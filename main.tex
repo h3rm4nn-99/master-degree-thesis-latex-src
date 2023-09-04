@@ -1,0 +1,84 @@
+\documentclass[a4paper, 12pt, oneside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3cm, bindingoffset=1cm]{geometry}
+\linespread{1.5}
+\usepackage{float}
+\usepackage{csquotes}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{alphabeta}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage[htt]{hyphenat}
+\usepackage{pgfplots}
+
+\usepackage[
+    backend=biber,
+    sorting=none
+]{biblatex}
+\addbibresource{bibliography.bib}
+
+
+\setlength{\parindent}{1cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\textbf{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\renewcommand{\contentsname}{Indice}
+
+\usepackage[Conny]{fncychap}
+
+  
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+        \LARGE{\uppercase{Università degli Studi di Salerno}}\\
+        \vspace{5mm}
+    	\uppercase{\normalsize Dipartimento di Informatica }\\
+    \end{center}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\textwidth]{logo_unisa}
+    \end{figure}
+    
+    \begin{center}
+        \normalsize{\textbf{Corso di Laurea Magistrale in Informatica}}\\
+    	\vspace{10mm}
+    	\LARGE{\textbf{Securing \textsc{MAVLink} protocol: a Post Quantum cryptography-based approach}}\\
+    	\vspace{3mm}
+        \large{\uppercase{Anno Accademico 2022/2023}}
+    \end{center}
+
+    \vspace{60mm}
+    \noindent
+    \begin{minipage}[t]{0.4\textwidth}
+    	Relatore:\\\textbf{Prof.\\ Arcangelo Castiglione}
+    	\vspace{12mm}\\
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.4\textwidth}\raggedleft
+    	Candidato: \\\textbf{Hermann Senatore}
+    \end{minipage}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\begin{abstract}
+    Lorem ipsum and so on.
+\end{abstract}
+\newpage
+
+\section{Introduzione}
+
+\newpage
+\printbibliography[title={Riferimenti bibliografici}]
+\end{document}
