@@ -60,7 +60,7 @@
     \vspace{60mm}
     \noindent
     \begin{minipage}[t]{0.4\textwidth}
-    	Relatore:\\\textbf{Prof.\\ Arcangelo Castiglione}
+    	Relatore:\\\textbf{Prof.\\Arcangelo Castiglione}
     	\vspace{12mm}\\
     \end{minipage}
     \hfill
@@ -73,11 +73,26 @@
 \newpage
 
 \begin{abstract}
-    Lorem ipsum and so on.
+    L'evoluzione tecnologica a cui si sta assistendo negli ultimi anni sta rivoluzionando pesantemente il mondo dell'aviazione, merito anche (e soprattutto) dei cosiddetti \textbf{UAV} (unmanned aerial vehicle), che comunemente vengono definiti \textbf{droni}, impiegati sia in contesto "civile" che in contesto militare. La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo MAVLink che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Exchange Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
 \end{abstract}
 \newpage
 
 \section{Introduzione}
+Questo capitolo funge da introduzione al lavoro svolto durante l'attività di Tesi, ne illustra la struttura e ne chiarisce le motivazioni ed il contesto in cui è calato.
+
+\subsection{UAV, APR o Droni: nomenclatura}
+Nell'ultimo decennio, l'importante evoluzione tecnologica nel contesto dell'aviazione ha permesso la progettazione e la concreta realizzazione di veicoli in grado di volare e compiere missioni anche \textbf{senza la presenza di un pilota umano} sempre più versatili, efficaci e precisi. Questa tipologia di veicoli viene definita, a seconda del contesto linguistico in cui ci si trova, \textbf{UAV} (\textit{unmanned aerial vehicle}), \textbf{APR} (\textit{aeromobile a pilotaggio remoto}) o, più comunemente, \textbf{Drone}. Tutti questi acronimi sono, quindi, equivalenti tra di loro. 
+
+La presenza di un essere umano continua tuttavia ad essere fondamentale in quanto il pilotaggio di questi dispositivi viene effettuato mentre una struttura di controllo "a terra", che prende il nome di \textbf{Ground Control Station} (da qui in poi \textit{GCS}). Tipicamente, una GCS può essere rappresentata da un qualsiasi apparato in grado di comunicare in qualche modo con l'UAV, quindi anche un comune Personal Computer su cui viene posto in esecuzione un software specifico.
+
+\subsection{Cenni storici ed evoluzione}
+Il concetto di aeromobile senza pilota in sé non è sorprendentemente prerogativa degli ultimi anni e delle conseguenze che l'avvento delle tecnologie informatiche si porta dietro. Risale infatti agli Anni '40 del XIX secolo il primo (rudimentale!) impiego di "dispositivi" volanti senza pilota in campo militare. 
+
+Per fronteggiare i moti rivoluzionari, peraltro diffusi anche in tutta Europa nel 1848, nella città di Venezia (che avevano portato alla creazione della cosiddetta Repubblica di San Marco), l'esercito austriaco lanciò dei \textbf{palloni} a cui era stato fissato dell'\textbf{esplosivo} dalla nave "Vulcano". 
+
+Questo primo esperimento portò a risultati "misti": alcuni di questi dispositivi riuscirono effettivamente a colpire la città, altri furono invece deviati dal vento.
+
+Per tutto il XIX secolo, lo sviluppo di questo tipo di dispositivi rimase prerogativa militare.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici}]
