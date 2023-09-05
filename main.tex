@@ -86,10 +86,10 @@ In particolare:
 
 \begin{itemize}
     \item Questo capitolo funge da introduzione al lavoro svolto durante l'attività di Tesi, ne illustra la struttura e ne chiarisce le motivazioni ed il contesto in cui è calato;
-    \item Il \textbf{Capitolo 2} fornisce una panoramica sulle principali piattaforme software considerate nel presente lavoro;
-    \item Il \textbf{Capitolo 3} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
-    \item Il \textbf{Capitolo 4} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
-    \item Il \textbf{Capitolo 5} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
+    \item il \textbf{Capitolo 2} fornisce una panoramica sulle principali piattaforme software considerate nel presente lavoro;
+    \item il \textbf{Capitolo 3} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
+    \item il \textbf{Capitolo 4} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
+    \item il \textbf{Capitolo 5} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
 \end{itemize}
 
 \newpage
@@ -122,6 +122,18 @@ A partire dagli anni 10 del XXI secolo sono stati concepiti diversi progetti sof
 Parimenti, è stato necessario definire uno \textit{standard} per quanto riguarda l'ambito dei protocolli di comunicazione tra il drone e la sua \textit{GCS}, che è rappresentato sicuramente dal protocollo \textbf{MAVLink} e dalle sue successive evoluzioni. 
 
 Una panoramica più approfondita sul protocollo MAVLink verrà in ogni caso affrontata nelle prossime sezioni in cui verranno illustrate le piattaforme software utilizzate nell'ambito del presente lavoro.
+
+\newpage
+
+\section{Piattaforme software per UAV e GCS}
+Il presente capitolo fornisce una panoramica delle principali tecnologie utilizzate in ambito \textbf{civile} ed \textbf{amatoriale} nel contesto dei velivoli a pilotaggio remoto. In particolare viene riservata particolare attenzione ai seguenti due progetti \textbf{open source}:
+
+\begin{itemize}
+    \item \textbf{Ardupilot}: una piattaforma integrata scritta in \textbf{C} utilizzabile su diverse tipologie di veicoli non necessariamente adatti al volo;
+    \item \textbf{QGroundControl}: una \textbf{Ground Control Station} open source scritta in C++ e che utilizza il framework \textbf{Qt} e che permette una più stretta interazione con la piattaforma Ardupilot.
+\end{itemize}
+
+Viene inoltre svolta una panoramica sul protocollo di comunicazione \textbf{MAVLink} che permette l'interazione tra queste due componenti.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici}]
