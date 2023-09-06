@@ -129,11 +129,33 @@ Una panoramica più approfondita sul protocollo MAVLink verrà in ogni caso affr
 Il presente capitolo fornisce una panoramica delle principali tecnologie utilizzate in ambito \textbf{civile} ed \textbf{amatoriale} nel contesto dei velivoli a pilotaggio remoto. In particolare viene riservata particolare attenzione ai seguenti due progetti \textbf{open source}:
 
 \begin{itemize}
-    \item \textbf{Ardupilot}: una piattaforma integrata scritta in \textbf{C} utilizzabile su diverse tipologie di veicoli non necessariamente adatti al volo;
-    \item \textbf{QGroundControl}: una \textbf{Ground Control Station} open source scritta in C++ e che utilizza il framework \textbf{Qt} e che permette una più stretta interazione con la piattaforma Ardupilot.
+    \item \textbf{ArduPilot}: una piattaforma integrata scritta in \textbf{C++} utilizzabile su diverse tipologie di veicoli non necessariamente adatti al volo;
+    \item \textbf{QGroundControl}: una \textbf{Ground Control Station} open source scritta in C++, che utilizza il framework \textbf{Qt} e che permette una più stretta interazione con la piattaforma ArduPilot.
 \end{itemize}
 
-Viene inoltre svolta una panoramica sul protocollo di comunicazione \textbf{MAVLink} che permette l'interazione tra queste due componenti.
+Viene quindi svolta una panoramica sul protocollo di comunicazione \textbf{MAVLink} che permette l'interazione tra queste due componenti.
+
+\subsection{ArduPilot}
+
+ArduPilot, come accennato, è una suite software universale che permette il controllo di diversi veicoli \textbf{non necessariamente volanti} \cite{ardupilot} la cui nascita risale al 2007.  L'idea di una suite software quale ArduPilot è stata formalizzata presso la piattaforma \textbf{DIYDrones.com}, community dedicata agli UAV fondata da \textbf{Chris Anderson} e che si definisce quindi "The Birthplace of ArduPilot"\cite{diy-drones}.
+
+Nel 2009 venne prodotta la prima \textbf{board} che utilizzava questa piattaforma e nel novembre dello stesso anno il codice sorgente del progetto venne reso pubblico (ed è attualmente disponibile su GitHub all'url \url{https://github.com/ArduPilot/ardupilot})\cite{ardupilot-history}.
+
+Correntemente, il progetto permette l'utilizzo su diverse tipologie di dispositivi, mediante delle versioni del firmware leggermente diverse tra di loro. In particolare, ArduPilot supporta dispositivi del tipo:
+
+\begin{itemize}
+    \item \textbf{Copter}: probabilmente quello più diffuso tra tutti e che tipicamente è composto da una board a cui sono associate diverse \textbf{eliche}. Il progetto di riferimento si chiama \textbf{ArduCopter}\cite{arducopter};
+    \item \textbf{Plane}: un tipo di dispositivo ad \textbf{ala fissa}, tipicamente un \textbf{aereo radiocomandato}. Il progetto di riferimento si chiama \textbf{ArduPlane}\cite{arduplane};
+    \item \textbf{Rover}: un tipo di dispositivo che non può spiccare il volo ma dotato di ruote e che di conseguenza viene utilizzato per missioni "a terra". Il progetto di riferimento si chiama semplicemente \textbf{Rover}\cite{rover};
+    \item \textbf{Sub}: un tipo di dispositivo subacqueo, appartenente alla categoria degli \textbf{Autonomous Underwater Vehicles} (\textit{AUV}). Il progetto di riferimento si chiama \textbf{ArduSub}\cite{ardusub};
+\end{itemize}
+
+Il progetto fornisce anche del codice specifico per apparati "complementari" ai dispositivi qui sopra descritti. In particolare:
+
+\begin{itemize}
+    \item \textbf{AntennaTracker}: che permette di governare apparati che si occupano di ricevere il segnale proveniente dai dispositivi controllati da remoto.\cite{antennatracker};
+    \item \textbf{Blimp}: un particolare tipo di "pallone" aerostatico dotato di motore\cite{blimp}.
+\end{itemize}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici}]
