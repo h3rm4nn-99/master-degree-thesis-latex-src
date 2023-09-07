@@ -73,7 +73,7 @@
 \newpage
 
 \begin{abstract}
-    L'evoluzione tecnologica a cui si sta assistendo negli ultimi anni sta rivoluzionando pesantemente il mondo dell'aviazione, merito anche (e soprattutto) dei cosiddetti \textbf{UAV} (unmanned aerial vehicle), che comunemente vengono definiti \textbf{droni}, impiegati sia in contesto "civile" che in contesto militare. La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo MAVLink che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Exchange Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
+    L'evoluzione tecnologica a cui si sta assistendo negli ultimi anni sta rivoluzionando pesantemente il mondo dell'aviazione, merito anche (e soprattutto) dei cosiddetti \textbf{UAV} (unmanned aerial vehicle), che comunemente vengono definiti \textbf{droni}, impiegati sia in contesto "civile" che in contesto militare. La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. L'innovazione tecnologica porta però a nuove sfide anche nel campo della sicurezza. In particolare, i recenti progressi nel campo del \textbf{quantum computing} apre nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo MAVLink che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Exchange Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
 \end{abstract}
 \newpage
 
@@ -156,6 +156,14 @@ Il progetto fornisce anche del codice specifico per apparati "complementari" ai 
     \item \textbf{AntennaTracker}: che permette di governare apparati che si occupano di ricevere il segnale proveniente dai dispositivi controllati da remoto.\cite{antennatracker};
     \item \textbf{Blimp}: un particolare tipo di "pallone" aerostatico dotato di motore\cite{blimp}.
 \end{itemize}
+
+\subsubsection{SITL - Software in the Loop}
+Il progetto ArduPilot mette inoltre a disposizione anche un \textbf{emulatore} che permette il testing di tutte queste varianti della piattaforma \textbf{senza possedere l'hardware adatto} \cite{sitl} e quindi procedere al \textbf{flashing} del firmware. Tale emulatore prende il nome di \textbf{SITL} (\textit{Software In The Loop}) e risulta quindi molto utile quando è necessario svolgere attività di testing preliminari per valutare il comportamento del firmware in use case differenti. Tra l'altro, proprio l'utilizzo di SITL ha permesso la realizzazione di questo lavoro in totale autonomia da hardware specifico. Maggiori informazioni su SITL e sul suo utilizzo saranno proposte in una successiva sottosezione dove verranno presentati ulteriori dettagli sull'architettura software del progetto ArduPilot.
+
+\subsection{ArduPilot: architettura software}
+Come menzionato in precedenza, il progetto ArduPilot utilizza il linguaggio di programmazione \textbf{C++}, che è uno di quelli più utilizzati per la programmazione di sistemi embedded in generale poiché \textbf{gira direttamente sull'hardware} senza bisogno di macchine virtuali di sorta (al contrario di Java o di linguaggi interpretati), permettendo di ottenere prestazioni migliori in un contesto in cui proprio le prestazioni rappresentano un requisito fondamentale.
+
+Dal punto di vista della configurazione del progetto, la scelta degli sviluppatori di ArduPilot è ricaduta sul framework \textbf{waf}. 
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici}]
