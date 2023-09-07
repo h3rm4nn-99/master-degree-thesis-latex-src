@@ -135,7 +135,26 @@ Il presente capitolo fornisce una panoramica delle principali tecnologie utilizz
     \item \textbf{QGroundControl}: una \textbf{Ground Control Station} open source scritta in C++, che utilizza il framework \textbf{Qt} e che permette una più stretta interazione con la piattaforma ArduPilot.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/ardupilot_logo.png}
+    \caption{Il logo di ArduPilot}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/QGC_RGB_Logo_Horizontal_Positive_PREFERRED.png}
+    \caption{Il logo di QGroundControl}
+\end{figure}
+
 Viene quindi svolta una panoramica sul protocollo di comunicazione \textbf{MAVLink} che permette l'interazione tra queste due componenti.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/logo_mavlink_small.png}
+    \caption{Il logo del protocollo MAVLink}
+\end{figure}
+
+\newpage
 
 \subsection{ArduPilot}
 
@@ -165,8 +184,6 @@ Correntemente, il progetto permette l'utilizzo su diverse tipologie di dispositi
     \subfloat[\centering Sub]{{\includegraphics[width=0.4\textwidth]{images/sub.jpeg} }}
 \end{figure}
 
-\newpage
-
 Il progetto fornisce anche del codice specifico per apparati "complementari" ai dispositivi qui sopra descritti. In particolare:
 
 \begin{itemize}
@@ -185,8 +202,6 @@ Il progetto fornisce anche del codice specifico per apparati "complementari" ai 
     \caption{Blimp}
 \end{figure}
 
-\newpage
-
 \subsubsection{SITL - Software in the Loop}
 Il progetto ArduPilot mette inoltre a disposizione anche un \textbf{emulatore} che permette il testing di tutte queste varianti della piattaforma \textbf{senza possedere l'hardware adatto} \cite{sitl} e quindi procedere al \textbf{flashing} del firmware. Tale emulatore prende il nome di \textbf{SITL} (\textit{Software In The Loop}) e risulta quindi molto utile quando è necessario svolgere attività di testing preliminari per valutare il comportamento del firmware in use case differenti. Tra l'altro, proprio l'utilizzo di SITL ha permesso la realizzazione di questo lavoro in totale autonomia da hardware specifico. Maggiori informazioni su SITL e sul suo utilizzo saranno proposte in una successiva sottosezione dove verranno presentati ulteriori dettagli sull'architettura software del progetto ArduPilot.
 
@@ -198,7 +213,7 @@ Dal punto di vista della configurazione del progetto, la scelta degli sviluppato
 In breve, la documentazione di waf \cite{waf} suggerisce che:
 
 \begin{itemize}
-    \item Per utilizzare il framework è necessaria unicamente un'installazione dell'interprete \textbf{Python};
+    \item Per utilizzare il framework è necessaria unicamente un'installazione di \textbf{Python};
     \item Waf non definisce un nuovo "linguaggio" (come avviene nel meccanismo dei \textbf{Makefile}) ma si compone di moduli scritti in Python, che permette quindi una maggiore riusabilità delle componenti;
     \item I "target" sono definiti come oggetti python dichiarati in maniera separata dai comandi (definiti invece come funzioni in un file chiamato \texttt{wscript}).
 \end{itemize}
@@ -225,6 +240,24 @@ e, per generare il firmware specifico per un determinato tipo di veicolo (in que
 \begin{center}
     \texttt{./waf copter}
 \end{center}
+
+Per avviare l'emulatore \textbf{SITL} configurato in precedenza è necessario recarsi nella directory del veicolo per cui si è scelto di compilare il firmware (specificato nel comando precedente) (in questo caso, \texttt{ArduCopter/})
+
+\begin{center}
+    \texttt{cd ArduCopter/}
+\end{center}
+
+e finalmente eseguire l'emulatore mediante il comando
+
+\begin{center}
+    \texttt{sim\_vehicle.py}
+\end{center}
+
+Nota: il file appena descritto è presente nel percorso \texttt{/Tools/autotest/sim\_vehicle.py} ma non è necessario specificare il suo path assoluto perché durante l'installazione dei prerequisiti di ArduPilot, quest'ultimo viene aggiunto alla \textbf{variabile d'ambiente} \texttt{PATH}.
+
+A questo punto, il veicolo "virtuale" è pronto ad accettare connessioni da una GCS. In particolare, viene aperta la porta \textbf{5760} sull'interfaccia di \textbf{loopback} locale.
+
+È anche possibile modificare il numero di porta utilizzato e l'interfaccia su cui mettersi in ascolto.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici}]
