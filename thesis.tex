@@ -33,6 +33,8 @@
 \renewcommand{\headrulewidth}{1pt}
 \renewcommand{\footrulewidth}{1pt}
 \renewcommand{\contentsname}{Indice}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}
 
 \usepackage[Conny]{fncychap}
 
@@ -150,12 +152,40 @@ Correntemente, il progetto permette l'utilizzo su diverse tipologie di dispositi
     \item \textbf{Sub}: un tipo di dispositivo subacqueo, appartenente alla categoria degli \textbf{Autonomous Underwater Vehicles} (\textit{AUV}). Il progetto di riferimento si chiama \textbf{ArduSub}\cite{ardusub};
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \subfloat[\centering Copter]{{\includegraphics[width=0.4\textwidth]{images/copter.jpg} }}
+    \qquad
+    \subfloat[\centering Plane]{{\includegraphics[width=0.4\textwidth]{images/plane.jpg} }}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \subfloat[\centering Rover]{{\includegraphics[width=0.4\textwidth]{images/rover.jpeg} }}
+    \qquad
+    \subfloat[\centering Sub]{{\includegraphics[width=0.4\textwidth]{images/sub.jpeg} }}
+\end{figure}
+
+\newpage
+
 Il progetto fornisce anche del codice specifico per apparati "complementari" ai dispositivi qui sopra descritti. In particolare:
 
 \begin{itemize}
-    \item \textbf{AntennaTracker}: che permette di governare apparati che si occupano di ricevere il segnale proveniente dai dispositivi controllati da remoto.\cite{antennatracker};
+    \item \textbf{AntennaTracker}: che permette di governare apparati che si occupano di ricevere il segnale proveniente dai dispositivi controllati da remoto\cite{antennatracker};
     \item \textbf{Blimp}: un particolare tipo di "pallone" aerostatico dotato di motore\cite{blimp}.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/antenna.jpg}
+    \caption{AntennaTracker}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/blimp.png}
+    \caption{Blimp}
+\end{figure}
+
+\newpage
 
 \subsubsection{SITL - Software in the Loop}
 Il progetto ArduPilot mette inoltre a disposizione anche un \textbf{emulatore} che permette il testing di tutte queste varianti della piattaforma \textbf{senza possedere l'hardware adatto} \cite{sitl} e quindi procedere al \textbf{flashing} del firmware. Tale emulatore prende il nome di \textbf{SITL} (\textit{Software In The Loop}) e risulta quindi molto utile quando è necessario svolgere attività di testing preliminari per valutare il comportamento del firmware in use case differenti. Tra l'altro, proprio l'utilizzo di SITL ha permesso la realizzazione di questo lavoro in totale autonomia da hardware specifico. Maggiori informazioni su SITL e sul suo utilizzo saranno proposte in una successiva sottosezione dove verranno presentati ulteriori dettagli sull'architettura software del progetto ArduPilot.
@@ -163,7 +193,38 @@ Il progetto ArduPilot mette inoltre a disposizione anche un \textbf{emulatore} c
 \subsection{ArduPilot: architettura software}
 Come menzionato in precedenza, il progetto ArduPilot utilizza il linguaggio di programmazione \textbf{C++}, che è uno di quelli più utilizzati per la programmazione di sistemi embedded in generale poiché \textbf{gira direttamente sull'hardware} senza bisogno di macchine virtuali di sorta (al contrario di Java o di linguaggi interpretati), permettendo di ottenere prestazioni migliori in un contesto in cui proprio le prestazioni rappresentano un requisito fondamentale.
 
-Dal punto di vista della configurazione del progetto, la scelta degli sviluppatori di ArduPilot è ricaduta sul framework \textbf{waf}. 
+Dal punto di vista della configurazione del progetto, la scelta degli sviluppatori di ArduPilot è ricaduta sul framework \textbf{waf}. Tale framework, scritto in Python, offre un ambiente di build modulare e per quanto possibile agnostico rispetto ai linguaggi di programmazione utilizzati nel progetto col quale lo si vuole usare.
+
+In breve, la documentazione di waf \cite{waf} suggerisce che:
+
+\begin{itemize}
+    \item Per utilizzare il framework è necessaria unicamente un'installazione dell'interprete \textbf{Python};
+    \item Waf non definisce un nuovo "linguaggio" (come avviene nel meccanismo dei \textbf{Makefile}) ma si compone di moduli scritti in Python, che permette quindi una maggiore riusabilità delle componenti;
+    \item I "target" sono definiti come oggetti python dichiarati in maniera separata dai comandi (definiti invece come funzioni in un file chiamato \texttt{wscript}).
+\end{itemize}
+
+Il progetto GitHub della piattaforma ArduPilot contiene il codice sorgente specifico di tutte le tipologie di veicolo, organizzato in directory separate. In particolare:
+
+\begin{itemize}
+    \item \texttt{ArduCopter/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Copter};
+    \item \texttt{ArduPlane/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Plane};
+    \item \texttt{ArduSub/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Sub};
+    \item \texttt{Rover/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Rover};
+    \item \texttt{AntennaTracker/} contiene il codice sorgente specifico per i dispositivi che comandano \textbf{antenne di invio/ricezione};
+    \item \texttt{Blimp/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Blimp}, come descritti in precedenza;
+\end{itemize}
+
+Inoltre, mediante il comando \texttt{configure} ed il parametro \texttt{-{}-board=} è possibile personalizzare ulteriormente la compilazione del firmware adattandolo ad un \textit{tipo di board} specifico o istruendo il sistema a prepararsi ad essere utilizzato mediante \textbf{SITL}. Quest'ultimo scenario è quello utilizzato nel presente lavoro e si ottiene eseguendo il comando:
+
+\begin{center}
+    \texttt{./waf configure -{}-board=sitl}
+\end{center}
+
+e, per generare il firmware specifico per un determinato tipo di veicolo (in questo caso quello di elezione è \textbf{Copter}), è necessario eseguire il seguente comando:
+
+\begin{center}
+    \texttt{./waf copter}
+\end{center}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici}]
