@@ -218,7 +218,7 @@ In breve, la documentazione di waf \cite{waf} suggerisce che:
     \item I "target" sono definiti come oggetti python dichiarati in maniera separata dai comandi (definiti invece come funzioni in un file chiamato \texttt{wscript}).
 \end{itemize}
 
-Il progetto GitHub della piattaforma ArduPilot contiene il codice sorgente specifico di tutte le tipologie di veicolo, organizzato in directory separate. In particolare:
+Il progetto GitHub della piattaforma ArduPilot contiene il codice sorgente specifico di tutte le tipologie di veicolo, organizzato in directory separate\cite{ardupilot-github}. In particolare:
 
 \begin{itemize}
     \item \texttt{ArduCopter/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Copter};
@@ -229,7 +229,7 @@ Il progetto GitHub della piattaforma ArduPilot contiene il codice sorgente speci
     \item \texttt{Blimp/} contiene il codice sorgente specifico per i veicoli di tipo \textbf{Blimp}, come descritti in precedenza;
 \end{itemize}
 
-Inoltre, mediante il comando \texttt{configure} ed il parametro \texttt{-{}-board=} è possibile personalizzare ulteriormente la compilazione del firmware adattandolo ad un \textit{tipo di board} specifico o istruendo il sistema a prepararsi ad essere utilizzato mediante \textbf{SITL}. Quest'ultimo scenario è quello utilizzato nel presente lavoro e si ottiene eseguendo il comando:
+Inoltre, mediante il comando \texttt{configure} ed il parametro \texttt{-{}-board=} è possibile personalizzare ulteriormente la compilazione del firmware adattandolo ad un \textit{tipo di board} specifico o istruendo il sistema a prepararsi ad essere utilizzato mediante \textbf{SITL}\cite{how-to-build-ardupilot}. Quest'ultimo scenario è quello utilizzato nel presente lavoro e si ottiene eseguendo il comando:
 
 \begin{center}
     \texttt{./waf configure -{}-board=sitl}
@@ -253,12 +253,31 @@ e finalmente eseguire l'emulatore mediante il comando
     \texttt{sim\_vehicle.py}
 \end{center}
 
-Nota: il file appena descritto è presente nel percorso \texttt{/Tools/autotest/sim\_vehicle.py} ma non è necessario specificare il suo path assoluto perché durante l'installazione dei prerequisiti di ArduPilot, quest'ultimo viene aggiunto alla \textbf{variabile d'ambiente} \texttt{PATH}.
+Nota: il file appena descritto è presente nel percorso \texttt{/Tools/autotest/} ma non è necessario specificare il suo path assoluto perché durante l'installazione dei prerequisiti di ArduPilot, quest'ultimo viene aggiunto in maniera system-wide alla variabile d'ambiente \texttt{PATH}.
 
 A questo punto, il veicolo "virtuale" è pronto ad accettare connessioni da una GCS. In particolare, viene aperta la porta \textbf{5760} sull'interfaccia di \textbf{loopback} locale.
 
 È anche possibile modificare il numero di porta utilizzato e l'interfaccia su cui mettersi in ascolto.
 
 \newpage
-\printbibliography[title={Riferimenti bibliografici}]
+
+\subsection{QGroundControl: una GCS open source}
+
+\subsubsection{Panoramica sulle principali GCS disponibili}
+
+Come menzionato in precedenza, un UAV per essere totalmente operativo ha bisogno di una componente \textbf{"a terra"} che lo governi: questa componente prende appunto il nome di \textbf{Ground Control Station} (GCS) e si occupa di gestire la connessione con l'UAV mediante il protocollo più adatto e di controllarlo mediante messaggi tipicamente aderenti alle specifiche \textbf{MAVLink} (maggiori informazioni sono fornite nella sottosezione dedicata). È quindi pacifico affermare che il software in questione risulti essere nella maggior parte dei casi \textbf{molto complesso} dal punto di vista dei requisiti a cui deve rispondere e da quello dell'architettura software.
+
+Attualmente, sono disponibili pubblicamente diverse Ground Control Station più o meno sofisticate. Tra queste si annoverano:
+
+\begin{itemize}
+    \item \textbf{MAVProxy} \cite{mavproxy}: una (non necessariamente) command-line-based GCS che possiede tutti gli strumenti necessari a comandare un UAV risultando al contempo utilizzabile su sistemi con a disposizione relativamente poche risorse. Di default, è quella che si avvia al momento dell'esecuzione di \textbf{SITL} a meno che non venga passato il parametro \texttt{-{}-no-mavproxy} allo script \texttt{sim\_vehicle.py} (come accennato in precedenza);
+    \item \textbf{Mission Planner} \cite{mission-planner}, sviluppato da \textbf{Michael Orbone} e che permette di gestire diversi aspetti di una missione di un UAV: dalla configurazione dei waypoints (in termini di coordinate GPS) ai comandi da far eseguire all'UAV durante lo svolgimento della missione;
+    \item \textbf{APM Planner 2}: sostanzialmente \textbf{un'evoluzione} dello strumento Mission Planner, creato dal team di sviluppo di \textbf{ArduPilot} e che permette di gestire sia dispositivi basati su ArduPilot stesso che basati sulla piattaforma \textbf{PX4};
+    \item \textbf{QGroundControl} \cite{qgroundcontrol}: probabilmente la GCS più funzionale tra quelle appena descritte. È stata sviluppata dal team che si occupa del protocollo \textbf{MAVLink} e che permette di interfacciarsi con qualsiasi dispositivo che supporti i messaggi MAVLink. Tale piattaforma è stata utilizzata per realizzare parte del lavoro di tesi qui presentato. 
+\end{itemize}
+
+\subsubsection{Architettura software di QGroundControl}
+
+\newpage
+\printbibliography[title={Riferimenti bibliografici e risorse consultate}]
 \end{document}
