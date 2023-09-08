@@ -205,7 +205,7 @@ Il progetto fornisce anche del codice specifico per apparati "complementari" ai 
 \subsubsection{SITL - Software in the Loop}
 Il progetto ArduPilot mette inoltre a disposizione anche un \textbf{emulatore} che permette il testing di tutte queste varianti della piattaforma \textbf{senza possedere l'hardware adatto} \cite{sitl} e quindi procedere al \textbf{flashing} del firmware. Tale emulatore prende il nome di \textbf{SITL} (\textit{Software In The Loop}) e risulta quindi molto utile quando è necessario svolgere attività di testing preliminari per valutare il comportamento del firmware in use case differenti. Tra l'altro, proprio l'utilizzo di SITL ha permesso la realizzazione di questo lavoro in totale autonomia da hardware specifico. Maggiori informazioni su SITL e sul suo utilizzo saranno proposte in una successiva sottosezione dove verranno presentati ulteriori dettagli sull'architettura software del progetto ArduPilot.
 
-\subsection{ArduPilot: architettura software}
+\subsubsection{ArduPilot: architettura software}
 Come menzionato in precedenza, il progetto ArduPilot utilizza il linguaggio di programmazione \textbf{C++}, che è uno di quelli più utilizzati per la programmazione di sistemi embedded in generale poiché \textbf{gira direttamente sull'hardware} senza bisogno di macchine virtuali di sorta (al contrario di Java o di linguaggi interpretati), permettendo di ottenere prestazioni migliori in un contesto in cui proprio le prestazioni rappresentano un requisito fondamentale.
 
 Dal punto di vista della configurazione del progetto, la scelta degli sviluppatori di ArduPilot è ricaduta sul framework \textbf{waf}. Tale framework, scritto in Python, offre un ambiente di build modulare e per quanto possibile agnostico rispetto ai linguaggi di programmazione utilizzati nel progetto col quale lo si vuole usare.
@@ -217,6 +217,8 @@ In breve, la documentazione di waf \cite{waf} suggerisce che:
     \item Waf non definisce un nuovo "linguaggio" (come avviene nel meccanismo dei \textbf{Makefile}) ma si compone di moduli scritti in Python, che permette quindi una maggiore riusabilità delle componenti;
     \item I "target" sono definiti come oggetti python dichiarati in maniera separata dai comandi (definiti invece come funzioni in un file chiamato \texttt{wscript}).
 \end{itemize}
+
+\subsubsection{Compilare ArduPilot}
 
 Il progetto GitHub della piattaforma ArduPilot contiene il codice sorgente specifico di tutte le tipologie di veicolo, organizzato in directory separate\cite{ardupilot-github}. In particolare:
 
@@ -259,9 +261,12 @@ A questo punto, il veicolo "virtuale" è pronto ad accettare connessioni da una 
 
 È anche possibile modificare il numero di porta utilizzato e l'interfaccia su cui mettersi in ascolto.
 
+\subsubsection{ArduPilot: integrazione con il protocollo MAVLink}
+Il progetto ArduPilot usa il protocollo MAVLink per comunicare con le Ground Control Stations. Il codice sorgente che implementa le primitive e le funzioni di supporto per la comunicazione non è però già disponibile all'atto della clonazione del progetto da GitHub. Al contrario, è stato configurato il tool \texttt{mavgen} come \textit{submodule} all'interno della repository. Tale tool, richiamato dal sistema di building \texttt{waf} all'atto della compilazione del codice per un determinato veicolo, permette di generare \textit{dinamicamente} tutto il codice di basso livello necessario per le operazioni di comunicazione verso l'esterno\cite{mavgen}. Più nello specifico, viene generata una libreria \textit{headers-only} in linguaggio \textbf{C}, che tuttavia risulta perfettamente interoperabile con il resto del software scritto invece, come già menzionato, in C++. Maggiori dettagli su questo tool saranno forniti durante la panoramica che verrà svolta riguardo il protocollo MAVLink.
+
 \newpage
 
-\subsection{QGroundControl: una GCS open source}
+\subsection{QGroundControl}
 
 \subsubsection{Panoramica sulle principali GCS disponibili}
 
@@ -277,6 +282,81 @@ Attualmente, sono disponibili pubblicamente diverse Ground Control Station più 
 \end{itemize}
 
 \subsubsection{Architettura software di QGroundControl}
+
+Come accennato, QGroundControl è un software molto complesso e che fornisce una moltitudine di funzionalità, che vanno dalla pianificazione delle missioni al monitoraggio dei messaggi MAVLink tramite un \textbf{inspector} \textit{ad-hoc}, per citarne alcune.
+
+Il progetto è stato sviluppato dall'organizzazione che si occupa di MAVLink e, più in generale, del \textbf{MAV-SDK}: la \textbf{DroneCode Foundation}, che ha come mission quella di "creare uno standard nell'industria dei droni mediante progetti open-source"\cite{dronecode}. 
+
+È scritto interamente in \textbf{C++}, eccetto per lo stack di comunicazione MAVLink in uso, mediante l'ausilio del framework \textbf{Qt} ed il suo codice sorgente è disponibile su GitHub \cite{qgc-github}.
+
+Al contrario delle altre GCS, QGroundControl \textbf{supporta anche la compilazione per la piattaforma Android}\cite{qgc-github-android}, il che di conseguenza permette l'utilizzo del software su dispositivi portatili e rendendo il progetto completamente \textbf{cross-platform}.
+
+In ogni caso, il \textit{core} della piattaforma è presente all'interno della directory \texttt{src/} nella root della repo GitHub. Qui sono presenti tutti i moduli che permettono, tra le altre cose, la gestione dei veicoli connessi alla GCS (classe \texttt{Vehicle} coaudivata da un'istanza di \texttt{LinkManager}) e dei messaggi di cui è stato svolto il \textit{parsing} dalla libreria MAVLink (classe \texttt{MAVLinkProtocol}: presente nella sottodirectory \texttt{comm/}).
+
+La comunicazione con l'UAV connesso avviene mediante \textbf{datagrammi UDP} gestiti da un \texttt{LinkManager} che contengono messaggi MAVLink costruiti utilizzando le funzioni della libreria C di questo progetto.
+
+Al contrario di quanto avviene nel contesto di ArduPilot, con QGroundControl suddetta libreria \textbf{non viene generata} al momento della compilazione ma viene fatto uso dell'\textbf{implementazione di riferimento in C} \cite{mavlink-c-implementation} messa a disposizione pubblicamente da DroneCode su GitHub ed inclusa nella repo di QGroundControl utilizzando (ancora una volta) il meccanismo dei \textit{submodules}.
+
+Il "dialetto" utilizzato di default da QGroundControl per la libreria MAVLink è (a partire dal 24 agosto 2023)\cite{qgc-all-commit} \texttt{all}, ma tale aspetto può essere variato in uno dei \textbf{file di configurazione del progetto}: \texttt{QGCExternalLibs.pri}.
+
+Per quanto riguarda questo lavoro, invece, viene ancora utilizzato il "dialetto" \texttt{ArduPilotMega} poiché tale cambiamento non era stato proposto ed approvato. \footnote{Cambiamenti così importanti sono particolarmente frequenti in progetti open source del genere, ndr}
+
+\subsubsection{Ottenere QGroundControl}
+La natura open source e cross platform di tale progetto permette a chi è interessato di ottenerne una copia sostanzialmente in due modi:
+
+\begin{enumerate}
+    \item Utilizzando una \textbf{release} periodica precompilata;
+    \item Compilando (ed eventualmente modificando!) il codice sorgente, approccio utilizzato tra l'altro nel presente lavoro.
+\end{enumerate}
+
+Per quanto riguarda la (1.), pacchetti precompilati sono disponibili nella sezione "release" di GitHub, dove sono presenti di solito:
+
+\begin{itemize}
+    \item Un file \texttt{.exe} che permette l'installazione su Microsoft Windows;
+    \item Un'immagine disco \texttt{.dmg} montabile ed installabile su macOS;
+    \item Un'\textit{AppImage} compatibile la maggior parte delle distro GNU/Linux;
+    \item Un file apk installabile su Android.
+\end{itemize}
+
+Per quanto riguarda la (2.), sono naturalmente necessari particolari accorgimenti, oltre ad una piattaforma che permetta di compilare agevolmente un progetto di grandi dimensioni.\footnote{Gli step riportati qui di seguito si riferiscono al sistema operativo \textbf{Ubuntu 20.04 LTS}, lo stesso utilizzato per il lavoro presentato.}
+
+In particolare:
+
+\begin{enumerate}
+    \item È necessario installare il framework \textbf{Qt}, mediante l'online installer oppure tramite tool di terze parti \cite{aqtinstall}. La versione di Qt necessaria attualmente è, secondo quanto indicato \cite{build-qgc}, la 5.15.2;
+    \item Tramite il gestore pacchetti \texttt{apt} è necessario installare i seguenti pacchetti:
+        \begin{itemize}
+            \item \texttt{speech-dispatcher};
+            \item \texttt{libudev-dev};
+            \item \texttt{libsdl2-dev};
+            \item \texttt{patchelf};
+            \item \texttt{build-essential};
+            \item \texttt{curl} (che probabilmente è già installato di default).
+        \end{itemize}
+\end{enumerate}
+
+Successivamente è necessario preparare l'ambiente di build mediante i seguenti comandi nella \textit{root} della repository:
+
+\begin{center}
+    \texttt{mkdir build/ \&\& cd build/} \\
+    \texttt{qmake ../}
+\end{center}
+
+L'invocazione di \texttt{qmake} permette a Qt di inizializzare i \textbf{Makefile} ed di caricare le \textbf{variabili d'ambiente} contenute nei \textbf{file di configurazione} (come ad esempio il dialetto di MAVLink da utilizzare, già accennato in precedenza).
+
+È ora finalmente possibile invocare \texttt{make} per iniziare la procedura di compilazione vera e propria:
+
+\begin{center}
+    \texttt{make -j\$(nproc -{}-all)}
+\end{center}
+
+Il comando \texttt{nproc -{}-all} permette di determinare il numero di core logici che la CPU della macchina su cui si sta svolgendo la compilazione ha a disposizione. Ciò permette una compilazione veloce quanto più possibile.
+
+Una volta terminata la compilazione del software, l'eseguibile prodotto sarà posizionato all'interno della cartella \texttt{build/staging} e si chiama semplicemente \texttt{QGroundContol}. Suddetto file ha già assegnati i permessi di esecuzione ed è possibile eseguirlo mediante il seguente comando:
+
+\begin{center}
+    \texttt{staging/QGroundControl}
+\end{center}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
