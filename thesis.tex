@@ -16,6 +16,7 @@
 \usepackage{listings}
 \usepackage[htt]{hyphenat}
 \usepackage{pgfplots}
+\usepackage{wrapfig}
 
 \usepackage[
     backend=biber,
@@ -59,15 +60,16 @@
         \large{\uppercase{Anno Accademico 2022/2023}}
     \end{center}
 
-    \vspace{60mm}
+    \vspace{50mm}
     \noindent
     \begin{minipage}[t]{0.4\textwidth}
-    	Relatore:\\\textbf{Prof.\\Arcangelo Castiglione}
+    	\textsc{Relatore}\\Prof. \textbf{Arcangelo Castiglione}\\
+        \small Università degli Studi di Salerno
     	\vspace{12mm}\\
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.4\textwidth}\raggedleft
-    	Candidato: \\\textbf{Hermann Senatore}
+    	\textsc{Candidato} \\\textbf{Hermann Senatore}\\\small Matricola: \textbf{0522501273}
     \end{minipage}
 \end{titlepage}
 
@@ -75,7 +77,11 @@
 \newpage
 
 \begin{abstract}
-    L'evoluzione tecnologica a cui si sta assistendo negli ultimi anni sta rivoluzionando pesantemente il mondo dell'aviazione, merito anche (e soprattutto) dei cosiddetti \textbf{UAV} (unmanned aerial vehicle), che comunemente vengono definiti \textbf{droni}, impiegati sia in contesto "civile" che in contesto militare. La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. L'innovazione tecnologica porta però a nuove sfide anche nel campo della sicurezza. In particolare, i recenti progressi nel campo del \textbf{quantum computing} apre nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo MAVLink che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Exchange Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
+    L'evoluzione tecnologica a cui si sta assistendo negli ultimi anni sta rivoluzionando pesantemente (tra le altre cose) il mondo dell'aviazione, merito anche (e soprattutto) dei cosiddetti \textbf{UAV} (unmanned aerial vehicle), che comunemente vengono definiti \textbf{droni}, impiegati sia in contesto "civile" che in contesto militare. 
+    
+    La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. L'innovazione tecnologica porta però a nuove sfide anche nel campo della sicurezza. 
+    
+    In particolare, i recenti progressi nel campo del \textbf{quantum computing} apre nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo MAVLink che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Encapsulation Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
 \end{abstract}
 \newpage
 
@@ -89,9 +95,10 @@ In particolare:
 \begin{itemize}
     \item Questo capitolo funge da introduzione al lavoro svolto durante l'attività di Tesi, ne illustra la struttura e ne chiarisce le motivazioni ed il contesto in cui è calato;
     \item il \textbf{Capitolo 2} fornisce una panoramica sulle principali piattaforme software considerate nel presente lavoro;
-    \item il \textbf{Capitolo 3} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
-    \item il \textbf{Capitolo 4} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
-    \item il \textbf{Capitolo 5} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
+    \item il \textbf{Capitolo 3} fornisce una panoramica sul protocollo \textbf{MAVLink} e ne evidenzia alcune problematiche di sicurezza;
+    \item il \textbf{Capitolo 4} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
+    \item il \textbf{Capitolo 5} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
+    \item il \textbf{Capitolo 6} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
 \end{itemize}
 
 \newpage
@@ -387,6 +394,165 @@ Una volta terminata la compilazione del software, l'eseguibile prodotto sarà po
 \section{Il protocollo MAVLink}
 
 Come accennato in fase di introduzione a questo lavoro, il \textbf{protocollo MAVLink} è il vero e proprio "collante" tra le due parti della comunicazione, ovvero l'UAV e la GCS a terra. In questa sezione viene presentata la filosofia, le specifiche e l'architettura del protocollo MAVLink e se ne illustra l'evoluzione con il passare del tempo.
+
+\subsection{Principi di funzionamento}
+Il protocollo MAVLink (nome breve per \textbf{M}icro \textbf{A}erial \textbf{V}ehicle \textbf{Link}) è stato proposto per la prima volta nel 2010 dallo sviluppatore \textbf{Lorenz Meier} e si propone come un protocollo basato su \textbf{scambio di messaggi} che ha come caratteristica orincipale quello di essere \textbf{lightweight} e, alla luce del contesto in cui si sta operando, quest'ultima caratteristica risulta essere particolarmente desiderabile.
+
+\begin{wrapfigure}{r}{0.50\textwidth}
+    \includegraphics[width=0.9\linewidth]{images/logo_mavlink_small.png}
+    \caption{Logo del progetto} 
+\end{wrapfigure}
+
+Il principio di funzionamento del protocollo MAVLink è tipico di altri protocolli di tipo \textbf{publish-subscribe}, in quanto le due parti della comunicazione (l'UAV e la GCS) pubblicano \textbf{messaggi MAVLink} su un \textbf{topic} a cui sono entrambi iscritti. 
+
+La particolarità di questo protocollo risiede nella sua \textbf{duttilità} poiché (al contrario di quanto potrebbe suggerire il suo nome) può essere utilizzato per dispositivi diversi da quelli comunemente definiti come "droni". D'altronde, il progetto ArduPilot lo utilizza anche nei progetti che riguardano Rover e Sub.
+
+Come menzionato in precedenza, l'implementazione di riferimento di questo protocollo è disponibile su \textbf{GitHub} e si configura come una libreria \textbf{header-only} scritta nel linguaggio di programmazione C e che può essere liberamente integrata nei progetti che intendono farne uso, secondo la licenza LGPL.
+
+Altra particolarità di questo protocollo è la sua \textbf{estensibilità}: è presente un \textbf{pool} di messaggi standard che permettono una corretta e completa a 360° comunicazione tra UAV e GCS ma è possibile aggiungerne liberamente degli altri per introdurre un comportamento personalizzato, ottenere informazioni non standard e \textbf{scambiare dati} di conseguenza. 
+
+Proprio questo ultimo aspetto è stato determinante per il lavoro presentato.
+
+Data la sua estensibilità sono stati stabiliti, col passare del tempo, diverse varianti (o \textbf{dialetti}) di MAVLink, alcuni di questi "supportati ufficialmente". Ad esempio:
+
+\begin{itemize}
+    \item \texttt{minimal}: il "minimo indispensabile", ovvero quei messaggi che vanno implementati su ogni veicolo pena il non funzionamento del protocollo;
+    \item \texttt{common}: il sottoinsieme dei messaggi più \textbf{comuni} che \textit{andrebbero} messi a disposizione su tutti i veicoli. Naturalmente, include \texttt{minimal};
+    \item \texttt{ardupilotmega}: i messaggi MAVLink usati dal progetto \textbf{ArduPilot}, include \texttt{common};
+    \item \texttt{ASLUAV}: i messaggi MAVLink utilizzati per veicoli ad ala fissa denominati \textbf{ASLUAV};
+    \item \texttt{uAvionix}: i messaggi MAVLink utilizzati dal progetto \textbf{uAvionix};
+    \item \texttt{paparazzi}: i messaggi MAVLink utilizzati dall'autopilot \textbf{paparazzi};
+    \item \texttt{all}: una collezione di tutti i messaggi definiti in precedenza.
+\end{itemize}
+
+Le definizioni di questi messaggi sono contenute in dei file XML presenti nella repo GitHub del progetto. In ciascuno di questi è presente la direttiva \texttt{<include></include>} che permette la definizione di \textbf{gerarchie di messaggi}. 
+
+
+
+La caratteristica che rende lightweight tale protocollo è il modo in cui i messaggi MAVLink viaggiano sul link di comunicazione: essi vengono infatti \textbf{serializzati} in forma \textbf{binaria}, operazione che ne facilita di molto il parsing, con un \textit{gain} prestazionale non indifferente rispetto al parsing da altri formati \textbf{text-based} come JSON o XML, usati tipicamente in contesti in cui le risorse a disposizione non sono limitate, al contrario di quanto avviene nel caso degli UAV.
+
+Con il passare del tempo sono state proposte \textbf{due revisioni maggiori} del protocollo MAVLink:
+
+\begin{itemize}
+    \item La versione \textbf{1.0}, standardizzata nel 2013;
+    \item La versione \textbf{2.0}, le cui migliorie sono descritte nella sezione successiva, rilasciata nella prima parte del 2017
+\end{itemize}
+
+Fino al 2013 era inoltre ampiamente utilizzata la versione \textbf{0.9} del protocollo, deprecata con l'adozione da parte dei vari progetti della versione 1.0.
+
+\newpage
+\subsection{Architettura di un pacchetto MAVLink}
+
+Un pacchetto MAVLink, al netto delle differenze tra le due revisioni, è composto sostanzialmente da due parti:
+
+\begin{itemize}
+    \item Un \textbf{header} che contiene delle informazioni di controllo;
+    \item Un \textbf{payload} che contiene i dati veri e propri scambiati nel pacchetto.
+\end{itemize}
+
+\subsubsection{MAVLink 1.0: struttura di un pacchetto}
+Un \textbf{frame} MAVLink 1.0 è strutturato come segue:
+
+\begin{itemize}
+    \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame MAVLink. Nella versione 1.0 del protocollo questo byte assume un valore fisso: \texttt{0xFE};
+    \item Payload Length (\texttt{LEN}): un byte che rappresenta la \textbf{lunghezza in byte} del payload. Poiché questo campo è formato da un solo byte, la lunghezza del payload \textbf{non può superare i 255 bytes};
+    \item Packet Sequence Number (\texttt{SEQ}): un byte che rappresenta il numero di sequenza del pacchetto nel contesto di una comunicazione. Serve principalmente per la \textbf{detection} di \textbf{perdita} dei pacchetti e degli errori in generale;
+    \item System ID (\texttt{SYSID}): un byte che rappresenta l'ID del \textbf{mittente} del messaggio. Non è possibile indicare 0 (l'indirizzo di broadcast) come mittente poiché viene interpretato come non valido dal parser;
+    \item Component ID (\texttt{COMPID}): un byte che rappresenta la \textbf{componente} del veicolo che ha generato il messaggio (una videocamera o un qualche accessorio);
+    \item Message ID (\texttt{MSGID}): un byte che rappresenta il \textbf{Message ID} del contenuto del payload. Serve alla libreria per identificare il messaggio eselezionare il parser più adatto per interpretare il contenuto e deserializzarlo;
+    \item Payload (\texttt{PAYLOAD}): un vettore di byte di \textbf{al più} 255 bytes (si veda il ragionamento fatto in precedenza) che contiene i dati veri e propri scambiati tra l'UAV e la GCS;
+    \item CRC (+ CRC Extra) (\texttt{CHECKSUM}): due bytes: \begin{itemize}
+        \item Il primo rappresenta il checksum del messaggio (nel suo calcolo non viene considerato \texttt{STX});
+        \item Il secondo (denominato \texttt{CRC\_EXTRA}) rappresenta il CRC della \textbf{struttura della definizione XML del messaggio}. Ciò permette alle due parti della comunicazione di assicurarsi di star considerando messaggi definiti allo stesso modo.
+    \end{itemize}
+\end{itemize}
+
+Di seguito è presente un riepilogo della struttura di un pacchetto MAVLink nella sua revisione 1.0:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/packet_mavlink_v1.jpg}
+    \caption{La struttura di un messaggio MAVLink 1.0}
+\end{figure}
+
+Per quanto riguarda la dimensione dei pacchetti MAVLink 1.0:
+
+\begin{itemize}
+    \item La dimensione \textbf{minima} di un pacchetto MAVLink 1.0 è di 8 bytes (quando \textbf{non} è presente un payload, tipicamente quando si ha a che fare con dei pacchetti di ACK);
+    \item La dimensione \textbf{massima} di un pacchetto MAVLink 1.0 è di 263 bytes (8 bytes di header + 255 bytes di payload, quando quest'ultimo è completamente "riempito").
+\end{itemize}
+
+\newpage
+
+\subsubsection{MAVLink 2.0: struttura di un pacchetto}
+
+Con il rilascio della versione 2.0 delle specifiche del protocollo, la struttura di un pacchetto è variata leggermente.
+
+In particolare:
+
+\begin{itemize}
+    \item Sono stati aggiunti due nuovi membri dell'header: \texttt{CMPFLAGS} e \texttt{INCFLAGS};
+    \item È stato aggiunto il supporto alla \textbf{firma digitale del pacchetto};\\
+\end{itemize}
+Un frame MAVLink 2.0 è quindi strutturato come segue:
+
+\begin{itemize}
+    \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame MAVLink. Nella versione 2.0 del protocollo questo byte assume un valore fisso: \texttt{0xFD};
+    \item Payload Length (\texttt{LEN}): un byte che rappresenta la \textbf{lunghezza in byte} del payload. Poiché questo campo è formato da un solo byte, la lunghezza del payload \textbf{non può superare i 255 bytes};
+    \item Incompatibility Flags (\texttt{INCFLAGS}): un byte che rappresenta quelle features del protocollo che \textbf{devono essere tassativamente supportate} da chi riceve il pacchetto poiché \textbf{ne alterano la struttura}. In caso contrario, le specifiche del protcollo indicano che il pacchetto deve essere \textbf{scartato}. L'unico valore attualmente supportato è \texttt{0x01}, che rappresenta la possibilità di \textbf{firmare il messaggio};
+    \item Compatibility Flags (\texttt{CMPFLAGS}): un byte che indica la presenza di features "aggiuntive" che, anche se non supportate dal ricevente \textbf{non pregiudicano} la deserializzazione del pacchetto e che quindi lo scarto delpacchetto non è per forza necessario. Un esempio è una flag che denota un pacchetto "ad alta priorità".
+    \item Packet Sequence Number (\texttt{SEQ}): un byte che rappresenta il numero di sequenza del pacchetto nel contesto di una comunicazione. Serve principalmente per la \textbf{detection} di \textbf{perdita} dei pacchetti e degli errori in generale;
+    \item System ID (\texttt{SYSID}): un byte che rappresenta l'ID del \textbf{mittente} del messaggio. Non è possibile indicare 0 (l'indirizzo di broadcast) come mittente poiché viene interpretato come non valido dal parser;
+    \item Component ID (\texttt{COMPID}): un byte che rappresenta la \textbf{componente} del veicolo che ha generato il messaggio (una videocamera o un qualche accessorio);
+    \item Message ID (\texttt{MSGID}): \textbf{tre bytes} che rappresentano il \textbf{Message ID} del contenuto del payload. Serve alla libreria per identificare il messaggio eselezionare il parser più adatto per interpretare il contenuto e deserializzarlo. Con l'aumento della dimensione di questo campo è possibile supportare un numero più grande di messaggi e di rendere la libreria ancora più flessibile rispetto a prima;
+    \item Payload (\texttt{PAYLOAD}): un vettore di byte di \textbf{al più} 255 bytes (si veda il ragionamento fatto in precedenza) che contiene i dati veri e propri scambiati tra l'UAV e la GCS;
+    \item CRC (+ CRC Extra) (\texttt{CHECKSUM}): due bytes: \begin{itemize}
+        \item Il primo rappresenta il checksum del messaggio (nel suo calcolo non viene considerato \texttt{STX});
+        \item Il secondo (denominato \texttt{CRC\_EXTRA}) rappresenta il CRC della \textbf{struttura della definizione XML del messaggio}. Ciò permette alle due parti della comunicazione di assicurarsi di star considerando messaggi definiti allo stesso modo.
+    \end{itemize}
+\end{itemize}
+
+Oltre all'header ed al payload, il protocollo MAVLink 2.0 introduce anche la possibilità di aggiungere (\textit{append}) una \textbf{firma digitale} ad un frame. Tale campo è lungo esattamente \textbf{13 bytes}.
+
+\newpage
+
+Di seguito è presente un riepilogo della struttura di un pacchetto MAVLink nella sua revisione 2.0:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/packet_mavlink_v2.jpg}
+    \caption{La struttura di un messaggio MAVLink 2.0}
+\end{figure}
+
+Alla luce di tutte le informazioni qui sopra riportate, riguardo la dimensione di un frame MAVLink 2.0 è possibile menzionare che:
+
+\begin{itemize}
+    \item La dimensione \textbf{minima} di un pacchetto MAVLink 2.0 (senza payload e senza firma) è di \textbf{12 bytes};
+    \item La dimensione \textbf{massima} di un pacchetto MAVLink 2.0 (con payload "riempito" e con apposta una firma digitale) è di \textbf{280 bytes} (\textbf{12} bytes di header + \textbf{255} bytes di payload + \textbf{13} bytes di firma). 
+\end{itemize}
+
+\subsubsection{Scelta del protocollo}
+Poiché l'uso del protocollo MAVLink 1.0 è ancora ampiamente diffuso, è stato necessario implementare un meccanismo di "definizione" della versione del protocollo da utilizzare per una comunicazione: una sorta di \textbf{handshaking} preliminare la cui struttura viene riportata di seguito:
+
+\begin{itemize}
+    \item La \textbf{Ground Control Station} invia il messaggio \texttt{MAV\_CMD\_REQUEST\_PROTOCOL\_VERSION} al drone, richiedendo quindi la versione del protocollo in uso dal veicolo ed iniziando contemporaneamente un \textit{countdown di timeout};
+    \item L'UAV a questo punto può rispondere in due modi: \begin{itemize}
+        \item Se è presente il supporto per il protocollo MAVLink 2.0, risponderà con il messaggio di ACK \texttt{PROTOCOL\_VERSION} formattato come frame MAVLink 2.0;
+        \item Se invece non vi è supporto per MAVLink 2.0, risponderà con un \textbf{NACK} e, in caso di assenza di procedure apposite, \textbf{scarterà il messaggio precedente} e non risponderà affatto.
+    \end{itemize}
+    \item \begin{itemize}
+        \item Se la GCS riceve il messaggio \texttt{PROTOCOL\_VERSION} allorà verrà effettuato lo \textit{switch} alla versione 2.0 del protocollo.
+        \item Se viene ricevuto un NACK oppure si giunge al timeout, viene utilizzata la versione 1.0 del protocollo poiché evidentemente l'UAV non è riuscito ad interpretare in maniera corretta il frame precedente.
+        \end{itemize} 
+\end{itemize}
+
+Di seguito è presente una rappresntazione grafica dell'handshaking appena descritto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/handshake_mavlink.jpeg}
+    \caption{L'handshake effettuato per stabilire la versione del protocollo da utilizzare}
+\end{figure}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
