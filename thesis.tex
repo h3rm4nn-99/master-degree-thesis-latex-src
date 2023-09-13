@@ -396,7 +396,7 @@ Una volta terminata la compilazione del software, l'eseguibile prodotto sarà po
 Come accennato in fase di introduzione a questo lavoro, il \textbf{protocollo MAVLink} è il vero e proprio "collante" tra le due parti della comunicazione, ovvero l'UAV e la GCS a terra. In questa sezione viene presentata la filosofia, le specifiche e l'architettura del protocollo MAVLink e se ne illustra l'evoluzione con il passare del tempo.
 
 \subsection{Principi di funzionamento}
-Il protocollo MAVLink (nome breve per \textbf{M}icro \textbf{A}erial \textbf{V}ehicle \textbf{Link}) è stato proposto per la prima volta nel 2010 dallo sviluppatore \textbf{Lorenz Meier} e si propone come un protocollo basato su \textbf{scambio di messaggi} che ha come caratteristica orincipale quello di essere \textbf{lightweight} e, alla luce del contesto in cui si sta operando, quest'ultima caratteristica risulta essere particolarmente desiderabile.
+Il protocollo MAVLink (nome breve per \textbf{M}icro \textbf{A}erial \textbf{V}ehicle \textbf{Link}) è stato proposto per la prima volta nel 2010 dallo sviluppatore \textbf{Lorenz Meier} \cite{mavlink-first-commit} e si propone come un protocollo basato su \textbf{scambio di messaggi} che ha come caratteristica principale quello di essere \textbf{lightweight}: alla luce del contesto in cui si sta operando, quest'ultima caratteristica risulta essere particolarmente desiderabile.
 
 \begin{wrapfigure}{r}{0.50\textwidth}
     \includegraphics[width=0.9\linewidth]{images/logo_mavlink_small.png}
@@ -407,7 +407,7 @@ Il principio di funzionamento del protocollo MAVLink è tipico di altri protocol
 
 La particolarità di questo protocollo risiede nella sua \textbf{duttilità} poiché (al contrario di quanto potrebbe suggerire il suo nome) può essere utilizzato per dispositivi diversi da quelli comunemente definiti come "droni". D'altronde, il progetto ArduPilot lo utilizza anche nei progetti che riguardano Rover e Sub.
 
-Come menzionato in precedenza, l'implementazione di riferimento di questo protocollo è disponibile su \textbf{GitHub} e si configura come una libreria \textbf{header-only} scritta nel linguaggio di programmazione C e che può essere liberamente integrata nei progetti che intendono farne uso, secondo la licenza LGPL.
+Come menzionato in precedenza, l'implementazione di riferimento di questo protocollo è disponibile su \textbf{GitHub} e si configura come una libreria \textbf{header-only} scritta nel linguaggio di programmazione C e che può essere liberamente integrata nei progetti che intendono farne uso, secondo la licenza LGPL. \cite{mavlink-c-implementation}
 
 Altra particolarità di questo protocollo è la sua \textbf{estensibilità}: è presente un \textbf{pool} di messaggi standard che permettono una corretta e completa a 360° comunicazione tra UAV e GCS ma è possibile aggiungerne liberamente degli altri per introdurre un comportamento personalizzato, ottenere informazioni non standard e \textbf{scambiare dati} di conseguenza. 
 
@@ -425,17 +425,15 @@ Data la sua estensibilità sono stati stabiliti, col passare del tempo, diverse 
     \item \texttt{all}: una collezione di tutti i messaggi definiti in precedenza.
 \end{itemize}
 
-Le definizioni di questi messaggi sono contenute in dei file XML presenti nella repo GitHub del progetto. In ciascuno di questi è presente la direttiva \texttt{<include></include>} che permette la definizione di \textbf{gerarchie di messaggi}. 
+Le definizioni di questi messaggi sono contenute in dei file XML presenti nella repo GitHub del progetto. In ciascuno di questi è presente la direttiva \texttt{<include></include>} che permette la definizione di \textbf{gerarchie di messaggi}. \cite{mavlink-message-definitions}
 
-
-
-La caratteristica che rende lightweight tale protocollo è il modo in cui i messaggi MAVLink viaggiano sul link di comunicazione: essi vengono infatti \textbf{serializzati} in forma \textbf{binaria}, operazione che ne facilita di molto il parsing, con un \textit{gain} prestazionale non indifferente rispetto al parsing da altri formati \textbf{text-based} come JSON o XML, usati tipicamente in contesti in cui le risorse a disposizione non sono limitate, al contrario di quanto avviene nel caso degli UAV.
+La caratteristica che rende lightweight tale protocollo è il modo in cui i messaggi MAVLink viaggiano sul link di comunicazione: essi vengono infatti \textbf{serializzati} in forma \textbf{binaria} \cite{mavlink-overview}, operazione che ne facilita di molto il parsing, con un \textit{gain} prestazionale non indifferente rispetto al parsing da altri formati \textbf{text-based} come JSON o XML, usati tipicamente in contesti in cui le risorse a disposizione non sono limitate, al contrario di quanto avviene nel caso degli UAV.
 
 Con il passare del tempo sono state proposte \textbf{due revisioni maggiori} del protocollo MAVLink:
 
 \begin{itemize}
-    \item La versione \textbf{1.0}, standardizzata nel 2013;
-    \item La versione \textbf{2.0}, le cui migliorie sono descritte nella sezione successiva, rilasciata nella prima parte del 2017
+    \item La versione \textbf{1.0}, standardizzata nel 2013 \cite{mavlink-versions};
+    \item La versione \textbf{2.0}, le cui migliorie sono descritte nella sezione successiva, rilasciata nella prima parte del 2017 \cite{mavlink-2}.
 \end{itemize}
 
 Fino al 2013 era inoltre ampiamente utilizzata la versione \textbf{0.9} del protocollo, deprecata con l'adozione da parte dei vari progetti della versione 1.0.
@@ -451,7 +449,7 @@ Un pacchetto MAVLink, al netto delle differenze tra le due revisioni, è compost
 \end{itemize}
 
 \subsubsection{MAVLink 1.0: struttura di un pacchetto}
-Un \textbf{frame} MAVLink 1.0 è strutturato come segue:
+Un \textbf{frame} MAVLink 1.0 è strutturato come segue \cite{mavlink-1-packet}:
 
 \begin{itemize}
     \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame MAVLink. Nella versione 1.0 del protocollo questo byte assume un valore fisso: \texttt{0xFE};
@@ -494,7 +492,7 @@ In particolare:
     \item Sono stati aggiunti due nuovi membri dell'header: \texttt{CMPFLAGS} e \texttt{INCFLAGS};
     \item È stato aggiunto il supporto alla \textbf{firma digitale del pacchetto};\\
 \end{itemize}
-Un frame MAVLink 2.0 è quindi strutturato come segue:
+Un frame MAVLink 2.0 è quindi strutturato come segue \cite{mavlink-2-packet}:
 
 \begin{itemize}
     \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame MAVLink. Nella versione 2.0 del protocollo questo byte assume un valore fisso: \texttt{0xFD};
@@ -532,7 +530,7 @@ Alla luce di tutte le informazioni qui sopra riportate, riguardo la dimensione d
 \end{itemize}
 
 \subsubsection{Scelta del protocollo}
-Poiché l'uso del protocollo MAVLink 1.0 è ancora ampiamente diffuso, è stato necessario implementare un meccanismo di "definizione" della versione del protocollo da utilizzare per una comunicazione: una sorta di \textbf{handshaking} preliminare la cui struttura viene riportata di seguito:
+Poiché l'uso del protocollo MAVLink 1.0 è ancora ampiamente diffuso, è stato necessario implementare un meccanismo di "definizione" della versione del protocollo da utilizzare per una comunicazione: una sorta di \textbf{handshaking} \cite{version-handshaking} preliminare la cui struttura viene riportata di seguito:
 
 \begin{itemize}
     \item La \textbf{Ground Control Station} invia il messaggio \texttt{MAV\_CMD\_REQUEST\_PROTOCOL\_VERSION} al drone, richiedendo quindi la versione del protocollo in uso dal veicolo ed iniziando contemporaneamente un \textit{countdown di timeout};
