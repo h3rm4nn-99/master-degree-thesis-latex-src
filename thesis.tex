@@ -529,7 +529,52 @@ Alla luce di tutte le informazioni qui sopra riportate, riguardo la dimensione d
     \item La dimensione \textbf{massima} di un pacchetto MAVLink 2.0 (con payload "riempito" e con apposta una firma digitale) è di \textbf{280 bytes} (\textbf{12} bytes di header + \textbf{255} bytes di payload + \textbf{13} bytes di firma). 
 \end{itemize}
 
-\subsubsection{Scelta del protocollo}
+\subsubsection{La firma digitale in MAVLink 2.0}
+Come menzionato, a partire dalla versione 2.0 del protocollo MAVLink è stato aggiunto il supporto alla firma digitale dei frame. La struttura dell'header della firma del pacchetto risulta essere grande 13 bytes, così strutturati \cite{sign-frame-fotmat}:
+
+\begin{itemize}
+    \item \textbf{Link ID} (\texttt{LINK ID}): un byte che rappresenta il \textbf{link} su cui è stato inviato un determinato pacchetto;
+    \item \textbf{Timestamp} (\texttt{TM.STAMP}): \textbf{sei bytes} che rappresentano il numero di unità di 10 \textbf{microsecondi} passati dal \textbf{1 Gennaio 2015}. Questo contatore deve aumentare in maniera \textit{monotona} ad ogni messaggio inviato. Se ci si trova in un contesto in cui vengono inviati più di ~100.000 messaggi al secondo, questo timestamp può \textbf{superare} l'ora corrente;
+    \item \textbf{Signature} (\texttt{SIGNATURE}): \textbf{sei bytes} (48 bit) che contengono la firma digitale vera e propria.
+\end{itemize}
+
+Di seguito è presente una rappresentazione grafica dell'header aggiuntivo della firma digitale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/mavlink2-signature.png}
+    \caption{La struttura dell'header di firma}
+\end{figure}
+
+Un pacchetto MAVLink firmato, come accennato in precedenza, è caratterizzato dal campo \texttt{INCFLAGS} impostato a \texttt{0x01}.
+
+\newpage
+
+\subsubsection{Algoritmo di generazione della firma digitale in MAVLink 2.0}
+
+I \textbf{sei bytes} che compongono la firma digitale vera e propria sono ottenuti concatenando \cite{sign-algorithm}:
+
+\begin{itemize}
+    \item Una \textbf{chiave segreta} condivisa tra le due parti della comunicazione (\texttt{SECRET\_KEY});
+    \item I bytes che compongono l'\textbf{header} del pacchetto (\texttt{HEADER});
+    \item I bytes che compongono il \textbf{payload} del pacchetto (\texttt{PAYLOAD});
+    \item I bytes che compongono il \textbf{CRC} dell'intero pacchetto (\texttt{CRC});
+    \item I bytes che compongono il \textbf{Link ID} dell'header della firma (\texttt{LINKID});
+    \item I bytes che compongono il \textbf{timestamp} dell'header della firma (\texttt{TM.STAMP}).
+\end{itemize}
+
+ed estraendo i primi \textbf{48 bit} dell'hash di questa sequenza ottenuto utilizzando l'algoritmo \textbf{SHA256}.
+
+Ricapitolando:
+
+\begin{center}
+    \texttt{SIGN = SHA256\_48(SECRET\_KEY + HEADER + PAYLOAD + CRC + LINKID + TM.STAMP);}
+\end{center}
+
+dove \texttt{SHA256\_48} rappresenta il troncamento dell'hash prodotto ai primi \textbf{48 bit} e il simbolo \texttt{+} rappresenta la concatenazione tra bytes.
+
+\newpage
+\subsubsection{Scelta della versione del protocollo}
 Poiché l'uso del protocollo MAVLink 1.0 è ancora ampiamente diffuso, è stato necessario implementare un meccanismo di "definizione" della versione del protocollo da utilizzare per una comunicazione: una sorta di \textbf{handshaking} \cite{version-handshaking} preliminare la cui struttura viene riportata di seguito:
 
 \begin{itemize}
@@ -544,6 +589,8 @@ Poiché l'uso del protocollo MAVLink 1.0 è ancora ampiamente diffuso, è stato 
         \end{itemize} 
 \end{itemize}
 
+\newpage
+
 Di seguito è presente una rappresntazione grafica dell'handshaking appena descritto.
 
 \begin{figure}[H]
@@ -551,6 +598,36 @@ Di seguito è presente una rappresntazione grafica dell'handshaking appena descr
     \includegraphics[width=0.8\textwidth]{images/handshake_mavlink.jpeg}
     \caption{L'handshake effettuato per stabilire la versione del protocollo da utilizzare}
 \end{figure}
+
+\subsubsection{Possibili attacchi contro MAVLink}
+Come qualsiasi protocollo che fa utilizzo di un mezzo trasmissivo, MAVLink non è di certo immune a determinati tipi di attacchi che vanno a colpire ognuno dei membri della cosiddetta triade \textbf{CIA}, ovvero:
+
+\begin{itemize}
+    \item \textbf{C}onfidentiality;
+    \item \textbf{I}ntegrity;
+    \item \textbf{A}vailability
+\end{itemize}
+
+Inoltre, l'intrinseca natura di MAVLink come protocollo \textbf{lightweight} implica un maggior focus sulle performance e sulla portabilità del protocollo piuttosto che sulla \textbf{sicurezza} dello stesso.
+
+In uno studio \cite{8425627} del 2019, \textbf{Kwon et al.} hanno svolto un'analisi delle possibili vulnerabilità che affliggono il protocollo MAVLink. Tra queste si annoverano:
+
+\begin{itemize}
+    \item \textbf{Man-in-the-middle}, che permette ad un attaccante di posizionarsi dal punto di vista logico "al centro" di una comunicazione tra un drone e la sua GCS. Questo è un attacco che viola la confidenzialità e (specialmente) l'integrità della comunicazione;
+    \item \textbf{Eavesdropping}, che permette ad un attaccante di "origliare" (\textit{eavesdrop}) la conversazione tra un drone e la sua GCS. Questo attacco viola la confidenzialità della comunicazione;
+    \item \textbf{DoS - Denial of Service}, che permette ad un attaccante di operare in maniera tale da rendere uno o anche entrambi gli apparati coinvolti della comunicazione non in grado di continuarla. Questo è un attacco all'avalilability. Ciò può avvenire tramite flooding (attacchi "rumorosi") o mediante lo sfruttamento di determinate vulnerabilità o errori di configurazione degli apparati stessi (attacchi "non rumorosi").
+\end{itemize}
+
+Gli autori dello studio menzionano due tipologie di attacchi portati a termine con successo, testati mediante \textbf{SITL} ed ArduPilot \textbf{Mission Control}:
+
+\begin{itemize}
+    \item Attacco basato su \textbf{ICMP flooding}, che permette di saturare i due endpoint della comunicazione, modificando pesantemente la \textbf{varianza} dei temPI DI \textit{inter-ricezione} dei pacchetti, rendendo quindi la comunicazione \textbf{instabile};
+    \item Attacco basato su \textbf{packet injection}, che permette ad un attaccante di effettuare l'\textbf{hijacking} della comunicazione tra drone e GCS ed è basata su una vulnerabilità del \textbf{Waypoint Protocol}. In breve, quando un UAV riceve il comando \texttt{MISSION\_COUNT(N)} da parte della GCS cancella tutte le informazioni relative alla missione che stava eseguendo e resta in attesa di indicazioni sulla nuova missione da eseguire. L'iniezione di un pacchetto di questo tipo permette ad un attaccante di "iniettare" una nuova missione da eseguire magari creata ad-hoc.
+\end{itemize}
+
+Inoltre, il fatto che il protocollo MAVLink non preveda alcun tipo di cifratura dei pacchetti in transito implica una intrinseca insicurezza dello stesso poiché tutte le informazioni sono scambiate in chiaro, rendendo quindi possibile gli attacchi di cui sopra.
+
+La versione 20, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
