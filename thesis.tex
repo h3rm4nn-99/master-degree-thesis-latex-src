@@ -72,7 +72,21 @@
     	\textsc{Candidato} \\\textbf{Hermann Senatore}\\\small Matricola: \textbf{0522501273}
     \end{minipage}
 \end{titlepage}
+\newpage
 
+\begin{titlepage}
+\nonumber
+\null \vspace {\stretch{1}}
+    \begin{flushright}
+        \textit{We're flying high \\
+        We're watching the world pass us by\\
+        Never want to come down\\
+        Never want to put my feet back down on the ground} \\
+        \textbf{(Depeche Mode)}
+    \end{flushright}
+\end{titlepage}
+    
+\newpage
 \tableofcontents
 \newpage
 
@@ -95,10 +109,11 @@ In particolare:
 \begin{itemize}
     \item Questo capitolo funge da introduzione al lavoro svolto durante l'attività di Tesi, ne illustra la struttura e ne chiarisce le motivazioni ed il contesto in cui è calato;
     \item il \textbf{Capitolo 2} fornisce una panoramica sulle principali piattaforme software considerate nel presente lavoro;
-    \item il \textbf{Capitolo 3} fornisce una panoramica sul protocollo \textbf{MAVLink} e ne evidenzia alcune problematiche di sicurezza;
-    \item il \textbf{Capitolo 4} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
-    \item il \textbf{Capitolo 5} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
-    \item il \textbf{Capitolo 6} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
+    \item il \textbf{Capitolo 3} fornisce una panoramica sul protocollo \textbf{MAVLink};
+    \item il \textbf{Capitolo 4} discute alcune problematiche di sicurezza che affliggono il protocollo MAVLink e discute alcuni approcci a questo problema presnti in letteratura;
+    \item il \textbf{Capitolo 5} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
+    \item il \textbf{Capitolo 6} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
+    \item il \textbf{Capitolo 7} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
 \end{itemize}
 
 \newpage
@@ -599,7 +614,10 @@ Di seguito è presente una rappresntazione grafica dell'handshaking appena descr
     \caption{L'handshake effettuato per stabilire la versione del protocollo da utilizzare}
 \end{figure}
 
-\subsubsection{Possibili attacchi contro MAVLink}
+\newpage
+
+\section{Sicurezza del protocollo MAVLink}
+\subsection{Possibili attacchi contro MAVLink}
 Come qualsiasi protocollo che fa utilizzo di un mezzo trasmissivo, MAVLink non è di certo immune a determinati tipi di attacchi che vanno a colpire ognuno dei membri della cosiddetta triade \textbf{CIA}, ovvero:
 
 \begin{itemize}
@@ -625,9 +643,69 @@ Gli autori dello studio menzionano due tipologie di attacchi portati a termine c
     \item Attacco basato su \textbf{packet injection}, che permette ad un attaccante di effettuare l'\textbf{hijacking} della comunicazione tra drone e GCS ed è basata su una vulnerabilità del \textbf{Waypoint Protocol}. In breve, quando un UAV riceve il comando \texttt{MISSION\_COUNT(N)} da parte della GCS cancella tutte le informazioni relative alla missione che stava eseguendo e resta in attesa di indicazioni sulla nuova missione da eseguire. L'iniezione di un pacchetto di questo tipo permette ad un attaccante di "iniettare" una nuova missione da eseguire magari creata ad-hoc.
 \end{itemize}
 
-Inoltre, il fatto che il protocollo MAVLink non preveda alcun tipo di cifratura dei pacchetti in transito implica una intrinseca insicurezza dello stesso poiché tutte le informazioni sono scambiate in chiaro, rendendo quindi possibile gli attacchi di cui sopra.
+Inoltre, il fatto che il protocollo MAVLink non preveda alcun tipo di cifratura dei pacchetti in transito \cite{mavlink-no-encrypt} implica una intrinseca insicurezza dello stesso poiché tutte le informazioni sono scambiate in chiaro, rendendo quindi possibile gli attacchi di cui sopra.
 
-La versione 20, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
+\subsection{Possibili contromisure}
+La versione 2.0 di MAVLink, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
+
+Data la sempre maggiore attenzione riservata a questo tipo di dispositivi in particolare nell'ultimo decennio, il problema della messa in sicurezza dei protocolli come il MAVLink ha acquisito sicuramente un'importanza maggiore. Il problema, inoltre, viene reso ancora più difficile dal fatto che si renda necessario fare un \textbf{tradeoff} tra il grado di sicurezza del protocollo e l'alto \textbf{\textit{throughput}} che lo stesso deve offrire pur trovandosi in contesti caratterizzati da risorsehardware tutt'altro che illimitate.
+
+Negli ultimi anni sono stati, in effetti, compiuti alcuni passi in avanti in questo senso grazie a diversi lavori di ricerca.
+
+\subsubsection{MAVSec}
+In uno studio \cite{DBLP:journals/corr/abs-1905-00265} pubblicato nel Maggio del 2019, \textbf{Allouch et al.}, oltre ad un'ulteriore overview delle potenziali vulnerabilità insite nel protocollo MAVLink hanno proposto una soluzione che potesse risolvere la problematica della \textbf{confidenzialità} della comunicazione introducendo una sorta di \textit{framework} denominato \textbf{MAVSec}, che prevede di modificare i progetti \textbf{ArduPilot}, \textbf{QGroundControl} e la libreria \textbf{MAVLink} (nella sua implementazione di riferimento in C) al fine di supportare diversi algoritmi di cifratura \textbf{simmetrica} da applicare al \textbf{payload} dei messaggi MAVLink prima della loro immissione nel mezzo trasmissivo.
+
+Gli algoritmi considerati nello studio comprendono:
+
+\begin{itemize}
+    \item \texttt{AES} in modalità \textbf{CBC};
+    \item \texttt{AES} in modalità \textbf{CTR};
+    \item \texttt{RC4} (usato tra l'altro dal protocollo di sicurezza WEP);
+    \item \texttt{ChaCha20}.
+\end{itemize}
+
+Gli autori dello studio hanno confrontato le performance di questi algoritmi sostanzialmente in tre macro-aree:
+
+\begin{itemize}
+    \item \textbf{Consumo di memoria} da parte dell'UAV;
+    \item \textbf{Numero di frame} inviati al secondo;
+    \item \textbf{Consumo di CPU} da parte dell'UAV.
+\end{itemize}
+
+Dai risultati della ricerca emerge che l'algoritmo migliore in \textbf{tutti} questi campi risulti essere \texttt{ChaCha20}.
+
+Tale algoritmo è stato proposto nel 2008 in un paper \cite{chacha20} pubblicato da \textbf{Daniel J. Bernstein} e si configura come un \textbf{cifrario a blocchi} variante di \texttt{Salsa20/20} che permette di migliorarne la resistenza ad attacchi basati su \textbf{crittoanalisi} riducendo in alcuni casi il tempo di esecuzione di ogni round. Il \texttt{20} all'interno del nome è dovuto al numero di round che vengono effettuati durante l'esecuzione dell'algoritmo. In generale, i membri della famiglia ChaCha consistono:
+
+\begin{itemize}
+    \item \texttt{ChaCha8}, derivato dall'algoritmo \texttt{Salsa20/8} e che prevede \textbf{8 rounds};
+    \item \texttt{ChaCha12}, derivato dall'algoritmo \texttt{Salsa20/12} e che prevede \textbf{12 rounds};
+    \item Il già citato \texttt{ChaCha20}.
+\end{itemize}
+
+\subsubsection{Securing Unmanned Aerial Vehicles by Encrypting MAVLink Protocol}
+
+In un successivo studio \cite{10037546} pubblicato alcuni anni più tardi, nel 2022, \textbf{Sabuwala et al.} proposero uno studio simile a quello menzionato in precedenza, prendendo però in considerazione algoritmi diversi. In particolare:
+
+\begin{itemize}
+    \item \texttt{ChaCha20}, come nel caso dello studio precedente;
+    \item \texttt{Encryption by Navid}, una tecnica di cifratura basata (in parte) su un \textbf{Cifrario di Cesare};
+    \item \texttt{DMAV}, uno schema di cifratura basata su una codifica denominata "DNA dinamica" proposto in uno studio del 2022. 
+\end{itemize}
+
+I risultati di questo studio confermano, in un certo senso, quellid el precedente, determinando come l'algoritmo \texttt{ChaCha20} \textbf{sia il migliore dei tre confrontati} negli ambiti di \textbf{pacchetti inviati al secondo}, \textbf{consumo di memoria nell'UAV}, \textbf{percentuale di CPU} in uso nell'UAV.
+
+Si noti come in entrambi i casi sia stato utilizzato il progetto ArduPilot ed in particolare il già citato software \textbf{SITL} per condurre i test.
+
+\subsubsection{Sicurezza in ambienti resource-constrained: il concetto di lightweight cryptography}
+Più o meno nello stesso periodo in cui si il panorama delle piattaforme hardware e software per UAV si è arricchiato e l'utilizzo di questi dispositivi è e andata "democratizzandosi", si è assistito, in generale, alla sempre più capillare di dispositivi "intelligenti" da utilizzare nei contesti più disparati. Nasce quindi il concetto di \textbf{Internet of Things} (comunemente definito con il suo acronimo \textbf{IoT}), che condivide un discreto numero di aspetti sia positivi che negativi con il contesto dell'UAV. 
+
+Certamente, si ritrova in entrambi i casi la necessità dell'utilizzo di protocolli leggeri ed efficienti ma anche (e soprattutto) i limiti delle piattaforme hardware che permettono il funzionamento dei dispositivi (quindi tipicamente microcontrollori dotati di funzionalità di rete). 
+
+Vien da sé, quindi, che il discorso sulla generale insicurezza dei protocolli affrontato più volte in questo lavoro per gli UAV valga anche per i dispositivi IoT. 
+
+Nondimeno, la capillare diffusione di tali dispositvi in ambienti domestici ed aziendali pone un'ulteriore problematica di \textbf{privacy} oltre che di \textbf{safety} e di \textbf{security} come invece avveniva nel caso degli UAV.
+
+Per far fronte a questo tipo di criticità e al (necessario) tradeoff tra performance e requisiti di sicurezza, ecco che col passare del tempo sorge una nuova "branca" di ricerca nell'ambito della crittografia dedicata allo sviluppo di algoritmi (e di relative piattaforme \textit{ad-hoc} per la loro implementazione in hardware) pensati per funzionare in ambienti \textbf{resource-constrained}: la \textbf{lightweight cryptography}.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
