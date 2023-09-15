@@ -696,7 +696,7 @@ I risultati di questo studio confermano, in un certo senso, quellid el precedent
 
 Si noti come in entrambi i casi sia stato utilizzato il progetto ArduPilot ed in particolare il già citato software \textbf{SITL} per condurre i test.
 
-\subsubsection{Sicurezza in ambienti resource-constrained: il concetto di lightweight cryptography}
+\subsubsection{Sicurezza in ambienti resource-constrained: una breve introduzione al concetto di lightweight cryptography}
 Più o meno nello stesso periodo in cui si il panorama delle piattaforme hardware e software per UAV si è arricchiato e l'utilizzo di questi dispositivi è e andata "democratizzandosi", si è assistito, in generale, alla sempre più capillare di dispositivi "intelligenti" da utilizzare nei contesti più disparati. Nasce quindi il concetto di \textbf{Internet of Things} (comunemente definito con il suo acronimo \textbf{IoT}), che condivide un discreto numero di aspetti sia positivi che negativi con il contesto dell'UAV. 
 
 Certamente, si ritrova in entrambi i casi la necessità dell'utilizzo di protocolli leggeri ed efficienti ma anche (e soprattutto) i limiti delle piattaforme hardware che permettono il funzionamento dei dispositivi (quindi tipicamente microcontrollori dotati di funzionalità di rete). 
@@ -706,6 +706,30 @@ Vien da sé, quindi, che il discorso sulla generale insicurezza dei protocolli a
 Nondimeno, la capillare diffusione di tali dispositvi in ambienti domestici ed aziendali pone un'ulteriore problematica di \textbf{privacy} oltre che di \textbf{safety} e di \textbf{security} come invece avveniva nel caso degli UAV.
 
 Per far fronte a questo tipo di criticità e al (necessario) tradeoff tra performance e requisiti di sicurezza, ecco che col passare del tempo sorge una nuova "branca" di ricerca nell'ambito della crittografia dedicata allo sviluppo di algoritmi (e di relative piattaforme \textit{ad-hoc} per la loro implementazione in hardware) pensati per funzionare in ambienti \textbf{resource-constrained}: la \textbf{lightweight cryptography}.
+
+Come analizzato in una revisione della letteratura \cite{8370965} compiuta nel 2018 da \textbf{Sadkhan e Salman}, diversi studi sono stati proposti nel campo della crittografia leggera e che hanno portato alla definizione di nuovi schemi di cifratura \textbf{simmetrica} ed \textbf{asimmetrica}.
+
+Nell'Agosto del 2018, inoltre, il \textbf{NIST}\footnote{\textbf{N}ational \textbf{I}nstitute of \textbf{S}tandards and \textbf{T}echnology, un importante statale americano} ha annunciato l'inizio del processo di standardizzazione \cite{nist-request-lwc} di algoritmi di crittografia leggera. Dopo \textbf{due rounds} di selezione, nel 2021 sono stati annunciati i 10 \textbf{finalisti} \cite{nist-finalists-lwc} di questo processo, ovvero:
+
+\begin{itemize}
+    \item \texttt{ASCON};
+    \item \texttt{Elephant};
+    \item \texttt{GIFT-COFB};
+    \item \texttt{Grain128-AEAD};
+    \item \texttt{ISAP};
+    \item \texttt{Photon-Beetle};
+    \item \texttt{Romulus};
+    \item \texttt{Sparkle};
+    \item \texttt{TinyJambu};
+    \item \texttt{Xoodyak}.
+\end{itemize}
+
+Nel 2023, infine, l'algoritmo \texttt{ASCON} è stato dichiarato vincitore \cite{nist-ascon-lwc}.
+\newpage
+\subsubsection{MAVLink e lightweight cryptography}
+In un lavoro di tesi \cite{sec-uav} proposto dallo studente \textbf{Angelo Passaro}, è stato proposto un approccio basato su crittografia leggera che riprendesse il framework e le tecniche presentate nel lavoro \textbf{MAVSec} menzionato in precedenza ed il cui codice è disponibile su GitHub \cite{mavsec-github}.
+
+Tale lavoro si differenzia dai precedenti poiché va a sfruttare diverse caratteristiche del protocollo MAVLink e delle piattaforme software descritte nelle precedenti sezioni del lavoro qui presentato.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
