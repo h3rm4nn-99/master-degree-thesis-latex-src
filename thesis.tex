@@ -731,6 +731,46 @@ In un lavoro di tesi \cite{sec-uav} proposto dallo studente \textbf{Angelo Passa
 
 Tale lavoro si differenzia dai precedenti poiché va a sfruttare diverse caratteristiche del protocollo MAVLink e delle piattaforme software descritte nelle precedenti sezioni del lavoro qui presentato.
 
+Sono stati considerati diversi algoritmi che appartengono al pool della crittografia leggera sia dal punto di vista della cifratura \textbf{simmetrica} che dal punto di vista degli algoritmi di \textbf{scambio delle chiavi} e sono stati condotti diversi test per stabilire quale fosse quello più conveniente rispetto ao criteri definiti in precedenza dagli altri studi.
+
+In particolare, gli algoritmi di cifratura \textbf{simemtrica} integrati nel lavoro qui considerato consistono in:
+
+\begin{itemize}
+    \item \texttt{Trivium};
+    \item \texttt{Rabbit};
+    \item \texttt{ChaCha20} (utilizzato principalmente negli altri studi);
+    \item \texttt{Simon \& Speck};
+\end{itemize}
+
+Per quanto riguarda invece il concetto di scambio delle chiavi, nel lavoro considerato in questa sezione vengono discussi i risultati di uno studio \cite{10.1007/978-3-319-48799-1_58} presentato nel 2017 da \textbf{Alvarez et al.} che propone un confronto tra i seguenti \textit{meccanismi} di scambio delle chiavi:
+
+\begin{itemize}
+    \item \texttt{RSA};
+    \item \texttt{DH}: scambio delle chiavi \textbf{Diffie-Hellman};
+    \item \texttt{ECDH}: meccanismo di scambio delle chiavi ispirato a Diffie Hellman ma che si basa sul concetto di \textbf{curva ellittica};
+    \item \texttt{Curve25519}: altro meccansimo di scambio delle chiavi basato su \textbf{curve ellittiche} che mira a migliorare le prestazioni rispetto ad \texttt{ECDH};
+    \item \texttt{FourQ}: ulteriore meccanismo basato su curve ellittiche proposto da \textbf{Microsoft} nel 2015.
+\end{itemize}
+
+I risultati raggiunti nel paper menzionato in precedenza suggeriscono che gli algoritmi basati su \textbf{curve ellittiche} offrano le migliori prestazioni ed un minore consumo di risorse (memoria e percentuale di CPU utilizzata) ed in particolare, \texttt{FourQ} risulta prevalere sugli altri algoritmi del pool considerato.
+
+Proprio per questa ragione, l'algoritmo che sta alla base del meccanismo di scambio delle chiavi implementato nel lavoro di Angelo Passaro consiste proprio in \texttt{FourQ}.
+
+Dal punto di vista tecnologico, invece, sono state utilizzate le stesse piattaforme considerate negli altri studi menzionati in precedenza, ovvero:
+
+\begin{itemize}
+    \item \textbf{ArduPilot} perl'utilizzo di SITL;
+    \item \textbf{QGroundContol} per controllare il simulatore;
+    \item \textbf{MAVLink} (nella sua implementazione di riferimento in C) per integrare i nuovi messaggi per lo scambio delle chiavi e gestire cifratura e decifratura.
+\end{itemize}
+
+Il lavoro proposto in questo elaborato ricalca il framework stabilito da \textbf{MAVSec} prima e dal lavoro di \textbf{Angelo Passaro} poi dal punto di vista delle modifiche introdotte nello stack tecnologico, adattandolo poi al contesto della \textbf{Post-Quantum Cryptography}. 
+
+Una descrizione tecnica approfondita dell'implementazione effettuata verrà svolta nel \textbf{Capitolo 6}.
+
+\newpage
+\section{Quantum Comuting e Post-Quantum Cryptography}
+
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
 \end{document}
