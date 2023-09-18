@@ -770,7 +770,51 @@ Una descrizione tecnica approfondita dell'implementazione effettuata verrà svol
 
 \newpage
 \section{Quantum Comuting e Post-Quantum Cryptography}
+In questo capitolo verrà svolta una breve introduzione al concetto di \textbf{Quantum Computing} e si discuteranno le implicazioni della sua diffusione, tra gli altri, nel campo della crittografia.
+
+\subsection{Cos'è il Quantum Computing}
+Sebbene il concetto di Quantum Computing stia acquisendo sempre più importanza negli ultimi decenni, l'idea che sta alla sua base risale ai \textbf{primi anni '80} del XX secolo, quando in uno studio \cite{Benioff1980} del fisico statunutense \textbf{Paul Benioff} (venuto a mancare di recente, nel marzo del 2022) venne proposto un primo modello di \textbf{macchina di Turing} operante sotto le leggi della \textbf{meccanica quantistica}. Da quel momento molti altri studi vennero basati su questa idea: tra questi annoveriamo quello proposto da \textbf{Richard Feynmann} a proposito della simulazione di fenomeni fisici usando computer quantistici.
+
+La vera differenza che intercorre tra un computer classico ed una macchina quantistica consiste nel modo in cui sono rappresentate le informazioni: se nel caso "classico" a noi familiare si ragiona in termini di \texttt{bit} (ovvero la più piccola unità con cui possono essere codificate delle informazioni), nel caso quantistico si passa al concetto di \texttt{\textbf{qubit}}, termine coniato nel 1995 \cite{PhysRevA.51.2738} dal fisico Benjamin Schumacher che rappresenta l'unità di informazione quantistica. 
+
+Se nel contesto della computazione "classica" gli \textbf{stati} possibili che un bit può assumere sono solamente due: lo stato "0" e lo stato "1", nel contesto quantistico il confine tra gli stati che un qubit può assumere è in un certo senso più \textbf{labile}, in accordo con il fenomeno quantistico della \textbf{sovrapposizione tra stati}.
+
+Un qubit può quindi trovarsi rispettivamente:
+
+\begin{itemize}
+    \item Nello stato \texttt{0} (con il 100\% di probabilità);
+    \item Nello stato \texttt{1} (con il 100\% di probabilità);
+    \item In una sovrapposizione di due stati: con il \texttt{p} di probabilità nello stato \texttt{0} e con probabilità \texttt{1 - p} nello stato \texttt{1}.
+\end{itemize}
+
+Al di là dei (comunque importanti e necessari) formalismi matematici, la conseguenza di usare un sistema basato su \texttt{qubit} al posto dei classici \texttt{bit} permette alle macchine che sfruttano questo sistema di ottenere performance nettamente maggiori a quelle dei computer tradizionali, tant'è che col passare del tempo questa tipologia di macchine sono state usate per provare a risolvere in tempo polinomiale problemi per cui non erano noti algoritmi "classici" efficienti.
+
+\subsection{Attacco ad RSA: l'algoritmo di Shor}
+Uno degli esempi lampanti del potere computazionale notevolmente maggiore dei computer quantistici rispetto a quelli classici consiste nella pubblicazione di uno studio \cite{365700} da parte di \textbf{Peter W. Shor} nel 1994 che propone un \textbf{algoritmo} (conosicuto appunto come \textbf{Algoritmo di Shor}) per la fattorizzazione di interi.
+
+Dal punto di vista teorico, tale algoritmo si configura come una \textbf{riduzione} dal problema della fattorizzazione di interi ad un problema di ricerca dell'\textbf{ordine} di un gruppo (inteso come struttura algebrica), anch'esso considerato come problema \textit{difficile} nel contesto della computazione classica. 
+
+Si noti comunque che il processo di riduzione in sé avviene in tempo polinomiale anche in un computer tradizionale. 
+
+Il \textit{core} dell'algoritmo proposto da Shor si occupa quindi di risolvere efficientemente (leggasi, \textit{tempo polinomiale}) il problema verso cui è stata effettuata la riduzione, seppur con un tasso di errore minore o uguale ad $\frac{1}{3}$ nel caso pessimo. La soluzione di tale problema, per com'è strutturato il processo dell riduzione di sicurezza implica la soluzione anche del problema "originale".
+
+L'analisi della complessità dell'algoritmo proposto da Shor suggerisce che il suo tempo di esecuzione, comprensivo di tutte le operazioni descritte in precedenza sia proporzionale a:
+
+\begin{center}
+    $\mathcal{O}((log{}N)^2 (log{}log{}N))$
+\end{center}
+
+assumendo di utilizzare il metodo di \textbf{Harvey e Van Der Hoeven} \cite{harvey:hal-02070778} per la moltiplicazione efficiente di interi in tempo $\mathcal{O}(n log{}n)$ e che quindi il problema della fattorizzazione di interi appartenga, dal punto di vista della teroia della computazione, alla classe \textbf{BQP}, ovvero \textbf{la classe dei problemi risolvibili in tempo polinomiale mediante computer quantistici}.
+
+L'approccio proposto da Shor, secondo quanto menzionato nel sommario dello studio, è applicabile non solo al problema della fattorizzazione di interi ma anche al problema del \textbf{logaritmo discreto}.
+
+Le implicazioni dello studio di Shor sono enormi nel campo della crittografia poiché il problema della fattorizzazione di interi e del logaritmo discreto sono alla base degli schemi più utilizzati nel campo della crittografia asimmetrica (o a chiave pubblica): rispettivamente di \textbf{RSA} e del meccanismo di Key Exchange \textbf{Diffie Hellman}.
+
+La risoluzione in tempo polinomiale mediante computer quantistici di tali problemi renderebbe del tutto insicuri tali schemi, ponendo un considerevole rischio correlato al funzionamento dei protocolli crittografici basati su problemi difficili, come appunto RSA e Diffie Hellman.
+
+Tuttavia, vale la pena sottolinerare come il tasso di errore di tale algoritmo (dovuto al concetto di sovrapposizione degli stati) sia ancora troppo alto, pregiudicando quindi l'esecuzione dell'algoritmo anche sulle piattaforme più potenti allo stato attuale.
+
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
-\end{document}
+\end{document} 
