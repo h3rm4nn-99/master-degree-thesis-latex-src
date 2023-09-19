@@ -789,7 +789,9 @@ Un qubit può quindi trovarsi rispettivamente:
 
 Al di là dei (comunque importanti e necessari) formalismi matematici, la conseguenza di usare un sistema basato su \texttt{qubit} al posto dei classici \texttt{bit} permette alle macchine che sfruttano questo sistema di ottenere performance nettamente maggiori a quelle dei computer tradizionali, tant'è che col passare del tempo questa tipologia di macchine sono state usate per provare a risolvere in tempo polinomiale problemi per cui non erano noti algoritmi "classici" efficienti.
 
-\subsection{Attacco ad RSA: l'algoritmo di Shor}
+\newpage
+
+\subsection{Il problema: RSA, DH e l'algoritmo di Shor}
 Uno degli esempi lampanti del potere computazionale notevolmente maggiore dei computer quantistici rispetto a quelli classici consiste nella pubblicazione di uno studio \cite{365700} da parte di \textbf{Peter W. Shor} nel 1994 che propone un \textbf{algoritmo} (conosicuto appunto come \textbf{Algoritmo di Shor}) per la fattorizzazione di interi.
 
 Dal punto di vista teorico, tale algoritmo si configura come una \textbf{riduzione} dal problema della fattorizzazione di interi ad un problema di ricerca dell'\textbf{ordine} di un gruppo (inteso come struttura algebrica), anch'esso considerato come problema \textit{difficile} nel contesto della computazione classica. 
@@ -814,6 +816,62 @@ La risoluzione in tempo polinomiale mediante computer quantistici di tali proble
 
 Tuttavia, vale la pena sottolinerare come il tasso di errore di tale algoritmo (dovuto al concetto di sovrapposizione degli stati) sia ancora troppo alto, pregiudicando quindi l'esecuzione dell'algoritmo anche sulle piattaforme più potenti allo stato attuale.
 
+\newpage
+
+\subsection{La soluzione: Post-Quantum Cryptography}
+Il problema di situazioni del genere è che una volta note le modalità, ciò che manca è quindi la \textbf{potenza di calcolo}, che con l'avanzamento tecnologico sarà con ogni probabilità raggiunta col passare del tempo, ponendo quindi un rischio concreto per la sicurezza dei sistemi informatici (e non solo).
+
+Proprio per regire a questo tipo specifico di minaccia, negli anni ha preso piede un nuovo concetto nel campo della crittografia, che permette di superare la minaccia posta dall'avvento del Quantum Computing: quello di \textbf{Post-Quantum Cryptography}.
+
+Il grosso della ricerca in questo campo si è concentrato nel campo della crittografia a chiave pubblica e quindi nel contesto dello scambio di chiavi sicuro poiché è quello che fa affidamento su problemi diffcili come quelli descritti in precedenza (si pensi appunto ad RSA ed a Diffie Hellman).
+
+Gli schemi crittografici che sono stati messi appunti nel contesto di questo nuovo campo di studi vengono divisi in diverse categorie, a seconda dell'approccio che adottano \cite{Bernstein2009}. Tra questi:
+
+\begin{itemize}
+    \item Approccio basato su \textbf{Lattices}: l'approccio su cui si basa lo schema \texttt{Kyber} e che fa riferimento ad una struttura algebrica detta \textbf{Lattice} e che include i sistemi crittografici basati sul problema \textbf{LWE} (acronimo per \textbf{Learning With Errors}) o su loro varianti;
+    \item Approccio basato su \textbf{crittografia multivariata}: tale approccio si basa sulla difficoltà della risoluzione di \textbf{sistemi di equazioni multivariate};
+    \item Approccio basato su \textbf{hash}, che si basa sull'assuzione della sicurezza delle \textbf{funzioni hash}. Esempi di schemi che sfruttano questo approccio consistono nello schema di firma digitale di \textbf{Merkle} o comunque altri schemi che usano il \textbf{Merkle Tree};
+    \item Approccio basato su \textbf{codici}: ad esempio lo schema di cifratura di \textbf{McEliece}, che si basa sui \textbf{Codici di Goppa}.
+\end{itemize}
+
+Proprio l'attenzione riservata col passare del tempo a questo campo di ricerca, anche e soprattutto in seguito allo studio di Shor ed alal definizione del "suo" algoritmo, ha spinto il \textbf{NIST} a cercare di stabilire uno \textbf{standard} per algoritmi di cifratura a chiave pubblica resistenti ad attacchi con computer quantistici, un po' come successo (e menzionato in una precedente sezione del presente lavoro) con la crittografia leggera. 
+
+A dicembre 2016 \cite{nist-pqc-nomination} venne rilasciata una \textbf{Request for Nomination} sul sito web del NIST, prima milestone nel processo di standardizzazione, con deadline fissata al 30 novembre 2017. 
+
+Dopo quattro round di sottomissioni per tale processo, nel 2022 gli algoritmi selezionati dall'istituto sono i seguenti:
+
+Per la crittografia a chiave pubblica:
+
+\begin{itemize}
+    \item \texttt{CRYSTALS-Kyber}.
+\end{itemize}
+
+Riguardo invece gli schemi di firma digitale:
+
+\begin{itemize}
+    \item \texttt{CRYSTALS-DILITHIUM};
+    \item \texttt{FALCON};
+    \item \texttt{SPHINCS+}
+\end{itemize}
+
+Si noti come nel caso della crittografia a chiave pubblica sia stato selezionato \textbf{un unico} algoritmo e che quindi è divenuto lo \textbf{standard} per questo tipo di schemi.
+
+Anche nel contesto di questo lavoro, lo schema \texttt{Kyber} è stato quello scelto per eseguire operazioni di scambio chiavi.
+
+Di seguito viene svolta una panoramica sulle basi e sulla struttura di tale schema crittografico.
+
+\newpage
+\subsection{L'algoritmo \texttt{Kyber}}
+Come affermato in precedenza, \texttt{CRYSTALS-KYBER} è l'unico schema di cifratura selezionato dal NIST nel processo di standardizzazione.
+
+Fa parte della suite \textbf{CRYSTALS} (acronimo di \textbf{Cryptographic Suite for Algebraic Lattices}) \cite{crystals} e si configura come "meccanismo di incapsulamento delle chiavi CCA-sicuro basato sulla difficoltà del problema LWE" \cite{crystals-kyber}.
+
+Viene proposto alla comunità scientifica nel 2017 in uno studio \cite{cryptoeprint:2017/634} di \textbf{Joppe et al.} e successivamente valutato dal NIST per il processo di standardizzazione.
+
+Prima di descrivere il funzionamento di tale schema è necessario fare una panoramica sulle sue basi matematiche e scientifiche, in particolare il concetto di KEM, il concetto di \textbf{Lattice} ed il problema \textbf{LWE} (acronimo di \textbf{Learning with Errors}).
+
+\subsubsection{KEM - Key Encapsulation Mechanism}
+L'acronimo KEM è un abbreviazione per \textbf{Key Encapsulation Mechanism} ed è un particolare sistema crittografico \textit{ibrido} ed in particolare permette ai due "interlocutori" di una conversazione di utilizzare \textbf{un algoritmo di cifratura asimmetrica} per lo scambio di una chiave di cifratura da utilizzare nel contesto di un cifrario \textbf{simmetrico}. Naturalmente, il concetto di KEM non è solamente prerogativa della crittografia post quantistica [...]
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
