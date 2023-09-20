@@ -789,6 +789,12 @@ Un qubit può quindi trovarsi rispettivamente:
 
 Al di là dei (comunque importanti e necessari) formalismi matematici, la conseguenza di usare un sistema basato su \texttt{qubit} al posto dei classici \texttt{bit} permette alle macchine che sfruttano questo sistema di ottenere performance nettamente maggiori a quelle dei computer tradizionali, tant'è che col passare del tempo questa tipologia di macchine sono state usate per provare a risolvere in tempo polinomiale problemi per cui non erano noti algoritmi "classici" efficienti.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/1280px-Bloch_Sphere.svg.png}
+    \caption{La \textbf{sfera di Bloch}: una rappresentazione geometrica dei possibili stati in cui un \texttt{qubit} può trovarsi}
+\end{figure}
+
 \newpage
 
 \subsection{Il problema: RSA, DH e l'algoritmo di Shor}
@@ -871,7 +877,50 @@ Viene proposto alla comunità scientifica nel 2017 in uno studio \cite{cryptoepr
 Prima di descrivere il funzionamento di tale schema è necessario fare una panoramica sulle sue basi matematiche e scientifiche, in particolare il concetto di KEM, il concetto di \textbf{Lattice} ed il problema \textbf{LWE} (acronimo di \textbf{Learning with Errors}).
 
 \subsubsection{KEM - Key Encapsulation Mechanism}
-L'acronimo KEM è un abbreviazione per \textbf{Key Encapsulation Mechanism} ed è un particolare sistema crittografico \textit{ibrido} ed in particolare permette ai due "interlocutori" di una conversazione di utilizzare \textbf{un algoritmo di cifratura asimmetrica} per lo scambio di una chiave di cifratura da utilizzare nel contesto di un cifrario \textbf{simmetrico}. Naturalmente, il concetto di KEM non è solamente prerogativa della crittografia post quantistica [...]
+L'acronimo KEM è un abbreviazione per \textbf{Key Encapsulation Mechanism} ed è un particolare sistema crittografico \textit{ibrido} ed in particolare permette ai due "interlocutori" di una conversazione di utilizzare \textbf{un algoritmo di cifratura asimmetrica} per lo scambio di una chiave di cifratura da utilizzare nel contesto di un cifrario \textbf{simmetrico}. Naturalmente, il concetto di KEM non è solamente prerogativa della crittografia post quantistica ma è stato studiato ed implementato anche nel contesto della crittografia classica. Un esempio lampante ne è il KEM \textbf{basato sullo schema RSA} o su \textbf{curve ellittiche}, ampiamente utilizzati al giorno d'oggi.
+
+Formalmente, un generico schema di incapsulamento KEM $K$ è una tupla di algoritmi \textbf{probabilistici di tempo polinomiale}:
+
+\begin{center}
+    \texttt{K = (Gen(), Encaps(), Decaps())}
+\end{center}
+
+dove:
+
+\begin{itemize}
+    \item \texttt{Gen(sec\_par)} è un algoritmo che si occupa di generare (e restituire) una \textbf{coppia di chiavi} \texttt{(pk, sk)} di una lunghezza determinata da \textbf{parametro di sicurezza} \texttt{sec\_par} dell'algoritmo. In particolare: \begin{itemize}
+        \item \texttt{pk} rappresenta la \textbf{chiave pubblica};
+        \item \texttt{sk} rappresenta la \textbf{chiave segreta}.
+    \end{itemize}
+    \item \texttt{Encaps(pk)} è l'algoritmo di \textbf{incapsulamento} che prende in input la chiave pubblica generatada da \texttt{Gen} e restituisce: \begin{itemize}
+        \item \texttt{k}: una chiave segreta da usare con un cifrario simmetrico. Non deve essere inviata direttamente;
+        \item \texttt{s}: un \textbf{testo cifrato}, ovvero la "capsula" che viene inviata all'altro membro della conversazione e che contiene la chiave \texttt{k} appena descritta.
+    \end{itemize}
+    \item \texttt{Decaps(s, sk)} è l'algoritmo di \textbf{decapsulamento} che prende in input: \begin{itemize}
+        \item \texttt{s}: la capsula generata da \texttt{Encaps};
+        \item \texttt{sk}: la chiave segreta generata da \texttt{Gen}.
+    \end{itemize}
+
+    E restituisce in output: \begin{itemize}
+        \item \texttt{k}: la chiave che era stata incapsulata da \texttt{Encaps} se non si sono verificati errori.
+    \end{itemize}
+\end{itemize}
+
+Questo tipo di costruzione crittografica si pone come \textbf{ibrido} tra uno schema di cifratura a chiave pubblica ed a chiave privata.
+
+Si noti come, a differenza dei normali schemi di cifratura, non sia possibile scegliere un messaggio da incapsulare. Al contrario, \texttt{Encaps()} si occupa di scegliere la chiave simmetrica \texttt{k} e di incapsularla autonomamente.
+\newpage
+Di seguito è presente un diagramma che riassume il funzionamento di un generico KEM \texttt{K}, appena descritto formalmente.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/kem_scheme.png}
+    \caption[If you see me then something's very broken]{Funzionamento di un Key Encapsulation Mechanism\protect\footnotemark}
+\end{figure}
+
+\footnotetext{\href{https://blog.cloudflare.com/post-quantum-key-encapsulation/}{Fonte dell'immagine}}
+
+L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE} su un \textbf{Lattice}, oggetti di discussione nelle prossime sezioni.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
