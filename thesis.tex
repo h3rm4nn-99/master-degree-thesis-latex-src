@@ -17,6 +17,8 @@
 \usepackage[htt]{hyphenat}
 \usepackage{pgfplots}
 \usepackage{wrapfig}
+\usepackage{amsfonts}
+\usepackage{amsthm}
 
 \usepackage[
     backend=biber,
@@ -39,7 +41,9 @@
 
 \usepackage[Conny]{fncychap}
 
-  
+\theoremstyle{definition}
+\newtheorem{definition}{Definizione}
+
 \begin{document}
 \begin{titlepage}
     \begin{center}
@@ -834,7 +838,7 @@ Il grosso della ricerca in questo campo si è concentrato nel campo della critto
 Gli schemi crittografici che sono stati messi appunti nel contesto di questo nuovo campo di studi vengono divisi in diverse categorie, a seconda dell'approccio che adottano \cite{Bernstein2009}. Tra questi:
 
 \begin{itemize}
-    \item Approccio basato su \textbf{Lattices}: l'approccio su cui si basa lo schema \texttt{Kyber} e che fa riferimento ad una struttura algebrica detta \textbf{Lattice} e che include i sistemi crittografici basati sul problema \textbf{LWE} (acronimo per \textbf{Learning With Errors}) o su loro varianti;
+    \item Approccio basato su \textbf{Reticoli}: l'approccio su cui si basa lo schema \texttt{Kyber} e che fa riferimento ad una struttura algebrica detta \textbf{Reticolo} e che include i sistemi crittografici basati sul problema \textbf{LWE} (acronimo per \textbf{Learning With Errors}) o su loro varianti;
     \item Approccio basato su \textbf{crittografia multivariata}: tale approccio si basa sulla difficoltà della risoluzione di \textbf{sistemi di equazioni multivariate};
     \item Approccio basato su \textbf{hash}, che si basa sull'assuzione della sicurezza delle \textbf{funzioni hash}. Esempi di schemi che sfruttano questo approccio consistono nello schema di firma digitale di \textbf{Merkle} o comunque altri schemi che usano il \textbf{Merkle Tree};
     \item Approccio basato su \textbf{codici}: ad esempio lo schema di cifratura di \textbf{McEliece}, che si basa sui \textbf{Codici di Goppa}.
@@ -874,7 +878,7 @@ Fa parte della suite \textbf{CRYSTALS} (acronimo di \textbf{Cryptographic Suite 
 
 Viene proposto alla comunità scientifica nel 2017 in uno studio \cite{cryptoeprint:2017/634} di \textbf{Joppe et al.} e successivamente valutato dal NIST per il processo di standardizzazione.
 
-Prima di descrivere il funzionamento di tale schema è necessario fare una panoramica sulle sue basi matematiche e scientifiche, in particolare il concetto di KEM, il concetto di \textbf{Lattice} ed il problema \textbf{LWE} (acronimo di \textbf{Learning with Errors}).
+Prima di descrivere il funzionamento di tale schema è necessario fare una panoramica sulle sue basi matematiche e scientifiche, in particolare il concetto di KEM, il concetto di \textbf{Reticolo} ed il problema \textbf{LWE} (acronimo di \textbf{Learning with Errors}).
 
 \subsubsection{KEM - Key Encapsulation Mechanism}
 L'acronimo KEM è un abbreviazione per \textbf{Key Encapsulation Mechanism} ed è un particolare sistema crittografico \textit{ibrido} ed in particolare permette ai due "interlocutori" di una conversazione di utilizzare \textbf{un algoritmo di cifratura asimmetrica} per lo scambio di una chiave di cifratura da utilizzare nel contesto di un cifrario \textbf{simmetrico}. Naturalmente, il concetto di KEM non è solamente prerogativa della crittografia post quantistica ma è stato studiato ed implementato anche nel contesto della crittografia classica. Un esempio lampante ne è il KEM \textbf{basato sullo schema RSA} o su \textbf{curve ellittiche}, ampiamente utilizzati al giorno d'oggi.
@@ -920,7 +924,49 @@ Di seguito è presente un diagramma che riassume il funzionamento di un generico
 
 \footnotetext{\href{https://blog.cloudflare.com/post-quantum-key-encapsulation/}{Fonte dell'immagine}}
 
-L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE} su un \textbf{Lattice}, oggetti di discussione nelle prossime sezioni.
+L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE} su un \textbf{Reticolo}, oggetti di discussione nelle prossime sezioni.
+\newpage
+\subsubsection{Reticoli}
+Nelle sezioni precedenti sono stati presentati i vari approcci alla crittografia postquantistica. Uno di questi consisteva in quello basato su \textbf{Reticoli}.
+
+Il nome "reticolo" (in inglese \textit{lattice}) usato senza contestualizzazione risulta essere fuorviante poiché vi sono collegati due concetti distinti, ovvero:
+
+\begin{enumerate}
+    \item \textbf{Reticolo} inteso come \textbf{struttura algebrica} o, equivalentemente, come \textbf{insieme parzialmente ordinato} tale che per ogni coppia di elementi $x$ ed $y$ è possibile individuare l'\textbf{estremo superiore} $Sup$ e l'\textbf{estremo inferiore} $Inf$. Tale tipologia di insiemi può essere rappresentato mediante un \textbf{diagramma di Hasse};
+    \item \textbf{Reticolo} inteso come particolare \textbf{sottogruppo} dello spazio vettoriale $\mathcal{R}^n$.
+\end{enumerate}
+
+Il \textbf{secondo} concetto è quello utilizzato nel campo della crittografia.
+
+Nel lavoro \textbf{Introduction to Post-Quantum Cryptography} \cite{Bernstein2009} è presente una definizione formale di reticolo nel capitolo dedicato a tale concetto, curato da \textbf{Daniele Micciancio} ed \textbf{Oded Regev}, che viene qui proposta.
+
+Intuitivamente:
+\begin{definition}
+    Un reticolo è un insieme di punti in uno spazio $n$-dimensionale con una struttura periodica.
+\end{definition}
+
+Formalmente:
+
+\begin{definition}
+    Siano $b_1, b_2, ..., b_n \in \mathbb{R} ^n$ $n$ vettori linearmente indipendenti (dunque una \textbf{base} di $\mathbb{R}^n$), l'insieme definito come:
+
+    \begin{center}
+        \[\mathcal{L}(b_1,b_2,...,b_n) = \Biggl \{ \sum_{i = 1}^{n}x_ib_i \: : \: x_i \in \mathbb{Z} \Biggl\}\]
+    \end{center}
+
+    prende il nome di \textbf{reticolo}. I vettori $b_1, b_2, ..., b_n$ prendono il nome di \textbf{base} del reticolo.
+\end{definition}
+
+L'impiego nel campo della crittografia di questo particolare concetto nel campo della crittografia deriva principalmente dalla definizione di alcuni problemi che si suppone generalmente essere \textbf{difficili}, come il problema \texttt{SVP} (acronimo per \textbf{Shortest Vector Problem}, che consiste nel trovare il vettore più piccolo all'interno di un reticolo) e, mediante opportune trasformazioni, del problema \texttt{LWE} (acronimo per \textbf{Learning with Errors}), che sta alla base dell'algoritmo \texttt{Kyber} e che verrà ora descritto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/Equilateral_Triangle_Lattice.svg.png}
+    \caption{La rappresentazione di un reticolo su un piano euclideo}
+\end{figure}
+
+\newpage
+\subsubsection{Il problema \texttt{LWE}}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
