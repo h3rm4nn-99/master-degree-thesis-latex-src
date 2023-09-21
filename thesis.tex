@@ -17,8 +17,10 @@
 \usepackage[htt]{hyphenat}
 \usepackage{pgfplots}
 \usepackage{wrapfig}
+\usepackage{bm}
 \usepackage{amsfonts}
 \usepackage{amsthm}
+\usepackage{amsmath}
 
 \usepackage[
     backend=biber,
@@ -713,7 +715,7 @@ Per far fronte a questo tipo di criticità e al (necessario) tradeoff tra perfor
 
 Come analizzato in una revisione della letteratura \cite{8370965} compiuta nel 2018 da \textbf{Sadkhan e Salman}, diversi studi sono stati proposti nel campo della crittografia leggera e che hanno portato alla definizione di nuovi schemi di cifratura \textbf{simmetrica} ed \textbf{asimmetrica}.
 
-Nell'Agosto del 2018, inoltre, il \textbf{NIST}\footnote{\textbf{N}ational \textbf{I}nstitute of \textbf{S}tandards and \textbf{T}echnology, un importante statale americano} ha annunciato l'inizio del processo di standardizzazione \cite{nist-request-lwc} di algoritmi di crittografia leggera. Dopo \textbf{due rounds} di selezione, nel 2021 sono stati annunciati i 10 \textbf{finalisti} \cite{nist-finalists-lwc} di questo processo, ovvero:
+Nell'Agosto del 2018, inoltre, il \textbf{NIST}\footnote{\textbf{N}ational \textbf{I}nstitute of \textbf{S}tandards and \textbf{T}echnology, un importante ente statale americano} ha annunciato l'inizio del processo di standardizzazione \cite{nist-request-lwc} di algoritmi di crittografia leggera. Dopo \textbf{due rounds} di selezione, nel 2021 sono stati annunciati i 10 \textbf{finalisti} \cite{nist-finalists-lwc} di questo processo, ovvero:
 
 \begin{itemize}
     \item \texttt{ASCON};
@@ -924,7 +926,7 @@ Di seguito è presente un diagramma che riassume il funzionamento di un generico
 
 \footnotetext{\href{https://blog.cloudflare.com/post-quantum-key-encapsulation/}{Fonte dell'immagine}}
 
-L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE} su un \textbf{Reticolo}, oggetti di discussione nelle prossime sezioni.
+L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE}, che può essere ricondotto ad un altro problema definito su un \textbf{Reticolo}, entrambi oggetti di discussione nelle prossime sezioni.
 \newpage
 \subsubsection{Reticoli}
 Nelle sezioni precedenti sono stati presentati i vari approcci alla crittografia postquantistica. Uno di questi consisteva in quello basato su \textbf{Reticoli}.
@@ -957,7 +959,7 @@ Formalmente:
     prende il nome di \textbf{reticolo}. I vettori $b_1, b_2, ..., b_n$ prendono il nome di \textbf{base} del reticolo.
 \end{definition}
 
-L'impiego nel campo della crittografia di questo particolare concetto nel campo della crittografia deriva principalmente dalla definizione di alcuni problemi che si suppone generalmente essere \textbf{difficili}, come il problema \texttt{SVP} (acronimo per \textbf{Shortest Vector Problem}, che consiste nel trovare il vettore più piccolo all'interno di un reticolo) e, mediante opportune trasformazioni, del problema \texttt{LWE} (acronimo per \textbf{Learning with Errors}), che sta alla base dell'algoritmo \texttt{Kyber} e che verrà ora descritto.
+L'impiego di questo particolare concetto nel campo della crittografia deriva principalmente dalla definizione di alcuni problemi che si suppone generalmente essere \textbf{difficili}, come il problema \texttt{SVP} (acronimo per \textbf{Shortest Vector Problem}, che consiste nel trovare il vettore più piccolo all'interno di un reticolo) e, mediante opportune trasformazioni, del problema \texttt{LWE}, che sta alla base dell'algoritmo \texttt{Kyber} e che verrà ora descritto.
 
 \begin{figure}[H]
     \centering
@@ -967,7 +969,45 @@ L'impiego nel campo della crittografia di questo particolare concetto nel campo 
 
 \newpage
 \subsubsection{Il problema \texttt{LWE}}
+Strettamente legato al problema \texttt{SVP} appena menzionato è il problema \texttt{LWE} (acronimo per \textbf{Learning with Errors}) poiché mediante un processo di \textbf{riduzione} \cite{10.1145/1060590.1060603} è possibile affermare che se (una variante del) problema \texttt{SVP} (ed in particolare \texttt{GapSVP}) è difficile, allora anche il problema \texttt{LWE} è difficile.
 
+L'idea che sta informalmente alla base di questo problema consiste nel rappresentare determinate informazioni segrete aggiungendo un \textbf{errore} ad esse. 
+
+Il problema \texttt{LWE}, nonostante si riduca ad un problema definito su reticoli, non è esso stesso un problema definito su reticoli ma un problema \textbf{algebrico}. 
+
+In particolare, esso sfrutta alcune proprietà dei \textbf{sistemi di equazioni lineari}.
+
+Infatti, un generico sistema della forma
+
+\begin{center}
+    $Ax = b$
+\end{center}
+
+(espresso in forma matriciale per ragione di compattezza) può essere risolto facilmente mediante uno dei metodi "classici" come quello di \textbf{sostituzione} o quello di \textbf{eliminazione di Gauss-Jordan}.
+
+Tuttavia, se ad un sistema di questa forma viene aggiunto del "rumore", ovvero un certo vettore $e$ della forma:
+
+\begin{center}
+    $e = \begin{bmatrix}
+        e_1 \\ e_2 \\ ... \\ e_n
+    \end{bmatrix}$
+\end{center}
+
+facendo quindi diventare il sistema della forma 
+
+\begin{center}
+    $Ax + \mathbf{e} = b$
+\end{center}
+
+la situazione cambia drasticamente poiché \textbf{non è più possibile} utilizzare i metodi sopracitati per la risoluzione.
+
+Il problema LWE è definito usando esattamente tale osservazione, anche se di solito per questo tipo di operazioni si tende a restringersi all'insieme degli interi $mod \: q$, con $q \in \mathbb{N}$.
+
+Segue ora una definizione formale \cite{lwe-definition} del problema \texttt{LWE}.
+
+\begin{definition}
+    Sia $q \in \mathbb{N}$ e sia $\mathbb{Z}_q = \{0, 1, ..., q - 1\}$. Dati $m$ vettori $a_1, a_2, ..., a_m$ di $k$ componenti ciascuno (formalmente, definiti sull'insieme $\mathbb{Z}^k_q$), si definisca $s = \{s_1, s_2, ..., s_k\} \in \mathbb{Z}^k_q$ vettore \textbf{segreto} ed $e = \{e_1, e_2, ..., e_m\} \in \mathbb{Z}^m_q$ vettore degli \textbf{errori}. [Work in Progress].
+\end{definition}
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
 \end{document} 
