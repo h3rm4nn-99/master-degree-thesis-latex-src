@@ -22,6 +22,9 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 
+\usepackage{mathtools, nccmath}
+\DeclarePairedDelimiter{\nint}\lfloor\rceil % https://tex.stackexchange.com/questions/433101/rounding-to-nearest-integer-symbol-in-latex. Grazie!
+
 \usepackage[
     backend=biber,
     sorting=none
@@ -1006,8 +1009,116 @@ Il problema LWE è definito usando esattamente tale osservazione, anche se di so
 Segue ora una definizione formale \cite{lwe-definition} del problema \texttt{LWE}.
 
 \begin{definition}
-    Sia $q \in \mathbb{N}$ e sia $\mathbb{Z}_q = \{0, 1, ..., q - 1\}$. Dati $m$ vettori $a_1, a_2, ..., a_m$ di $k$ componenti ciascuno (formalmente, definiti sull'insieme $\mathbb{Z}^k_q$), si definisca $s = \{s_1, s_2, ..., s_k\} \in \mathbb{Z}^k_q$ vettore \textbf{segreto} ed $e = \{e_1, e_2, ..., e_m\} \in \mathbb{Z}^m_q$ vettore degli \textbf{errori}. [Work in Progress].
+    Sia $q \in \mathbb{N}$ e sia $\mathbb{Z}_q = \{0, 1, ..., q - 1\}$. Dati $m$ vettori $a_1, a_2, ..., a_m$ di $k$ componenti ciascuno (formalmente, definiti sull'insieme $\mathbb{Z}^k_q$), si definisca $s = \{s_1, s_2, ..., s_k\} \in \mathbb{Z}^k_q$ vettore \textbf{segreto} ed $e = \{e_1, e_2, ..., e_m\} \in \mathbb{Z}^m_q$ vettore degli \textbf{errori}.
+
+    Si consideri un generico sistema di equazioni della forma:
+    \[
+        \left\{ 
+        \begin{array}{l}
+            \langle a_1, s \rangle + e_1 = b_1 \: (mod \: q) \\
+            \langle a_2, s \rangle + e_2 = b_2 \: (mod \: q) \\
+            \vdots \\
+            \langle a_m, s \rangle + e_m = b_m \: (mod \: q)
+        \end{array} 
+    \right.
+    \]
+
+    che scritto in forma compatta (derivata da quella matriciale diventa):
+
+    \begin{center}
+        $A\mathbf{s} + e = b \: (mod \: q)$
+    \end{center}
+
+    Il problema \texttt{LWE} consiste, data una coppia $(A, b)$ ed un vettore $e$, trovare il "segreto" $s$. 
+
 \end{definition}
+
+Oltre alla variante del problema di \textbf{ricerca} appena mostrato esiste anche un problema \textbf{decisionale}, equivalente a questo.
+
+L'algoritmo \texttt{Kyber} precedentemente menzionato si basa su una particolare variante del problema appena descritto, ovvero \texttt{ModuleLWE} \cite{cryptoeprint:2012/090}, a sua volta derivato dal problema \texttt{RingLWE} \cite{cryptoeprint:2012/230}.
+
+La principale differenza tra il problema originale e i suoi "derivati" consiste nel fatto che l'insieme di riferimento non è più $\mathbb{Z}_q$ ma lo spazio dei polinomi a coefficienti in $\mathbb{Z}_q$, con la relazione $ X^n = - 1 $, formalmente: \[ R_q = \mathbb{Z}_q [X] / (X^n + 1)\]
+
+Definiti i concetti matematici alla base della crittografia basata su \textbf{reticoli}, è possibile finalmente svolgere una panoramica sui principi di funzionamento dell'algoritmo \texttt{Kyber}, che nasce come uno schema di cifratura a chiave pubblica ma viene utilizzato comunemente come \textbf{KEM} e di conseguenza \textbf{standardizzato} come tale.
+
+La descrizione del funzionamento di \texttt{Kyber} \cite{kyber-definition} ricalca sostanzialmente quella proposta per \texttt{LWE}, adattata per funzionare con l'insieme $R_q$.
+
+\subsubsection{\texttt{Kyber}: generazione delle chiavi}
+
+La \textbf{chiave privata} in Kyber è composta da un \textbf{vettore di $k$ polinomi} con coefficienti relativamente piccoli, chiamato $s$;
+
+La \textbf{chiave pubblica}, invece, è composta da una coppia $(A, t)$ in cui:
+
+\begin{itemize}
+    \item $A$ è una matrice di dimensione $k \times k$ di polinomi i cui coefficienti sono campionati in maniera casuale da $\mathbb{Z}_q$;
+    \item $t$ è un ulteriore vettore di $k$ polinomi.
+\end{itemize}
+
+Il calcolo di $t$ dipende da $A$, da $s$ ma anche da un ulteriore vettore di $k$ polinomi con coefficienti relativamente piccoli, chiamato \textbf{vettore degli errori}.
+
+Formalmente,
+
+\[ t = As + e \]
+
+utilizzando le operazioni di addizione e di prodotto riga per colonna.
+
+Come accennato in fase di definizione del problema, risulta essere difficile (a causa del vettore $e$) recuperare $s$ a partire da $(A, t)$ poiché equivarrebbe a risolvere il problema \texttt{ModuleLWE}. 
+
+\newpage
+\subsubsection{\texttt{Kyber}: la cifratura}
+Come un qualsiasi schema di cifratura asimmetrica (dato che formalmente \texttt{Kyber} ricade in questa categoria), le operazioni di \textbf{cifratura} avvengono con la \textbf{chiave pubblica} (ovvero $(A, t)$).
+
+La cifratura in \texttt{Kyber} è composta da \textbf{diversi passi preliminari}:
+
+\begin{enumerate}
+    \item Dato un generico messaggio $m$, per prima cosa se ne estrae la \textbf{codifica binaria}: sia $m'$ tale stringa;
+    \item Le cifre binarie di $m'$ vengono utilizzate come \textbf{coefficienti di un polinomio}: sia $m_b$ tale polinomio;
+    \item $m_b$ viene \textbf{scalato} di un fattore pari a $\nint*{\frac{q}{2}}$ (ovvero il numero intero più vicino a $\frac{q}{2}$) poiché è necessario che i coefficienti dei polinomi devono essere "grandi".
+\end{enumerate}
+
+Per l'operazione di cifratura sono necessarie tre \textbf{strutture di supporto}, generate in maniera casuale ad ogni nuova cifratura:
+
+\begin{itemize}
+    \item Un vettore $r$ di $k$ componenti detto \textbf{vettore di randomizzazione};
+    \item Un vettore $e_1$, anch'esso di $k$ componenti detto \textbf{vettore errore};
+    \item Un polinomio $e_2$ detto \textbf{polinomio errore}.
+\end{itemize}
+
+A questo punto il messaggio $m_b$ è pronto per essere cifrato.\\ \textbf{Il \textit{ciphertext} in \texttt{Kyber} consiste nella coppia $c = (u, v)$}, con $u$ vettore di $k$ componenti e $v$ polinomio, ottenuti nel seguente modo:
+
+\[ u = A^Tr + e_1 \] \[v = t^Tr + e_2 + m \]
+
+dove $A^T$ rappresenta l'operazione di \textbf{trasposizione} della matrice A e $t^T$ rappresenta l'operazione di trasposizione del vettore $t$.
+
+\subsubsection{\texttt{Kyber}: la decifratura}
+Una volta ottenuto $c$, il primo step della decifratura avviene mediante la seguente operazione:
+
+\begin{equation}
+    m_n = v - s^Tu
+\end{equation}
+
+dove $s^T$ rappresenta la \textbf{trasposizione} della \textbf{chiave privata} $s$. 
+
+Espandendo la (1) si ottiene:
+
+\begin{equation}
+    m_n = e^Tr + e_2 + m + s^Te_1
+\end{equation}
+
+Il polinomio $m_n$ ottenuto viene detto "rumoroso" poiché di per sé \textbf{non contiene $m_b$}.
+Tuttavia, siccome i coefficienti di tutti i polinomi (fatta eccezione per $m_b$, scalato di un fattore $\nint*{\frac{q}{2}}$) sono relativamente \textbf{"piccoli"} è possibile recuperare i coefficienti di quest'ultimo iterando tra i coefficienti di $m_n$ ed operando come segue. 
+
+Sia $a$ un generico coefficiente di $m_n$:
+
+\begin{itemize}
+    \item Se $a$ si avvicina di più a $\nint*{\frac{q}{2}}$ che a $q$ o a 0, vuol dire che il coefficiente a lui corrispondente in $m_b$ valeva 1, dunque è necessario arrotondarlo a $\nint*{\frac{q}{2}}$;
+    \item Al contrario, se $a$ si avvicina di più a $q$ o a 0 che a $\nint*{\frac{q}{2}}$, vuol dire che il coefficiente a lui corrispondente in $m_b$ valeva 0, dunque è necessario arrotondarlo a $0$;
+\end{itemize}
+
+A questo punto, $m_b$ è stato recuperato ed è necessario \textbf{invertire} l'upscaling avvenuto in fase di cifratura mediante una divisione per $\nint*{\frac{q}{2}}$.
+
+Dopo tale operazione è dunque possibile fare riferimento ai coefficienti del risultato per risalire alle cifre di $m'$ e, di conseguenza, di $m$, completando il processo di \textbf{decifratura}.
+
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
 \end{document} 
