@@ -21,6 +21,8 @@
 \usepackage{amsfonts}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage[bottom]{footmisc}
+
 
 \usepackage{mathtools, nccmath}
 \DeclarePairedDelimiter{\nint}\lfloor\rceil % https://tex.stackexchange.com/questions/433101/rounding-to-nearest-integer-symbol-in-latex. Grazie!
@@ -1043,6 +1045,7 @@ Definiti i concetti matematici alla base della crittografia basata su \textbf{re
 
 La descrizione del funzionamento di \texttt{Kyber} \cite{kyber-definition} ricalca sostanzialmente quella proposta per \texttt{LWE}, adattata per funzionare con l'insieme $R_q$.
 
+\newpage
 \subsubsection{\texttt{Kyber}: generazione delle chiavi}
 
 La \textbf{chiave privata} in Kyber è composta da un \textbf{vettore di $k$ polinomi} con coefficienti relativamente piccoli, chiamato $s$;
@@ -1118,6 +1121,68 @@ Sia $a$ un generico coefficiente di $m_n$:
 A questo punto, $m_b$ è stato recuperato ed è necessario \textbf{invertire} l'upscaling avvenuto in fase di cifratura mediante una divisione per $\nint*{\frac{q}{2}}$.
 
 Dopo tale operazione è dunque possibile fare riferimento ai coefficienti del risultato per risalire alle cifre di $m'$ e, di conseguenza, di $m$, completando il processo di \textbf{decifratura}.
+
+\newpage
+\subsubsection{\texttt{Kyber}: discussione sulla sicurezza}
+Gli algoritmi di crittografia post quantistica si contraddistinguono per una certamente maggiore dimensione delle chiavi e naturalmente l'algoritmo \texttt{Kyber} non fa eccezione. Nelle specifiche di tale algoritmo vengono riportate diverse "modalità" di funzionamento, in termini di lunghezza delle chiavi e della \textit{capsula}. La seguente tabella riporta tali valori ed il livello di sicurezza di ciascuna modalità quando confrontato con l'algoritmo \texttt{AES}. Tutte le lunghezze sono espresse in \textbf{bytes}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    Modalità  & \texttt{sk} \footnotemark[5] & \texttt{pk} \footnotemark[6] & Lunghezza \textit{capsula} & Livello di sicurezza \\ \hline
+    \texttt{Kyber512}  & 1632                     & 800                       & 768                        & \texttt{AES128}              \\ \hline
+    \texttt{Kyber768}  & 2400                     & 1184                      & 1088                       & \texttt{AES192}              \\ \hline
+    \texttt{Kyber1024} & 3168                     & 1568                      & 1568                       & \texttt{AES256}              \\ \hline
+    \end{tabular}
+\end{table}
+
+\footnotetext[5]{Lunghezza della \textbf{chiave segreta}}
+\footnotetext[6]{Lunghezza della \textbf{chiave pubblica}}
+
+Dal punto di vista della struttura interna, l'unica differenza che intercorre tra le tre versioni dell'algoritmo consiste nella variazione del parametro $k$, introdottto nelle precedenti sezioni e che rappresenta il numero delle componenti dei vettori. In particolare:
+
+\begin{itemize}
+    \item Nel caso di \textbf{Kyber512}, $k = 2$;
+    \item Nel caso di \textbf{Kyber768}, $k = 3$;
+    \item Nel caso di \textbf{Kyber1024}, $k = 4$;
+\end{itemize}
+
+Questa caratteristica rende l'implementazione di \texttt{Kyber} estremamente semplice ed efficace poiché tutte e tre le versioni di tale algoritmo possono utilizzare virtualmente lo stesso codice, aumentando notevolmente la \textbf{modularità} dello schema.
+\newpage
+Gli altri parametri, invece, risultano \textbf{invariati} tra tutte le modalità:
+
+\begin{itemize}
+    \item Il \textbf{grado massimo} ($n$) dei polinomi utilizzati è fissato a 256;
+    \item Il \textbf{modulo} ($q$) utilizzato per definire l'insieme di riferimento è fissato a 3329.
+\end{itemize}
+
+Una discussione sulle \textbf{implementazioni software} per questo algoritmo viene proposta nella sezione successiva di tale documento, che svolge una panoramica sul sistema proposto in questo lavoro.
+
+\newpage
+\section{Descrizione ed implementazione della soluzione proposta}
+Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scentifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
+
+\subsection{L'idea di base}
+Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundContol} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}.
+
+Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione.
+
+È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione della chiave.
+
+Per definire quest'architettura è stato necessario procedere per step:
+
+\begin{enumerate}
+    \item Definizione di nuovi messaggi \textsc{MAVLink} 2.0;
+    \item Compilazione ed installazione di un'implementazione di\texttt{Kyber} nell'ambiente di sviluppo;
+    \item Integrazione di \texttt{Kyber} all'interno di ArduPilot;
+    \item Alterazione di \textbf{ArduPilot};
+    \item Alterazione di \textbf{QGroundControl};
+    \item Alterazione della libreria \textsc{MAVLink}.
+\end{enumerate}
+
+
+
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
