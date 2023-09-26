@@ -1163,26 +1163,70 @@ Una discussione sulle \textbf{implementazioni software} per questo algoritmo vie
 \section{Descrizione ed implementazione della soluzione proposta}
 Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scentifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
 
-\subsection{L'idea di base}
-Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundContol} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}.
-
-Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione.
-
-È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione della chiave.
-
-Per definire quest'architettura è stato necessario procedere per step:
+\subsection{Overview del processo}
+Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundContol} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}. Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave.
 
 \begin{enumerate}
-    \item Definizione di nuovi messaggi \textsc{MAVLink} 2.0;
-    \item Compilazione ed installazione di un'implementazione di\texttt{Kyber} nell'ambiente di sviluppo;
+    \item Installazione di un'implementazione di \texttt{Kyber} nell'ambiente di sviluppo;
+    \item Definizione del protocollo;
+    \item Introduzione di nuovi messaggi \textsc{MAVLink} 2.0;
     \item Integrazione di \texttt{Kyber} all'interno di ArduPilot;
-    \item Alterazione di \textbf{ArduPilot};
-    \item Alterazione di \textbf{QGroundControl};
+    \item Integrazione di \texttt{Kyber} all'interno di QGroundControl;
+    \item Alterazione delle funzioni di \textbf{ArduPilot};
+    \item Alterazione delle funzioni di \textbf{QGroundControl};
     \item Alterazione della libreria \textsc{MAVLink}.
 \end{enumerate}
 
+Le sezioni successive approfondiscono ciascuno di questi step.
 
+\subsection{Step 1: installazione di un'implementazione di \texttt{Kyber} nell'ambiente di sviluppo}
+Sul sito web del progetto \texttt{CRYSTALS} \cite{crystals-software} viene fatta una panoramica delle soluzioni software esistenti che permettono l'utilizzo dello schema di incapsulamento \texttt{Kyber}.
 
+Su GitHub è presente una \textbf{implementazione di riferimento} \cite{kyber-reference} di tale schema nel linguaggio C ottimizzata per processori \textbf{Intel} x86 che sfrutta il set di istruzioni \texttt{AVX2} e che aggiunge il supporto ai vettori a 256 bit, permettendo calcoli in \textbf{virgola mobile} ad alte prestazioni \cite{intel-avx2}.
+
+Esistono tuttavia implementazioni di \texttt{Kyber} integrate in progetti più strutturati come \texttt{PQClean} o \texttt{OpenQuantumSafe}. Quest'ultimo consiste "in un framework per la prototipazione e lo sviluppo di crittografia quantum-resistant" \cite{oqs}.
+
+\subsubsection{\texttt{liboqs}: descrizione ed installazione}
+Il progetto di punta di questa organizzazione è però \texttt{liboqs}: una libreria open source che fornisce accesso ad implementazioni di diversi algoritmi post quantistici mediante un'API semplificata. Oltre a \texttt{Kyber}, questa suite include anche altri algoritmi \cite{liboqs-algorithms} \textbf{KEM} candidati nel processo di standardizzazione del NIST (\texttt{Classic McEliece}, \texttt{BIKE}, \texttt{HQC}, \texttt{FrodoKEM} ed \texttt{NTRU-Prime}) e degli schemi di \textbf{firma digitale} (\texttt{CRYSTALS-Dilithium}, \texttt{Falcon} e \texttt{SPHINCS+}). Il codice sorgente di tale libreria è presente su GitHub \cite{liboqs-github} insieme ad una guida per la compilazione e l'installazione del progetto, qui brevemente riportata:
+
+\begin{itemize}
+    \item Innanzitutto è necessario clonare la repository del progetto in una directory locale mediante il comando \begin{center}
+        \texttt{git clone -b https://github.com/open-quantum-safe/liboqs}
+    \end{center}
+    e dunque spostarsi nella directory che contiene i sorgenti:
+    \begin{center}
+        \texttt{cd liboqs/}
+    \end{center}
+    \item Poiché \texttt{liboqs} usa il sistema di building \textbf{cmake} utilizzato insieme a \texttt{ninja}, è necessario installare alcune dipendenze. Per i sistemi GNU/Linux basati su \textbf{Debian} (come Ubuntu) il comando da eseguire è il seguente:
+    \begin{center}
+        \texttt{sudo apt install astyle cmake gcc ninja-build libssl-dev python3-pytest python3-pytest-xdist unzip xsltproc doxygen graphviz python3-yaml valgrind}
+    \end{center}
+    \item È tutto pronto per iniziare il processo di building:
+    \begin{center}
+        \texttt{mkdir build \&\& cd build \\
+        cmake -GNinja .. \\
+        ninja}
+    \end{center}
+    \item Una volta terminato il processo di building, la \textbf{libreria statica} \texttt{liboqs.a} sarà disponibile nella directory \texttt{/build/lib/}. Se, invece, si desidera generare uno \textbf{shared object} è possibile passare il parametro \texttt{-DBUILD\_SHARED\_LIBS=ON} durante l'invocazione di \texttt{cmake}. Il risultato della compilazione, in questo caso, sarà il file \texttt{liboqs.so} nello stesso percorso menzionato in precedenza, oltre che la creazione di una directory \texttt{include/}, che contiene gli \textbf{headers} relativi alla libreria.
+    \item Infine, è possibile generare un \textbf{pacchetto} \texttt{.deb} per installare la libreria in maniera \textit{system-wide} mediante un job di \texttt{ninja}:
+    \begin{center}
+        \texttt{ninja package}
+    \end{center}
+    e successivamente installando il pacchetto appena generato:
+    \begin{center}
+        \texttt{sudo dpkg -i <nome\_paccketto>.deb}
+    \end{center}
+\end{itemize}
+
+A questo punto, \texttt{liboqs} può essere utilizzata all'interno di un generico programma C/C++ utilizzando la direttiva:
+
+\begin{center}
+    \texttt{\#include <oqs/liboqs.h>}
+\end{center}
+
+ed aggiungendo il flag \texttt{-loqs} in fase di compilazione del programma per comunicare al \textbf{linker} di effettuare il linking di tale libreria.
+
+Quest'ultimo aspetto viene sottolineato perché necessario negli step successivi descritti in questo capitolo.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
