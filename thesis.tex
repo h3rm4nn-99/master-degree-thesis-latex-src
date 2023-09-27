@@ -1226,7 +1226,38 @@ A questo punto, \texttt{liboqs} può essere utilizzata all'interno di un generic
 
 ed aggiungendo il flag \texttt{-loqs} in fase di compilazione del programma per comunicare al \textbf{linker} di effettuare il linking di tale libreria.
 
-Quest'ultimo aspetto viene sottolineato perché necessario negli step successivi descritti in questo capitolo.
+Quest'ultimo aspetto viene qui sottolineato perché necessario negli step successivi descritti in questo capitolo.
+
+\newpage
+\subsection{Step 2: definizione del protocollo}
+Una volta capito \textit{come} ottenere un'implementazione funzionante di \texttt{Kyber} è ora necessario capire \textit{cosa} fare per effettuare correttamente uno scambio di chiavi allo scopo di stabilire una comunicazione cifrata successivamente.
+
+È necessario quindi stabilire \textit{quale} delle due "parti" impegnate nella comunicazione, con riferimento al meccanismo di funzionamento di un KEM descritto in precedenza, deve svolgere le operazioni di \texttt{Gen()}, \texttt{Encaps()} e \texttt{Decaps()}.
+
+In fase di progettazione del nuovo sistema sono state effettuate le seguenti scelte, tenendo anche conto della possibile \footnote{In realtà, molto probabile!} differenza di capacità computazionale tra l'UAV e la GCS (che, si ricorda, è generalmente ospitata su hardware consumer, senza particolari limitazioni di risorse):
+
+\begin{itemize}
+    \item L'operazione di \texttt{Gen()} viene effettuata dalla \textbf{GCS}, che \textbf{invia la chiave pubblica} all'UAV;
+    \item Una volta ricevuta la chiave pubblica, l'\textbf{UAV} effettua l'operazione di \texttt{Encaps()} (che implica la generazione di una \textbf{chiave segreta}). Successivamente, lo stesso UAV \textbf{invia la capsula} alla GCS;
+    \item Alla ricezione della capsula, la \textbf{GCS} effettua l'operazione di \texttt{Decaps()}, \textbf{estrae la chiave segreta}, la \textbf{imposta} ed infine \textbf{invia conferma} all'UAV;
+    \item A questo punto, \textbf{le due parti} posseggono la stessa chiave segreta: è finalmente possibile iniziare la \textbf{comunicazione cifrata}.
+\end{itemize}
+
+Nello schema presente nella pagina successiva:
+
+\begin{itemize}
+    \item \texttt{pk} ed \texttt{sk} rappresentano rispettivamente la \textbf{chiave pubblica} e la \textbf{chiave privata} restituite dalla procedura \texttt{Gen()} dell'algoritmo \texttt{Kyber};
+    \item \texttt{capsule} rappresenta la \textbf{capsula} generata dalla procedura \texttt{Encaps()} dell'algoritmo \texttt{Kyber};
+    \item \texttt{ss} rappresenta lo \textbf{shared secret}, utilizzata come \textbf{chiave segreta} per la comunicazione cifrata mediante cifrario \texttt{AES}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/key_exchange.png}
+    \caption{Una rappresentazione grafica del protocollo descritto}
+\end{figure}
+
+Si noti che quello mostrato fino ad ora è una descrizione ad alto livello che permette di farsi un'idea di ciò che accade durante la fase di \textbf{scambio della chiave}. Una descrizione a più basso livello dei messaggi effettivamente scambiati tra le due parti della comunicazione viene svolta man mano che vengono presentati i vari step che hanno permetto la creazione del sistema proposto.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
