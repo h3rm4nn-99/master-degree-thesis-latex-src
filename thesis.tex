@@ -106,24 +106,24 @@
     
     La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. L'innovazione tecnologica porta però a nuove sfide anche nel campo della sicurezza. 
     
-    In particolare, i recenti progressi nel campo del \textbf{quantum computing} aprono nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo MAVLink che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Encapsulation Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
+    In particolare, i recenti progressi nel campo del \textbf{quantum computing} aprono nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo \textsc{MAVLink} che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Encapsulation Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
 \end{abstract}
 \newpage
 
 \section{Introduzione}
 
 \subsection{Scopi e struttura della tesi}
-Il presente lavoro si concentra, come tra l'altro già accennato in precedenza nell'abstract, sull'analisi del proof of concept di un'architettura basata sul protocollo MAVLink che permetta lo scambio di chiavi e la comunicazione cifrata tra un UAV e la sua centrale di comando a terra utilizzando il KEM quantum-resistant Kyber e l'algoritmo AES in modo tale da proteggere lo scambio di messaggi tra i due \textit{endpoint} della comunicazione.
+Il presente lavoro si concentra, come tra l'altro già accennato in precedenza nell'abstract, sull'analisi del proof of concept di un'architettura basata sul protocollo \textsc{MAVLink} che permetta lo scambio di chiavi e la comunicazione cifrata tra un UAV e la sua centrale di comando a terra utilizzando il KEM quantum-resistant Kyber e l'algoritmo AES in modo tale da proteggere lo scambio di messaggi tra i due \textit{endpoint} della comunicazione.
 
 In particolare:
 
 \begin{itemize}
     \item Questo capitolo funge da introduzione al lavoro svolto durante l'attività di Tesi, ne illustra la struttura e ne chiarisce le motivazioni ed il contesto in cui è calato;
     \item il \textbf{Capitolo 2} fornisce una panoramica sulle principali piattaforme software considerate nel presente lavoro;
-    \item il \textbf{Capitolo 3} fornisce una panoramica sul protocollo \textbf{MAVLink};
-    \item il \textbf{Capitolo 4} discute alcune problematiche di sicurezza che affliggono il protocollo MAVLink e discute alcuni approcci a questo problema presnti in letteratura;
+    \item il \textbf{Capitolo 3} fornisce una panoramica sul protocollo \textbf{\textsc{MAVLink}};
+    \item il \textbf{Capitolo 4} discute alcune problematiche di sicurezza che affliggono il protocollo \textsc{MAVLink} e discute alcuni approcci a questo problema presnti in letteratura;
     \item il \textbf{Capitolo 5} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
-    \item il \textbf{Capitolo 6} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo MAVLink stesso;
+    \item il \textbf{Capitolo 6} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo \textsc{MAVLink} stesso;
     \item il \textbf{Capitolo 7} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
 \end{itemize}
 
@@ -154,9 +154,9 @@ Proprio questa diffusione più capillare dell'uso di suddetti veicoli a guida re
 
 A partire dagli anni 10 del XXI secolo sono stati concepiti diversi progetti software \textbf{open source} che forniscono piattaforme integrate compatibili con diversi tipi di apparati sia lato UAV che lato GCS. 
 
-Parimenti, è stato necessario definire uno \textit{standard} per quanto riguarda l'ambito dei protocolli di comunicazione tra il drone e la sua \textit{GCS}, che è rappresentato sicuramente dal protocollo \textbf{MAVLink} e dalle sue successive evoluzioni. 
+Parimenti, è stato necessario definire uno \textit{standard} per quanto riguarda l'ambito dei protocolli di comunicazione tra il drone e la sua \textit{GCS}, che è rappresentato sicuramente dal protocollo \textbf{\textsc{MAVLink}} e dalle sue successive evoluzioni. 
 
-Una panoramica più approfondita sul protocollo MAVLink verrà in ogni caso affrontata nelle prossime sezioni in cui verranno illustrate le piattaforme software utilizzate nell'ambito del presente lavoro.
+Una panoramica più approfondita sul protocollo \textsc{MAVLink} verrà in ogni caso affrontata nelle prossime sezioni in cui verranno illustrate le piattaforme software utilizzate nell'ambito del presente lavoro.
 
 \newpage
 
@@ -179,12 +179,12 @@ Il presente capitolo fornisce una panoramica delle principali tecnologie utilizz
     \caption{Il logo di QGroundControl}
 \end{figure}
 
-Viene quindi svolta una panoramica sul protocollo di comunicazione \textbf{MAVLink} che permette l'interazione tra queste due componenti.
+Viene quindi svolta una panoramica sul protocollo di comunicazione \textbf{\textsc{MAVLink}} che permette l'interazione tra queste due componenti.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/logo_mavlink_small.png}
-    \caption{Il logo del protocollo MAVLink}
+    \caption{Il logo del protocollo \textsc{MAVLink}}
 \end{figure}
 
 \newpage
@@ -308,8 +308,8 @@ A questo punto, il veicolo "virtuale" è pronto ad accettare connessioni da una 
 
 
 
-\subsubsection{ArduPilot: integrazione con il protocollo MAVLink}
-Il progetto ArduPilot usa il protocollo MAVLink per comunicare con le Ground Control Stations. Il codice sorgente che implementa le primitive e le funzioni di supporto per la comunicazione non è però già disponibile all'atto della clonazione del progetto da GitHub. Al contrario, è stato configurato il tool \texttt{mavgen} come \textit{submodule} all'interno della repository. Tale tool, richiamato dal sistema di building \texttt{waf} all'atto della compilazione del codice per un determinato veicolo, permette di generare \textit{dinamicamente} tutto il codice di basso livello necessario per le operazioni di comunicazione verso l'esterno\cite{mavgen}. Più nello specifico, viene generata una libreria \textit{headers-only} in linguaggio \textbf{C}, che tuttavia risulta perfettamente interoperabile con il resto del software scritto invece, come già menzionato, in C++. Maggiori dettagli su questo tool saranno forniti durante la panoramica che verrà svolta riguardo il protocollo MAVLink.
+\subsubsection{ArduPilot: integrazione con il protocollo \textsc{MAVLink}}
+Il progetto ArduPilot usa il protocollo \textsc{MAVLink} per comunicare con le Ground Control Stations. Il codice sorgente che implementa le primitive e le funzioni di supporto per la comunicazione non è però già disponibile all'atto della clonazione del progetto da GitHub. Al contrario, è stato configurato il tool \texttt{mavgen} come \textit{submodule} all'interno della repository. Tale tool, richiamato dal sistema di building \texttt{waf} all'atto della compilazione del codice per un determinato veicolo, permette di generare \textit{dinamicamente} tutto il codice di basso livello necessario per le operazioni di comunicazione verso l'esterno\cite{mavgen}. Più nello specifico, viene generata una libreria \textit{headers-only} in linguaggio \textbf{C}, che tuttavia risulta perfettamente interoperabile con il resto del software scritto invece, come già menzionato, in C++. Maggiori dettagli su questo tool saranno forniti durante la panoramica che verrà svolta riguardo il protocollo \textsc{MAVLink}.
 
 \newpage
 
@@ -317,7 +317,7 @@ Il progetto ArduPilot usa il protocollo MAVLink per comunicare con le Ground Con
 
 \subsubsection{Panoramica sulle principali GCS disponibili}
 
-Come menzionato in precedenza, un UAV per essere totalmente operativo ha bisogno di una componente \textbf{"a terra"} che lo governi: questa componente prende appunto il nome di \textbf{Ground Control Station} (GCS) e si occupa di gestire la connessione con l'UAV mediante il protocollo più adatto e di controllarlo mediante messaggi tipicamente aderenti alle specifiche \textbf{MAVLink} (maggiori informazioni sono fornite nella sottosezione dedicata). È quindi pacifico affermare che il software in questione risulti essere nella maggior parte dei casi \textbf{molto complesso} dal punto di vista dei requisiti a cui deve rispondere e da quello dell'architettura software.
+Come menzionato in precedenza, un UAV per essere totalmente operativo ha bisogno di una componente \textbf{"a terra"} che lo governi: questa componente prende appunto il nome di \textbf{Ground Control Station} (GCS) e si occupa di gestire la connessione con l'UAV mediante il protocollo più adatto e di controllarlo mediante messaggi tipicamente aderenti alle specifiche \textbf{\textsc{MAVLink}} (maggiori informazioni sono fornite nella sottosezione dedicata). È quindi pacifico affermare che il software in questione risulti essere nella maggior parte dei casi \textbf{molto complesso} dal punto di vista dei requisiti a cui deve rispondere e da quello dell'architettura software.
 
 Attualmente, sono disponibili pubblicamente diverse Ground Control Station più o meno sofisticate. Tra queste si annoverano:
 
@@ -325,26 +325,26 @@ Attualmente, sono disponibili pubblicamente diverse Ground Control Station più 
     \item \textbf{MAVProxy} \cite{mavproxy}: una (non necessariamente) command-line-based GCS che possiede tutti gli strumenti necessari a comandare un UAV risultando al contempo utilizzabile su sistemi con a disposizione relativamente poche risorse. Di default, è quella che si avvia al momento dell'esecuzione di \textbf{SITL} a meno che non venga passato il parametro \texttt{-{}-no-mavproxy} allo script \texttt{sim\_vehicle.py} (come accennato in precedenza);
     \item \textbf{Mission Planner} \cite{mission-planner}, sviluppato da \textbf{Michael Orbone} e che permette di gestire diversi aspetti di una missione di un UAV: dalla configurazione dei waypoints (in termini di coordinate GPS) ai comandi da far eseguire all'UAV durante lo svolgimento della missione;
     \item \textbf{APM Planner 2}: sostanzialmente \textbf{un'evoluzione} dello strumento Mission Planner, creato dal team di sviluppo di \textbf{ArduPilot} e che permette di gestire sia dispositivi basati su ArduPilot stesso che basati sulla piattaforma \textbf{PX4};
-    \item \textbf{QGroundControl} \cite{qgroundcontrol}: probabilmente la GCS più funzionale tra quelle appena descritte. È stata sviluppata dal team che si occupa del protocollo \textbf{MAVLink} e che permette di interfacciarsi con qualsiasi dispositivo che supporti i messaggi MAVLink. Tale piattaforma è stata utilizzata per realizzare parte del lavoro di tesi qui presentato. 
+    \item \textbf{QGroundControl} \cite{qgroundcontrol}: probabilmente la GCS più funzionale tra quelle appena descritte. È stata sviluppata dal team che si occupa del protocollo \textbf{\textsc{MAVLink}} e che permette di interfacciarsi con qualsiasi dispositivo che supporti i messaggi \textsc{MAVLink}. Tale piattaforma è stata utilizzata per realizzare parte del lavoro di tesi qui presentato. 
 \end{itemize}
 
 \subsubsection{Architettura software di QGroundControl}
 
-Come accennato, QGroundControl è un software molto complesso e che fornisce una moltitudine di funzionalità, che vanno dalla pianificazione delle missioni al monitoraggio dei messaggi MAVLink tramite un \textbf{inspector} \textit{ad-hoc}, per citarne alcune.
+Come accennato, QGroundControl è un software molto complesso e che fornisce una moltitudine di funzionalità, che vanno dalla pianificazione delle missioni al monitoraggio dei messaggi \textsc{MAVLink} tramite un \textbf{inspector} \textit{ad-hoc}, per citarne alcune.
 
-Il progetto è stato sviluppato dall'organizzazione che si occupa di MAVLink e, più in generale, del \textbf{MAV-SDK}: la \textbf{DroneCode Foundation}, che ha come mission quella di "creare uno standard nell'industria dei droni mediante progetti open-source"\cite{dronecode}. 
+Il progetto è stato sviluppato dall'organizzazione che si occupa di \textsc{MAVLink} e, più in generale, del \textbf{MAV-SDK}: la \textbf{DroneCode Foundation}, che ha come mission quella di "creare uno standard nell'industria dei droni mediante progetti open-source"\cite{dronecode}. 
 
-È scritto interamente in \textbf{C++}, eccetto per lo stack di comunicazione MAVLink in uso, mediante l'ausilio del framework \textbf{Qt} ed il suo codice sorgente è disponibile su GitHub \cite{qgc-github}.
+È scritto interamente in \textbf{C++}, eccetto per lo stack di comunicazione \textsc{MAVLink} in uso, mediante l'ausilio del framework \textbf{Qt} ed il suo codice sorgente è disponibile su GitHub \cite{qgc-github}.
 
 Al contrario delle altre GCS, QGroundControl \textbf{supporta anche la compilazione per la piattaforma Android}\cite{qgc-github-android}, il che di conseguenza permette l'utilizzo del software su dispositivi portatili e rendendo il progetto completamente \textbf{cross-platform}.
 
-In ogni caso, il \textit{core} della piattaforma è presente all'interno della directory \texttt{src/} nella root della repo GitHub. Qui sono presenti tutti i moduli che permettono, tra le altre cose, la gestione dei veicoli connessi alla GCS (classe \texttt{Vehicle} coaudivata da un'istanza di \texttt{LinkManager}) e dei messaggi di cui è stato svolto il \textit{parsing} dalla libreria MAVLink (classe \texttt{MAVLinkProtocol}: presente nella sottodirectory \texttt{comm/}).
+In ogni caso, il \textit{core} della piattaforma è presente all'interno della directory \texttt{src/} nella root della repo GitHub. Qui sono presenti tutti i moduli che permettono, tra le altre cose, la gestione dei veicoli connessi alla GCS (classe \texttt{Vehicle} coaudivata da un'istanza di \texttt{LinkManager}) e dei messaggi di cui è stato svolto il \textit{parsing} dalla libreria \textsc{MAVLink} (classe \texttt{MAVLinkProtocol}: presente nella sottodirectory \texttt{comm/}).
 
-La comunicazione con l'UAV connesso avviene mediante \textbf{datagrammi UDP} gestiti da un \texttt{LinkManager} che contengono messaggi MAVLink costruiti utilizzando le funzioni della libreria C di questo progetto.
+La comunicazione con l'UAV connesso avviene mediante \textbf{datagrammi UDP} gestiti da un \texttt{LinkManager} che contengono messaggi \textsc{MAVLink} costruiti utilizzando le funzioni della libreria C di questo progetto.
 
 Al contrario di quanto avviene nel contesto di ArduPilot, con QGroundControl suddetta libreria \textbf{non viene generata} al momento della compilazione ma viene fatto uso dell'\textbf{implementazione di riferimento in C} \cite{mavlink-c-implementation} messa a disposizione pubblicamente da DroneCode su GitHub ed inclusa nella repo di QGroundControl utilizzando (ancora una volta) il meccanismo dei \textit{submodules}.
 
-Il "dialetto" utilizzato di default da QGroundControl per la libreria MAVLink è (a partire dal 24 agosto 2023)\cite{qgc-all-commit} \texttt{all}, ma tale aspetto può essere variato in uno dei \textbf{file di configurazione del progetto}: \texttt{QGCExternalLibs.pri}.
+Il "dialetto" utilizzato di default da QGroundControl per la libreria \textsc{MAVLink} è (a partire dal 24 agosto 2023)\cite{qgc-all-commit} \texttt{all}, ma tale aspetto può essere variato in uno dei \textbf{file di configurazione del progetto}: \texttt{QGCExternalLibs.pri}.
 
 Per quanto riguarda questo lavoro, invece, viene ancora utilizzato il "dialetto" \texttt{ArduPilotMega} poiché tale cambiamento non era stato proposto ed approvato. \footnote{Cambiamenti così importanti sono particolarmente frequenti in progetti open source del genere, ndr}
 
@@ -389,7 +389,7 @@ Successivamente è necessario preparare l'ambiente di build mediante i seguenti 
     \texttt{qmake ../}
 \end{center}
 
-L'invocazione di \texttt{qmake} permette a Qt di inizializzare i \textbf{Makefile} ed di caricare le \textbf{variabili d'ambiente} contenute nei \textbf{file di configurazione} (come ad esempio il dialetto di MAVLink da utilizzare, già accennato in precedenza).
+L'invocazione di \texttt{qmake} permette a Qt di inizializzare i \textbf{Makefile} ed di caricare le \textbf{variabili d'ambiente} contenute nei \textbf{file di configurazione} (come ad esempio il dialetto di \textsc{MAVLink} da utilizzare, già accennato in precedenza).
 
 È ora finalmente possibile invocare \texttt{make} per iniziare la procedura di compilazione vera e propria:
 
@@ -417,19 +417,19 @@ Una volta terminata la compilazione del software, l'eseguibile prodotto sarà po
     \caption{Le impostazioni di QGroundContol}
 \end{figure}
 
-\section{Il protocollo MAVLink}
+\section{Il protocollo \textsc{MAVLink}}
 
-Come accennato in fase di introduzione a questo lavoro, il \textbf{protocollo MAVLink} è il vero e proprio "collante" tra le due parti della comunicazione, ovvero l'UAV e la GCS a terra. In questa sezione viene presentata la filosofia, le specifiche e l'architettura del protocollo MAVLink e se ne illustra l'evoluzione con il passare del tempo.
+Come accennato in fase di introduzione a questo lavoro, il \textbf{protocollo \textsc{MAVLink}} è il vero e proprio "collante" tra le due parti della comunicazione, ovvero l'UAV e la GCS a terra. In questa sezione viene presentata la filosofia, le specifiche e l'architettura del protocollo \textsc{MAVLink} e se ne illustra l'evoluzione con il passare del tempo.
 
 \subsection{Principi di funzionamento}
-Il protocollo MAVLink (nome breve per \textbf{M}icro \textbf{A}erial \textbf{V}ehicle \textbf{Link}) è stato proposto per la prima volta nel 2010 dallo sviluppatore \textbf{Lorenz Meier} \cite{mavlink-first-commit} e si propone come un protocollo basato su \textbf{scambio di messaggi} che ha come caratteristica principale quello di essere \textbf{lightweight}: alla luce del contesto in cui si sta operando, quest'ultima caratteristica risulta essere particolarmente desiderabile.
+Il protocollo \textsc{MAVLink} (nome breve per \textbf{M}icro \textbf{A}erial \textbf{V}ehicle \textbf{Link}) è stato proposto per la prima volta nel 2010 dallo sviluppatore \textbf{Lorenz Meier} \cite{mavlink-first-commit} e si propone come un protocollo basato su \textbf{scambio di messaggi} che ha come caratteristica principale quello di essere \textbf{lightweight}: alla luce del contesto in cui si sta operando, quest'ultima caratteristica risulta essere particolarmente desiderabile.
 
 \begin{wrapfigure}{r}{0.50\textwidth}
     \includegraphics[width=0.9\linewidth]{images/logo_mavlink_small.png}
     \caption{Logo del progetto} 
 \end{wrapfigure}
 
-Il principio di funzionamento del protocollo MAVLink è tipico di altri protocolli di tipo \textbf{publish-subscribe}, in quanto le due parti della comunicazione (l'UAV e la GCS) pubblicano \textbf{messaggi MAVLink} su un \textbf{topic} a cui sono entrambi iscritti. 
+Il principio di funzionamento del protocollo \textsc{MAVLink} è tipico di altri protocolli di tipo \textbf{publish-subscribe}, in quanto le due parti della comunicazione (l'UAV e la GCS) pubblicano \textbf{messaggi \textsc{MAVLink}} su un \textbf{topic} a cui sono entrambi iscritti. 
 
 La particolarità di questo protocollo risiede nella sua \textbf{duttilità} poiché (al contrario di quanto potrebbe suggerire il suo nome) può essere utilizzato per dispositivi diversi da quelli comunemente definiti come "droni". D'altronde, il progetto ArduPilot lo utilizza anche nei progetti che riguardano Rover e Sub.
 
@@ -439,23 +439,23 @@ Altra particolarità di questo protocollo è la sua \textbf{estensibilità}: è 
 
 Proprio questo ultimo aspetto è stato determinante per il lavoro presentato.
 
-Data la sua estensibilità sono stati stabiliti, col passare del tempo, diverse varianti (o \textbf{dialetti}) di MAVLink, alcuni di questi "supportati ufficialmente". Ad esempio:
+Data la sua estensibilità sono stati stabiliti, col passare del tempo, diverse varianti (o \textbf{dialetti}) di \textsc{MAVLink}, alcuni di questi "supportati ufficialmente". Ad esempio:
 
 \begin{itemize}
     \item \texttt{minimal}: il "minimo indispensabile", ovvero quei messaggi che vanno implementati su ogni veicolo pena il non funzionamento del protocollo;
     \item \texttt{common}: il sottoinsieme dei messaggi più \textbf{comuni} che \textit{andrebbero} messi a disposizione su tutti i veicoli. Naturalmente, include \texttt{minimal};
-    \item \texttt{ardupilotmega}: i messaggi MAVLink usati dal progetto \textbf{ArduPilot}, include \texttt{common};
-    \item \texttt{ASLUAV}: i messaggi MAVLink utilizzati per veicoli ad ala fissa denominati \textbf{ASLUAV};
-    \item \texttt{uAvionix}: i messaggi MAVLink utilizzati dal progetto \textbf{uAvionix};
-    \item \texttt{paparazzi}: i messaggi MAVLink utilizzati dall'autopilot \textbf{paparazzi};
+    \item \texttt{ardupilotmega}: i messaggi \textsc{MAVLink} usati dal progetto \textbf{ArduPilot}, include \texttt{common};
+    \item \texttt{ASLUAV}: i messaggi \textsc{MAVLink} utilizzati per veicoli ad ala fissa denominati \textbf{ASLUAV};
+    \item \texttt{uAvionix}: i messaggi \textsc{MAVLink} utilizzati dal progetto \textbf{uAvionix};
+    \item \texttt{paparazzi}: i messaggi \textsc{MAVLink} utilizzati dall'autopilot \textbf{paparazzi};
     \item \texttt{all}: una collezione di tutti i messaggi definiti in precedenza.
 \end{itemize}
 
 Le definizioni di questi messaggi sono contenute in dei file XML presenti nella repo GitHub del progetto. In ciascuno di questi è presente la direttiva \texttt{<include></include>} che permette la definizione di \textbf{gerarchie di messaggi}. \cite{mavlink-message-definitions}
 
-La caratteristica che rende lightweight tale protocollo è il modo in cui i messaggi MAVLink viaggiano sul link di comunicazione: essi vengono infatti \textbf{serializzati} in forma \textbf{binaria} \cite{mavlink-overview}, operazione che ne facilita di molto il parsing, con un \textit{gain} prestazionale non indifferente rispetto al parsing da altri formati \textbf{text-based} come JSON o XML, usati tipicamente in contesti in cui le risorse a disposizione non sono limitate, al contrario di quanto avviene nel caso degli UAV.
+La caratteristica che rende lightweight tale protocollo è il modo in cui i messaggi \textsc{MAVLink} viaggiano sul link di comunicazione: essi vengono infatti \textbf{serializzati} in forma \textbf{binaria} \cite{mavlink-overview}, operazione che ne facilita di molto il parsing, con un \textit{gain} prestazionale non indifferente rispetto al parsing da altri formati \textbf{text-based} come JSON o XML, usati tipicamente in contesti in cui le risorse a disposizione non sono limitate, al contrario di quanto avviene nel caso degli UAV.
 
-Con il passare del tempo sono state proposte \textbf{due revisioni maggiori} del protocollo MAVLink:
+Con il passare del tempo sono state proposte \textbf{due revisioni maggiori} del protocollo \textsc{MAVLink}:
 
 \begin{itemize}
     \item La versione \textbf{1.0}, standardizzata nel 2013 \cite{mavlink-versions};
@@ -465,20 +465,20 @@ Con il passare del tempo sono state proposte \textbf{due revisioni maggiori} del
 Fino al 2013 era inoltre ampiamente utilizzata la versione \textbf{0.9} del protocollo, deprecata con l'adozione da parte dei vari progetti della versione 1.0.
 
 \newpage
-\subsection{Architettura di un pacchetto MAVLink}
+\subsection{Architettura di un pacchetto \textsc{MAVLink}}
 
-Un pacchetto MAVLink, al netto delle differenze tra le due revisioni, è composto sostanzialmente da due parti:
+Un pacchetto \textsc{MAVLink}, al netto delle differenze tra le due revisioni, è composto sostanzialmente da due parti:
 
 \begin{itemize}
     \item Un \textbf{header} che contiene delle informazioni di controllo;
     \item Un \textbf{payload} che contiene i dati veri e propri scambiati nel pacchetto.
 \end{itemize}
 
-\subsubsection{MAVLink 1.0: struttura di un pacchetto}
-Un \textbf{frame} MAVLink 1.0 è strutturato come segue \cite{mavlink-1-packet}:
+\subsubsection{\textsc{MAVLink} 1.0: struttura di un pacchetto}
+Un \textbf{frame} \textsc{MAVLink} 1.0 è strutturato come segue \cite{mavlink-1-packet}:
 
 \begin{itemize}
-    \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame MAVLink. Nella versione 1.0 del protocollo questo byte assume un valore fisso: \texttt{0xFE};
+    \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame \textsc{MAVLink}. Nella versione 1.0 del protocollo questo byte assume un valore fisso: \texttt{0xFE};
     \item Payload Length (\texttt{LEN}): un byte che rappresenta la \textbf{lunghezza in byte} del payload. Poiché questo campo è formato da un solo byte, la lunghezza del payload \textbf{non può superare i 255 bytes};
     \item Packet Sequence Number (\texttt{SEQ}): un byte che rappresenta il numero di sequenza del pacchetto nel contesto di una comunicazione. Serve principalmente per la \textbf{detection} di \textbf{perdita} dei pacchetti e degli errori in generale;
     \item System ID (\texttt{SYSID}): un byte che rappresenta l'ID del \textbf{mittente} del messaggio. Non è possibile indicare 0 (l'indirizzo di broadcast) come mittente poiché viene interpretato come non valido dal parser;
@@ -491,24 +491,24 @@ Un \textbf{frame} MAVLink 1.0 è strutturato come segue \cite{mavlink-1-packet}:
     \end{itemize}
 \end{itemize}
 
-Di seguito è presente un riepilogo della struttura di un pacchetto MAVLink nella sua revisione 1.0:
+Di seguito è presente un riepilogo della struttura di un pacchetto \textsc{MAVLink} nella sua revisione 1.0:
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/packet_mavlink_v1.jpg}
-    \caption{La struttura di un messaggio MAVLink 1.0}
+    \caption{La struttura di un messaggio \textsc{MAVLink} 1.0}
 \end{figure}
 
-Per quanto riguarda la dimensione dei pacchetti MAVLink 1.0:
+Per quanto riguarda la dimensione dei pacchetti \textsc{MAVLink} 1.0:
 
 \begin{itemize}
-    \item La dimensione \textbf{minima} di un pacchetto MAVLink 1.0 è di 8 bytes (quando \textbf{non} è presente un payload, tipicamente quando si ha a che fare con dei pacchetti di ACK);
-    \item La dimensione \textbf{massima} di un pacchetto MAVLink 1.0 è di 263 bytes (8 bytes di header + 255 bytes di payload, quando quest'ultimo è completamente "riempito").
+    \item La dimensione \textbf{minima} di un pacchetto \textsc{MAVLink} 1.0 è di 8 bytes (quando \textbf{non} è presente un payload, tipicamente quando si ha a che fare con dei pacchetti di ACK);
+    \item La dimensione \textbf{massima} di un pacchetto \textsc{MAVLink} 1.0 è di 263 bytes (8 bytes di header + 255 bytes di payload, quando quest'ultimo è completamente "riempito").
 \end{itemize}
 
 \newpage
 
-\subsubsection{MAVLink 2.0: struttura di un pacchetto}
+\subsubsection{\textsc{MAVLink} 2.0: struttura di un pacchetto}
 
 Con il rilascio della versione 2.0 delle specifiche del protocollo, la struttura di un pacchetto è variata leggermente.
 
@@ -518,10 +518,10 @@ In particolare:
     \item Sono stati aggiunti due nuovi membri dell'header: \texttt{CMPFLAGS} e \texttt{INCFLAGS};
     \item È stato aggiunto il supporto alla \textbf{firma digitale del pacchetto};\\
 \end{itemize}
-Un frame MAVLink 2.0 è quindi strutturato come segue \cite{mavlink-2-packet}:
+Un frame \textsc{MAVLink} 2.0 è quindi strutturato come segue \cite{mavlink-2-packet}:
 
 \begin{itemize}
-    \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame MAVLink. Nella versione 2.0 del protocollo questo byte assume un valore fisso: \texttt{0xFD};
+    \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame \textsc{MAVLink}. Nella versione 2.0 del protocollo questo byte assume un valore fisso: \texttt{0xFD};
     \item Payload Length (\texttt{LEN}): un byte che rappresenta la \textbf{lunghezza in byte} del payload. Poiché questo campo è formato da un solo byte, la lunghezza del payload \textbf{non può superare i 255 bytes};
     \item Incompatibility Flags (\texttt{INCFLAGS}): un byte che rappresenta quelle features del protocollo che \textbf{devono essere tassativamente supportate} da chi riceve il pacchetto poiché \textbf{ne alterano la struttura}. In caso contrario, le specifiche del protcollo indicano che il pacchetto deve essere \textbf{scartato}. L'unico valore attualmente supportato è \texttt{0x01}, che rappresenta la possibilità di \textbf{firmare il messaggio};
     \item Compatibility Flags (\texttt{CMPFLAGS}): un byte che indica la presenza di features "aggiuntive" che, anche se non supportate dal ricevente \textbf{non pregiudicano} la deserializzazione del pacchetto e che quindi lo scarto delpacchetto non è per forza necessario. Un esempio è una flag che denota un pacchetto "ad alta priorità".
@@ -536,27 +536,27 @@ Un frame MAVLink 2.0 è quindi strutturato come segue \cite{mavlink-2-packet}:
     \end{itemize}
 \end{itemize}
 
-Oltre all'header ed al payload, il protocollo MAVLink 2.0 introduce anche la possibilità di aggiungere (\textit{append}) una \textbf{firma digitale} ad un frame. Tale campo è lungo esattamente \textbf{13 bytes}.
+Oltre all'header ed al payload, il protocollo \textsc{MAVLink} 2.0 introduce anche la possibilità di aggiungere (\textit{append}) una \textbf{firma digitale} ad un frame. Tale campo è lungo esattamente \textbf{13 bytes}.
 
 \newpage
 
-Di seguito è presente un riepilogo della struttura di un pacchetto MAVLink nella sua revisione 2.0:
+Di seguito è presente un riepilogo della struttura di un pacchetto \textsc{MAVLink} nella sua revisione 2.0:
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/packet_mavlink_v2.jpg}
-    \caption{La struttura di un messaggio MAVLink 2.0}
+    \caption{La struttura di un messaggio \textsc{MAVLink} 2.0}
 \end{figure}
 
-Alla luce di tutte le informazioni qui sopra riportate, riguardo la dimensione di un frame MAVLink 2.0 è possibile menzionare che:
+Alla luce di tutte le informazioni qui sopra riportate, riguardo la dimensione di un frame \textsc{MAVLink} 2.0 è possibile menzionare che:
 
 \begin{itemize}
-    \item La dimensione \textbf{minima} di un pacchetto MAVLink 2.0 (senza payload e senza firma) è di \textbf{12 bytes};
-    \item La dimensione \textbf{massima} di un pacchetto MAVLink 2.0 (con payload "riempito" e con apposta una firma digitale) è di \textbf{280 bytes} (\textbf{12} bytes di header + \textbf{255} bytes di payload + \textbf{13} bytes di firma). 
+    \item La dimensione \textbf{minima} di un pacchetto \textsc{MAVLink} 2.0 (senza payload e senza firma) è di \textbf{12 bytes};
+    \item La dimensione \textbf{massima} di un pacchetto \textsc{MAVLink} 2.0 (con payload "riempito" e con apposta una firma digitale) è di \textbf{280 bytes} (\textbf{12} bytes di header + \textbf{255} bytes di payload + \textbf{13} bytes di firma). 
 \end{itemize}
 
-\subsubsection{La firma digitale in MAVLink 2.0}
-Come menzionato, a partire dalla versione 2.0 del protocollo MAVLink è stato aggiunto il supporto alla firma digitale dei frame. La struttura dell'header della firma del pacchetto risulta essere grande 13 bytes, così strutturati \cite{sign-frame-fotmat}:
+\subsubsection{La firma digitale in \textsc{MAVLink} 2.0}
+Come menzionato, a partire dalla versione 2.0 del protocollo \textsc{MAVLink} è stato aggiunto il supporto alla firma digitale dei frame. La struttura dell'header della firma del pacchetto risulta essere grande 13 bytes, così strutturati \cite{sign-frame-fotmat}:
 
 \begin{itemize}
     \item \textbf{Link ID} (\texttt{LINK ID}): un byte che rappresenta il \textbf{link} su cui è stato inviato un determinato pacchetto;
@@ -572,11 +572,11 @@ Di seguito è presente una rappresentazione grafica dell'header aggiuntivo della
     \caption{La struttura dell'header di firma}
 \end{figure}
 
-Un pacchetto MAVLink firmato, come accennato in precedenza, è caratterizzato dal campo \texttt{INCFLAGS} impostato a \texttt{0x01}.
+Un pacchetto \textsc{MAVLink} firmato, come accennato in precedenza, è caratterizzato dal campo \texttt{INCFLAGS} impostato a \texttt{0x01}.
 
 \newpage
 
-\subsubsection{Algoritmo di generazione della firma digitale in MAVLink 2.0}
+\subsubsection{Algoritmo di generazione della firma digitale in \textsc{MAVLink} 2.0}
 
 I \textbf{sei bytes} che compongono la firma digitale vera e propria sono ottenuti concatenando \cite{sign-algorithm}:
 
@@ -601,13 +601,13 @@ dove \texttt{SHA256\_48} rappresenta il troncamento dell'hash prodotto ai primi 
 
 \newpage
 \subsubsection{Scelta della versione del protocollo}
-Poiché l'uso del protocollo MAVLink 1.0 è ancora ampiamente diffuso, è stato necessario implementare un meccanismo di "definizione" della versione del protocollo da utilizzare per una comunicazione: una sorta di \textbf{handshaking} \cite{version-handshaking} preliminare la cui struttura viene riportata di seguito:
+Poiché l'uso del protocollo \textsc{MAVLink} 1.0 è ancora ampiamente diffuso, è stato necessario implementare un meccanismo di "definizione" della versione del protocollo da utilizzare per una comunicazione: una sorta di \textbf{handshaking} \cite{version-handshaking} preliminare la cui struttura viene riportata di seguito:
 
 \begin{itemize}
     \item La \textbf{Ground Control Station} invia il messaggio \texttt{MAV\_CMD\_REQUEST\_PROTOCOL\_VERSION} al drone, richiedendo quindi la versione del protocollo in uso dal veicolo ed iniziando contemporaneamente un \textit{countdown di timeout};
     \item L'UAV a questo punto può rispondere in due modi: \begin{itemize}
-        \item Se è presente il supporto per il protocollo MAVLink 2.0, risponderà con il messaggio di ACK \texttt{PROTOCOL\_VERSION} formattato come frame MAVLink 2.0;
-        \item Se invece non vi è supporto per MAVLink 2.0, risponderà con un \textbf{NACK} e, in caso di assenza di procedure apposite, \textbf{scarterà il messaggio precedente} e non risponderà affatto.
+        \item Se è presente il supporto per il protocollo \textsc{MAVLink} 2.0, risponderà con il messaggio di ACK \texttt{PROTOCOL\_VERSION} formattato come frame \textsc{MAVLink} 2.0;
+        \item Se invece non vi è supporto per \textsc{MAVLink} 2.0, risponderà con un \textbf{NACK} e, in caso di assenza di procedure apposite, \textbf{scarterà il messaggio precedente} e non risponderà affatto.
     \end{itemize}
     \item \begin{itemize}
         \item Se la GCS riceve il messaggio \texttt{PROTOCOL\_VERSION} allorà verrà effettuato lo \textit{switch} alla versione 2.0 del protocollo.
@@ -627,9 +627,9 @@ Di seguito è presente una rappresntazione grafica dell'handshaking appena descr
 
 \newpage
 
-\section{Sicurezza del protocollo MAVLink}
-\subsection{Possibili attacchi contro MAVLink}
-Come qualsiasi protocollo che fa utilizzo di un mezzo trasmissivo, MAVLink non è di certo immune a determinati tipi di attacchi che vanno a colpire ognuno dei membri della cosiddetta triade \textbf{CIA}, ovvero:
+\section{Sicurezza del protocollo \textsc{MAVLink}}
+\subsection{Possibili attacchi contro \textsc{MAVLink}}
+Come qualsiasi protocollo che fa utilizzo di un mezzo trasmissivo, \textsc{MAVLink} non è di certo immune a determinati tipi di attacchi che vanno a colpire ognuno dei membri della cosiddetta triade \textbf{CIA}, ovvero:
 
 \begin{itemize}
     \item \textbf{C}onfidentiality;
@@ -637,9 +637,9 @@ Come qualsiasi protocollo che fa utilizzo di un mezzo trasmissivo, MAVLink non �
     \item \textbf{A}vailability
 \end{itemize}
 
-Inoltre, l'intrinseca natura di MAVLink come protocollo \textbf{lightweight} implica un maggior focus sulle performance e sulla portabilità del protocollo piuttosto che sulla \textbf{sicurezza} dello stesso.
+Inoltre, l'intrinseca natura di \textsc{MAVLink} come protocollo \textbf{lightweight} implica un maggior focus sulle performance e sulla portabilità del protocollo piuttosto che sulla \textbf{sicurezza} dello stesso.
 
-In uno studio \cite{8425627} del 2019, \textbf{Kwon et al.} hanno svolto un'analisi delle possibili vulnerabilità che affliggono il protocollo MAVLink. Tra queste si annoverano:
+In uno studio \cite{8425627} del 2019, \textbf{Kwon et al.} hanno svolto un'analisi delle possibili vulnerabilità che affliggono il protocollo \textsc{MAVLink}. Tra queste si annoverano:
 
 \begin{itemize}
     \item \textbf{Man-in-the-middle}, che permette ad un attaccante di posizionarsi dal punto di vista logico "al centro" di una comunicazione tra un drone e la sua GCS. Questo è un attacco che viola la confidenzialità e (specialmente) l'integrità della comunicazione;
@@ -654,17 +654,17 @@ Gli autori dello studio menzionano due tipologie di attacchi portati a termine c
     \item Attacco basato su \textbf{packet injection}, che permette ad un attaccante di effettuare l'\textbf{hijacking} della comunicazione tra drone e GCS ed è basata su una vulnerabilità del \textbf{Waypoint Protocol}. In breve, quando un UAV riceve il comando \texttt{MISSION\_COUNT(N)} da parte della GCS cancella tutte le informazioni relative alla missione che stava eseguendo e resta in attesa di indicazioni sulla nuova missione da eseguire. L'iniezione di un pacchetto di questo tipo permette ad un attaccante di "iniettare" una nuova missione da eseguire magari creata ad-hoc.
 \end{itemize}
 
-Inoltre, il fatto che il protocollo MAVLink non preveda alcun tipo di cifratura dei pacchetti in transito \cite{mavlink-no-encrypt} implica una intrinseca insicurezza dello stesso poiché tutte le informazioni sono scambiate in chiaro, rendendo quindi possibile gli attacchi di cui sopra.
+Inoltre, il fatto che il protocollo \textsc{MAVLink} non preveda alcun tipo di cifratura dei pacchetti in transito \cite{mavlink-no-encrypt} implica una intrinseca insicurezza dello stesso poiché tutte le informazioni sono scambiate in chiaro, rendendo quindi possibile gli attacchi di cui sopra.
 
 \subsection{Possibili contromisure}
-La versione 2.0 di MAVLink, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
+La versione 2.0 di \textsc{MAVLink}, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
 
-Data la sempre maggiore attenzione riservata a questo tipo di dispositivi in particolare nell'ultimo decennio, il problema della messa in sicurezza dei protocolli come il MAVLink ha acquisito sicuramente un'importanza maggiore. Il problema, inoltre, viene reso ancora più difficile dal fatto che si renda necessario fare un \textbf{tradeoff} tra il grado di sicurezza del protocollo e l'alto \textbf{\textit{throughput}} che lo stesso deve offrire pur trovandosi in contesti caratterizzati da risorsehardware tutt'altro che illimitate.
+Data la sempre maggiore attenzione riservata a questo tipo di dispositivi in particolare nell'ultimo decennio, il problema della messa in sicurezza dei protocolli come il \textsc{MAVLink} ha acquisito sicuramente un'importanza maggiore. Il problema, inoltre, viene reso ancora più difficile dal fatto che si renda necessario fare un \textbf{tradeoff} tra il grado di sicurezza del protocollo e l'alto \textbf{\textit{throughput}} che lo stesso deve offrire pur trovandosi in contesti caratterizzati da risorsehardware tutt'altro che illimitate.
 
 Negli ultimi anni sono stati, in effetti, compiuti alcuni passi in avanti in questo senso grazie a diversi lavori di ricerca.
 
 \subsubsection{MAVSec}
-In uno studio \cite{DBLP:journals/corr/abs-1905-00265} pubblicato nel Maggio del 2019, \textbf{Allouch et al.}, oltre ad un'ulteriore overview delle potenziali vulnerabilità insite nel protocollo MAVLink hanno proposto una soluzione che potesse risolvere la problematica della \textbf{confidenzialità} della comunicazione introducendo una sorta di \textit{framework} denominato \textbf{MAVSec}, che prevede di modificare i progetti \textbf{ArduPilot}, \textbf{QGroundControl} e la libreria \textbf{MAVLink} (nella sua implementazione di riferimento in C) al fine di supportare diversi algoritmi di cifratura \textbf{simmetrica} da applicare al \textbf{payload} dei messaggi MAVLink prima della loro immissione nel mezzo trasmissivo.
+In uno studio \cite{DBLP:journals/corr/abs-1905-00265} pubblicato nel Maggio del 2019, \textbf{Allouch et al.}, oltre ad un'ulteriore overview delle potenziali vulnerabilità insite nel protocollo \textsc{MAVLink} hanno proposto una soluzione che potesse risolvere la problematica della \textbf{confidenzialità} della comunicazione introducendo una sorta di \textit{framework} denominato \textbf{MAVSec}, che prevede di modificare i progetti \textbf{ArduPilot}, \textbf{QGroundControl} e la libreria \textbf{\textsc{MAVLink}} (nella sua implementazione di riferimento in C) al fine di supportare diversi algoritmi di cifratura \textbf{simmetrica} da applicare al \textbf{payload} dei messaggi \textsc{MAVLink} prima della loro immissione nel mezzo trasmissivo.
 
 Gli algoritmi considerati nello studio comprendono:
 
@@ -693,7 +693,7 @@ Tale algoritmo è stato proposto nel 2008 in un paper \cite{chacha20} pubblicato
     \item Il già citato \texttt{ChaCha20}.
 \end{itemize}
 
-\subsubsection{Securing Unmanned Aerial Vehicles by Encrypting MAVLink Protocol}
+\subsubsection{Securing Unmanned Aerial Vehicles by Encrypting \textsc{MAVLink} Protocol}
 
 In un successivo studio \cite{10037546} pubblicato alcuni anni più tardi, nel 2022, \textbf{Sabuwala et al.} proposero uno studio simile a quello menzionato in precedenza, prendendo però in considerazione algoritmi diversi. In particolare:
 
@@ -737,10 +737,10 @@ Nell'Agosto del 2018, inoltre, il \textbf{NIST}\footnote{\textbf{N}ational \text
 
 Nel 2023, infine, l'algoritmo \texttt{ASCON} è stato dichiarato vincitore \cite{nist-ascon-lwc}.
 \newpage
-\subsubsection{MAVLink e lightweight cryptography}
+\subsubsection{\textsc{MAVLink} e lightweight cryptography}
 In un lavoro di tesi \cite{sec-uav} proposto dallo studente \textbf{Angelo Passaro}, è stato proposto un approccio basato su crittografia leggera che riprendesse il framework e le tecniche presentate nel lavoro \textbf{MAVSec} menzionato in precedenza ed il cui codice è disponibile su GitHub \cite{mavsec-github}.
 
-Tale lavoro si differenzia dai precedenti poiché va a sfruttare diverse caratteristiche del protocollo MAVLink e delle piattaforme software descritte nelle precedenti sezioni del lavoro qui presentato.
+Tale lavoro si differenzia dai precedenti poiché va a sfruttare diverse caratteristiche del protocollo \textsc{MAVLink} e delle piattaforme software descritte nelle precedenti sezioni del lavoro qui presentato.
 
 Sono stati considerati diversi algoritmi che appartengono al pool della crittografia leggera sia dal punto di vista della cifratura \textbf{simmetrica} che dal punto di vista degli algoritmi di \textbf{scambio delle chiavi} e sono stati condotti diversi test per stabilire quale fosse quello più conveniente rispetto ao criteri definiti in precedenza dagli altri studi.
 
@@ -772,7 +772,7 @@ Dal punto di vista tecnologico, invece, sono state utilizzate le stesse piattafo
 \begin{itemize}
     \item \textbf{ArduPilot} perl'utilizzo di SITL;
     \item \textbf{QGroundContol} per controllare il simulatore;
-    \item \textbf{MAVLink} (nella sua implementazione di riferimento in C) per integrare i nuovi messaggi per lo scambio delle chiavi e gestire cifratura e decifratura.
+    \item \textbf{\textsc{MAVLink}} (nella sua implementazione di riferimento in C) per integrare i nuovi messaggi per lo scambio delle chiavi e gestire cifratura e decifratura.
 \end{itemize}
 
 Il lavoro proposto in questo elaborato ricalca il framework stabilito da \textbf{MAVSec} prima e dal lavoro di \textbf{Angelo Passaro} poi dal punto di vista delle modifiche introdotte nello stack tecnologico, adattandolo poi al contesto della \textbf{Post-Quantum Cryptography}. 
@@ -1158,6 +1158,8 @@ Gli altri parametri, invece, risultano \textbf{invariati} tra tutte le modalità
 \end{itemize}
 
 Una discussione sulle \textbf{implementazioni software} per questo algoritmo viene proposta nella sezione successiva di tale documento, che svolge una panoramica sul sistema proposto in questo lavoro.
+
+La scelta della versione di \texttt{Kyber} da utilizzare in questo lavoro è ricaduta su \texttt{Kyber512} per fra fronte al tradeoff necessario tra prestazioni e livello di sicurezza.
 
 \newpage
 \section{Descrizione ed implementazione della soluzione proposta}
