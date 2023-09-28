@@ -106,7 +106,7 @@
     
     La potenziale delicatezza delle missioni che questi veicoli si trovano ad affrontare suggerisce dunque la necessità di definire dei requisiti di sicurezza che ne permettano un impiego più agevole. L'innovazione tecnologica porta però a nuove sfide anche nel campo della sicurezza. 
     
-    In particolare, i recenti progressi nel campo del \textbf{quantum computing} aprono nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata principalmente sul protocollo \textsc{MAVLink} che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Encapsulation Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
+    In particolare, i recenti progressi nel campo del \textbf{quantum computing} aprono nuove sfide nel contesto della crittografia, rendendo quindi necessario sviluppare nuove tecniche resistenti ad attacchi veicolati mediante computer quantistici. In questo lavoro viene presentato un \textbf{proof of concept} di un'architettura basata sul protocollo \textsc{MAVLink} che permetta una comunicazione sicura tra un drone e la sua \textbf{Ground Control Station} e, ad un livello più alto, la definizione della chiave di cifratura utilizzata mediante il \textbf{Key Encapsulation Mechanism} Kyber, selezionato dal \textbf{NIST} come lo standard per quanto riguarda gli algoritmi di incapsulamento \textbf{quantum resistant}.
 \end{abstract}
 \newpage
 
@@ -1223,12 +1223,22 @@ Il progetto di punta di questa organizzazione è però \texttt{liboqs}: una libr
 A questo punto, \texttt{liboqs} può essere utilizzata all'interno di un generico programma C/C++ utilizzando la direttiva:
 
 \begin{center}
-    \texttt{\#include <oqs/liboqs.h>}
+    \texttt{\#include <oqs/oqs.h>}
 \end{center}
 
 ed aggiungendo il flag \texttt{-loqs} in fase di compilazione del programma per comunicare al \textbf{linker} di effettuare il linking di tale libreria.
 
 Quest'ultimo aspetto viene qui sottolineato perché necessario negli step successivi descritti in questo capitolo.
+
+Tale libreria, in fase di compilazione, è configurabile in modo da permettere l'abilitazione solo di algoritmi specifici mediante il \textit{flag} \texttt{OQS\_ALGS\_ENABLED}.
+
+In particolare, per ogni schema KEM abilitato nella libreria \texttt{liboqs} offre tre funzioni \cite{liboqsapi} che ricalcano sostanzialmente le procedure \texttt{Gen()}, \texttt{Encaps()} e \texttt{Decaps()} di un generico schema KEM. Per \texttt{Kyber512}, ad esempio:
+
+\begin{itemize}
+    \item \texttt{OQS\_KEM\_kyber\_512\_keypair()} permette di generare la coppia di chiavi \texttt{(pk, sk)}: corrisponde al generico \texttt{Gen()};
+    \item \texttt{OQS\_KEM\_kyber\_512\_encaps()} permette di generare uno shared secret ed "incapsularlo": corrisponde (naturalmente!) al generico \texttt{Encaps()};
+    \item \texttt{OQS\_KEM\_kyber\_512\_encaps()} permette di decapsulare lo shared secret presente nel cifrato: corrisponde al generico \texttt{Decaps()};
+\end{itemize}
 
 \newpage
 \subsection{Step 2: definizione del protocollo}
@@ -1262,5 +1272,111 @@ Nello schema presente nella pagina successiva:
 Si noti che quello mostrato fino ad ora è una descrizione ad alto livello che permette di farsi un'idea di ciò che accade durante la fase di \textbf{scambio della chiave}. Una descrizione a più basso livello dei messaggi effettivamente scambiati tra le due parti della comunicazione viene svolta man mano che vengono presentati i vari step che hanno permetto la creazione del sistema proposto.
 
 \newpage
-\printbibliography[title={Riferimenti bibliografici e risorse consultate}, heading=bibintoc]
+
+\subsection{Introduzione di nuovi messaggi \textsc{MAVLink} 2.0}
+Nella sezione dedicata al funzionamento della libreria \textsc{MAVLink} è stato sottolineato come fosse possibile \textbf{estenderlo} andando a modificare i file \texttt{XML} che descrivono i messaggi previsti per un certo "dialetto" del protocollo.
+
+Per modellare il funzionamento dello schema di scambio delle chiavi è contestualmente necessario prevedere dei messaggi ad hoc che permettano lo scambio delle informazioni illustrate nella sezione precedente.
+
+Poiché al momento dell'implementazione di questo lavoro \footnote{Inizio Agosto 2023} il progetto \textbf{QGroundControl} utilizzava il dialetto \texttt{ardupilotmega} (prima di effettuare la migrazione al dialetto \texttt{all} a fine Agosto 2023) i nuovi messaggi sono stati aggiunti a tale dialetto e, di conseguenza, inclusi nel file \texttt{ardupilotmega.xml}.
+
+In particolare, sono stati aggiunti \textbf{quattro} messaggi:
+
+\begin{itemize}
+    \item \texttt{KEYEXCHANGE};
+    \item \texttt{KEYEXCHANGEGCSACK};
+    \item \texttt{CAPSULE};
+    \item \texttt{CAPSULEACK}.
+\end{itemize}
+
+\subsubsection{\texttt{KEYEXCHANGE}}
+Questo messaggio \textbf{viene inviato dall'UAV alla GCS} e corrisponde ad una \textit{richiesta} da parte del drone di una \textbf{porzione} della chiave pubblica generata dalla GCS.
+
+La ragione dietro all'adozione di questo approccio è duplice: 
+
+\begin{itemize}
+    \item La prima è da ricercarsi in un dettaglio implementativo presente nella piattaforma \textbf{ArduPilot}. In questo software è presente un meccanismo che permette di determinare a tempo di compilazione quale tipo di messaggio deve essere inviato e con quale frequenza. Un meccanismo del genere non è invece presente nativamente all'interno del software \textbf{QGroundControl}, dunque si è scelto di "delegare" tale responsabilità all'UAV;
+    \item La seconda deriva da un limite intrinseco del protocollo \textsc{MAVLink} 2.0, che, come già accennato in una sezione precedente, fissa la dimensione del payload di un messaggio a 255 bytes. La dimensione della \textbf{chiave pubblica} per \texttt{Kyber512} è invece fissata ad 800 bytes: è stato quindi necessario \textbf{frammentarla} in diversi \textit{chunks} durante la fase di scambio delle chiavi.
+\end{itemize}
+
+La struttura della entry corrispondente al messaggio \texttt{KEYEXCHANGE} all'interno del file \texttt{ardupilotmega.xml} è la seguente:
+
+\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+    <message id="10000" name="KEYEXCHANGE">
+      <description>Key Exchange Mechanism (ArduPilot version).</description>
+      <field type="uint8_t" name="seq">Sequence Number.</field>
+      <field type="uint16_t" name="chunk_start">Read from.</field>
+      <field type="uint16_t" name="chunk_end">Read to.</field>
+      <field type="uint8_t[128]" name="iv">IV</field>
+    </message>
+\end{lstlisting}
+
+In particolare:
+
+\begin{itemize}
+    \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresnta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della chiave;
+    \item I campi \texttt{chunk\_start} e \texttt{chunk\_end} rappresentano rispettivamente gli \textbf{indici} di inizio e della fine del chunk della chiave pubblica che l'UAV desidera ricevere. Entrambi questi campi sono \textbf{interi a 16 bit};
+    \item Il campo \textbf{IV} rappresenta il \textbf{vettore di inizializzazione} utilizzato per la comunicazione cifrata instaurata alla fine del processo di scambio delle chiavi. Consiste in un vettore di 128 bit, come richiesto dalle specifiche del cifrario AES.
+\end{itemize}
+
+\subsubsection{\texttt{KEYEXCHANGEGCSACK}}
+Questo messaggio rappresenta la "risposta" della \textbf{Ground Control Station} ad un messaggio \texttt{KEYEXCHANGE} da parte del drone. Contiene la porzione di chiave pubblica richiesta da quest'ultimo. La sua struttura è la seguente:
+
+
+\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+    <message id="10420" name="KEYEXCHANGEGCSACK">
+       <description>Key Exchange Mechanism (GCS version).</description>
+       <field type="uint8_t" name="seq_ack">Sequence Number ACK.</field>
+       <field type="uint16_t" name="chunk_start">Read from.</field>
+       <field type="uint16_t" name="chunk_end">Read to.</field>
+       <field type="uint8_t" name="more_data">More data to read.</field>
+       <field type="uint8_t[200]" name="data">Data</field>
+     </message>
+\end{lstlisting}
+
+In particolare:
+
+\begin{itemize}
+    \item Il campo \texttt{seq\_ack} rappresenta il \textbf{prossimo} sequence number che la GCS si aspetta. Funge, come suggerisce il nome, da meccanismo di \textbf{Acknowlegement};
+    \item I campi \texttt{chunk\_start} e \texttt{chunk\_end} rappresentano rispettivamente gli \textbf{indici} di inizio e della fine del chunk della chiave pubblica che l'UAV desidera ricevere. Entrambi questi campi sono \textbf{interi a 16 bit}. Riflettono quelli inviati nel messaggio precedente;
+    \item Il campo \texttt{more\_data} rappresenta un flag che permette, quando è impostato a 0, di avvisare l'UAV che lo scambio della chiave pubblica è terminato.
+\end{itemize}
+
+\subsubsection{\texttt{CAPSULE} e \texttt{CAPSULEACK}}
+In maniera speculare a quanto avviene durante lo scambio della chiave pubblica, il messaggio \texttt{CAPSULE} rappresenta l'invio, da parte dell'UAV di una porzione della \textbf{capsula}, generata dopo aver ricevuto completamente la chiave pubblica ed aver invocato \texttt{Encaps()}.
+
+La struttura di \texttt{CAPSULE} è la seguente:
+
+\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+    <message id="10421" name="CAPSULE">
+       <description>KEM Capsule.</description>
+       <field type="uint8_t" name="seq">Sequence Number.</field>
+       <field type="uint16_t" name="chunk_start">Read from.</field>
+       <field type="uint16_t" name="chunk_end">Read to.</field>
+       <field type="uint8_t" name="more_data">More data to read.</field>
+       <field type="uint8_t[192]" name="data">Data</field>
+     </message>
+\end{lstlisting}
+
+In particolare:
+
+\begin{itemize}
+    \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresnta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della capsula;
+    \item I campi \texttt{chunk\_start} e \texttt{chunk\_end} rappresentano rispettivamente gli \textbf{indici} di inizio e della fine del chunk della capsula che l'UAV desidera inviare alla GCS. Entrambi questi campi sono \textbf{interi a 16 bit};
+    \item Il campo \texttt{more\_data} rappresenta un flag che permette, quando è impostato a 0, di avvisare l'UAV che lo scambio della capsula è terminato e la GCS può di conseguenza invocare \texttt{Decaps()}.
+\end{itemize}
+
+Il messaggio \texttt{CAPSULEACK} testimonia semplicemnte l'avvenuta ricezione della GCS di un messaggio \texttt{CAPSULE} ed in particolare contiene \textbf{il prossimo numero di sequenza atteso}.
+
+Ecco la struttura di un messaggio \texttt{CAPSULEACK}:
+
+\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+    <message id="10422" name="CAPSULEACK">
+       <description>KEM Capsule ACK.</description>
+       <field type="uint8_t" name="ack">Next Sequence Number.</field>
+     </message>
+\end{lstlisting}
+
+\newpage
+\printbibliography[title={Riferimenti bibliografici e risorse consultate}]
 \end{document} 
