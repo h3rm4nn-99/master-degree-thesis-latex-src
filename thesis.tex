@@ -14,6 +14,7 @@
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{listings}
+\usepackage{minted}
 \usepackage[htt]{hyphenat}
 \usepackage{pgfplots}
 \usepackage{wrapfig}
@@ -851,7 +852,7 @@ Gli schemi crittografici che sono stati messi appunti nel contesto di questo nuo
     \item Approccio basato su \textbf{codici}: ad esempio lo schema di cifratura di \textbf{McEliece}, che si basa sui \textbf{Codici di Goppa}.
 \end{itemize}
 
-Proprio l'attenzione riservata col passare del tempo a questo campo di ricerca, anche e soprattutto in seguito allo studio di Shor ed alal definizione del "suo" algoritmo, ha spinto il \textbf{NIST} a cercare di stabilire uno \textbf{standard} per algoritmi di cifratura a chiave pubblica resistenti ad attacchi con computer quantistici, un po' come successo (e menzionato in una precedente sezione del presente lavoro) con la crittografia leggera. 
+Proprio l'attenzione riservata col passare del tempo a questo campo di ricerca, anche e soprattutto in seguito allo studio di Shor ed alla definizione del "suo" algoritmo, ha spinto il \textbf{NIST} a cercare di stabilire uno \textbf{standard} per algoritmi di cifratura a chiave pubblica resistenti ad attacchi con computer quantistici, un po' come successo (e menzionato in una precedente sezione del presente lavoro) con la crittografia leggera. 
 
 A dicembre 2016 \cite{nist-pqc-nomination} venne rilasciata una \textbf{Request for Nomination} sul sito web del NIST, prima milestone nel processo di standardizzazione, con deadline fissata al 30 novembre 2017. 
 
@@ -1226,7 +1227,7 @@ A questo punto, \texttt{liboqs} può essere utilizzata all'interno di un generic
     \texttt{\#include <oqs/oqs.h>}
 \end{center}
 
-ed aggiungendo il flag \texttt{-loqs} in fase di compilazione del programma per comunicare al \textbf{linker} di effettuare il linking di tale libreria.
+ed aggiungendo i flag \texttt{-loqs -lcrypto} in fase di building del programma per comunicare al \textbf{linker} il requisito di tale libreria (che possiede \texttt{libcrypto} come dipendenza).
 
 Quest'ultimo aspetto viene qui sottolineato perché necessario negli step successivi descritti in questo capitolo.
 
@@ -1301,7 +1302,7 @@ La ragione dietro all'adozione di questo approccio è duplice:
 
 La struttura della entry corrispondente al messaggio \texttt{KEYEXCHANGE} all'interno del file \texttt{ardupilotmega.xml} è la seguente:
 
-\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+\begin{minted}[fontsize=\footnotesize]{xml}
     <message id="10000" name="KEYEXCHANGE">
       <description>Key Exchange Mechanism (ArduPilot version).</description>
       <field type="uint8_t" name="seq">Sequence Number.</field>
@@ -1309,7 +1310,7 @@ La struttura della entry corrispondente al messaggio \texttt{KEYEXCHANGE} all'in
       <field type="uint16_t" name="chunk_end">Read to.</field>
       <field type="uint8_t[128]" name="iv">IV</field>
     </message>
-\end{lstlisting}
+\end{minted}
 
 In particolare:
 
@@ -1323,7 +1324,7 @@ In particolare:
 Questo messaggio rappresenta la "risposta" della \textbf{Ground Control Station} ad un messaggio \texttt{KEYEXCHANGE} da parte del drone. Contiene la porzione di chiave pubblica richiesta da quest'ultimo. La sua struttura è la seguente:
 
 
-\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+\begin{minted}[fontsize=\footnotesize]{xml}
     <message id="10420" name="KEYEXCHANGEGCSACK">
        <description>Key Exchange Mechanism (GCS version).</description>
        <field type="uint8_t" name="seq_ack">Sequence Number ACK.</field>
@@ -1332,7 +1333,7 @@ Questo messaggio rappresenta la "risposta" della \textbf{Ground Control Station}
        <field type="uint8_t" name="more_data">More data to read.</field>
        <field type="uint8_t[200]" name="data">Data</field>
      </message>
-\end{lstlisting}
+\end{minted}
 
 In particolare:
 
@@ -1347,7 +1348,7 @@ In maniera speculare a quanto avviene durante lo scambio della chiave pubblica, 
 
 La struttura di \texttt{CAPSULE} è la seguente:
 
-\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+\begin{minted}[fontsize=\footnotesize]{xml}
     <message id="10421" name="CAPSULE">
        <description>KEM Capsule.</description>
        <field type="uint8_t" name="seq">Sequence Number.</field>
@@ -1356,7 +1357,7 @@ La struttura di \texttt{CAPSULE} è la seguente:
        <field type="uint8_t" name="more_data">More data to read.</field>
        <field type="uint8_t[192]" name="data">Data</field>
      </message>
-\end{lstlisting}
+\end{minted}
 
 In particolare:
 
@@ -1366,16 +1367,39 @@ In particolare:
     \item Il campo \texttt{more\_data} rappresenta un flag che permette, quando è impostato a 0, di avvisare l'UAV che lo scambio della capsula è terminato e la GCS può di conseguenza invocare \texttt{Decaps()}.
 \end{itemize}
 
-Il messaggio \texttt{CAPSULEACK} testimonia semplicemnte l'avvenuta ricezione della GCS di un messaggio \texttt{CAPSULE} ed in particolare contiene \textbf{il prossimo numero di sequenza atteso}.
+Il messaggio \texttt{CAPSULEACK} testimonia semplicmente l'avvenuta ricezione della GCS di un messaggio \texttt{CAPSULE} ed in particolare contiene \textbf{il prossimo numero di sequenza atteso}.
 
 Ecco la struttura di un messaggio \texttt{CAPSULEACK}:
 
-\begin{lstlisting}[language=xml, basicstyle=\fontsize{8}{13}\selectfont\ttfamily]
+\begin{minted}[fontsize=\footnotesize]{xml}
     <message id="10422" name="CAPSULEACK">
        <description>KEM Capsule ACK.</description>
        <field type="uint8_t" name="ack">Next Sequence Number.</field>
      </message>
-\end{lstlisting}
+\end{minted}
+
+\newpage
+\subsection{Step 3: Integrazione di \texttt{Kyber} all'interno di ArduPilot}
+Come accennato in fase di presentazione di tale piattaforma software, \textbf{ArduPilot} utilizza il sistema di building \texttt{waf}. Di conseguenza, l'introduzione di nuove librerie all'interno di un progetto che fa uso di questo sistema di building deve naturalmente avvenire nei suoi file di configurazione. Per rendere quanto più semplice possibile il processo di integrazione e di linking di \texttt{liboqs} (come già descritto nello \textbf{Step 1}), tale libreria è stata installata in maniera system-wide sulla macchina su cui è stato svolto il lavoro allo scopo di minimizzare le modifiche a cui sottoporre il progetto. Di conseguenza, l'unico accorgimento da adottare consiste nell'aggiungere i flag \texttt{-loqs -lcrypto} in fase di linking. Tale operazione, di norma, si effettua andando a modificare la variabile d'ambiente \texttt{LDFLAGS}.
+
+Nel caso di \texttt{waf}, invece, è necessario andare a modificare il file \texttt{wscript} (uno script Python), presente nella root della repository del progetto \textbf{ArduPilot}.
+
+In particolare, è necessario considerare la funzione \texttt{build(bld)}, il cui parametro espone l'oggetto \texttt{env}, che modella \textbf{una copia} delle \textbf{variabili d'ambiente} da consultare in fase di compilazione e di linking, tra cui \texttt{CXXFLAGS} e (convenientemente!) \texttt{LDFLAGS}.
+
+Ciascuna di queste variabili d'ambiente è resa come una \textbf{lista di valori}, che può essere modificata ed \textbf{estesa}. L'aggiunta dei due flag ad \texttt{LDFLAGS} si effettua quindi come segue:
+
+\begin{minted}{python}
+    def build(bld):
+        bld.env.LDFLAGS += ['-loqs', '-lcrypto']
+\end{minted}
+
+A questo punto è possibile ricompilare \textbf{ArduCopter} mediante il comando:
+
+\begin{center}
+    \texttt{./waf copter -v}
+\end{center}
+
+utilizzando lo switch \texttt{-v} per abilitare la modalità \textit{verbose} e di conseguenza accertarsi che suddetti flag siano presenti nella stringa del linker mostrata durante l'ultima fase del processo di building.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
