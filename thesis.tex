@@ -660,7 +660,7 @@ Inoltre, il fatto che il protocollo \textsc{MAVLink} non preveda alcun tipo di c
 \subsection{Possibili contromisure}
 La versione 2.0 di \textsc{MAVLink}, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
 
-Data la sempre maggiore attenzione riservata a questo tipo di dispositivi in particolare nell'ultimo decennio, il problema della messa in sicurezza dei protocolli come il \textsc{MAVLink} ha acquisito sicuramente un'importanza maggiore. Il problema, inoltre, viene reso ancora più difficile dal fatto che si renda necessario fare un \textbf{tradeoff} tra il grado di sicurezza del protocollo e l'alto \textbf{\textit{throughput}} che lo stesso deve offrire pur trovandosi in contesti caratterizzati da risorsehardware tutt'altro che illimitate.
+Data la sempre maggiore attenzione riservata a questo tipo di dispositivi in particolare nell'ultimo decennio, il problema della messa in sicurezza dei protocolli come il \textsc{MAVLink} ha acquisito sicuramente un'importanza maggiore. Il problema, inoltre, viene reso ancora più difficile dal fatto che si renda necessario fare un \textbf{tradeoff} tra il grado di sicurezza del protocollo e l'alto \textbf{\textit{throughput}} che lo stesso deve offrire pur trovandosi in contesti caratterizzati da risorse hardware tutt'altro che illimitate.
 
 Negli ultimi anni sono stati, in effetti, compiuti alcuni passi in avanti in questo senso grazie a diversi lavori di ricerca.
 
@@ -704,18 +704,18 @@ In un successivo studio \cite{10037546} pubblicato alcuni anni più tardi, nel 2
     \item \texttt{DMAV}, uno schema di cifratura basata su una codifica denominata "DNA dinamica" proposto in uno studio del 2022. 
 \end{itemize}
 
-I risultati di questo studio confermano, in un certo senso, quellid el precedente, determinando come l'algoritmo \texttt{ChaCha20} \textbf{sia il migliore dei tre confrontati} negli ambiti di \textbf{pacchetti inviati al secondo}, \textbf{consumo di memoria nell'UAV}, \textbf{percentuale di CPU} in uso nell'UAV.
+I risultati di questo studio confermano, in un certo senso, quelli del precedente, determinando come l'algoritmo \texttt{ChaCha20} \textbf{sia il migliore dei tre confrontati} negli ambiti di \textbf{pacchetti inviati al secondo}, \textbf{consumo di memoria nell'UAV}, \textbf{percentuale di CPU} in uso nell'UAV.
 
 Si noti come in entrambi i casi sia stato utilizzato il progetto ArduPilot ed in particolare il già citato software \textbf{SITL} per condurre i test.
 
 \subsubsection{Sicurezza in ambienti resource-constrained: una breve introduzione al concetto di lightweight cryptography}
-Più o meno nello stesso periodo in cui si il panorama delle piattaforme hardware e software per UAV si è arricchiato e l'utilizzo di questi dispositivi è e andata "democratizzandosi", si è assistito, in generale, alla sempre più capillare di dispositivi "intelligenti" da utilizzare nei contesti più disparati. Nasce quindi il concetto di \textbf{Internet of Things} (comunemente definito con il suo acronimo \textbf{IoT}), che condivide un discreto numero di aspetti sia positivi che negativi con il contesto dell'UAV. 
+Più o meno nello stesso periodo in cui si il panorama delle piattaforme hardware e software per UAV si è arricchito e l'utilizzo di questi dispositivi è e andata "democratizzandosi", si è assistito, in generale, alla sempre più capillare di dispositivi "intelligenti" da utilizzare nei contesti più disparati. Nasce quindi il concetto di \textbf{Internet of Things} (comunemente definito con il suo acronimo \textbf{IoT}), che condivide un discreto numero di aspetti sia positivi che negativi con il contesto dell'UAV. 
 
 Certamente, si ritrova in entrambi i casi la necessità dell'utilizzo di protocolli leggeri ed efficienti ma anche (e soprattutto) i limiti delle piattaforme hardware che permettono il funzionamento dei dispositivi (quindi tipicamente microcontrollori dotati di funzionalità di rete). 
 
 Vien da sé, quindi, che il discorso sulla generale insicurezza dei protocolli affrontato più volte in questo lavoro per gli UAV valga anche per i dispositivi IoT. 
 
-Nondimeno, la capillare diffusione di tali dispositvi in ambienti domestici ed aziendali pone un'ulteriore problematica di \textbf{privacy} oltre che di \textbf{safety} e di \textbf{security} come invece avveniva nel caso degli UAV.
+Nondimeno, la capillare diffusione di tali dispositivi in ambienti domestici ed aziendali pone un'ulteriore problematica di \textbf{privacy} oltre che di \textbf{safety} e di \textbf{security} come invece avveniva nel caso degli UAV.
 
 Per far fronte a questo tipo di criticità e al (necessario) tradeoff tra performance e requisiti di sicurezza, ecco che col passare del tempo sorge una nuova "branca" di ricerca nell'ambito della crittografia dedicata allo sviluppo di algoritmi (e di relative piattaforme \textit{ad-hoc} per la loro implementazione in hardware) pensati per funzionare in ambienti \textbf{resource-constrained}: la \textbf{lightweight cryptography}.
 
@@ -745,7 +745,7 @@ Tale lavoro si differenzia dai precedenti poiché va a sfruttare diverse caratte
 
 Sono stati considerati diversi algoritmi che appartengono al pool della crittografia leggera sia dal punto di vista della cifratura \textbf{simmetrica} che dal punto di vista degli algoritmi di \textbf{scambio delle chiavi} e sono stati condotti diversi test per stabilire quale fosse quello più conveniente rispetto ao criteri definiti in precedenza dagli altri studi.
 
-In particolare, gli algoritmi di cifratura \textbf{simemtrica} integrati nel lavoro qui considerato consistono in:
+In particolare, gli algoritmi di cifratura \textbf{simmetrica} integrati nel lavoro qui considerato consistono in:
 
 \begin{itemize}
     \item \texttt{Trivium};
@@ -760,7 +760,7 @@ Per quanto riguarda invece il concetto di scambio delle chiavi, nel lavoro consi
     \item \texttt{RSA};
     \item \texttt{DH}: scambio delle chiavi \textbf{Diffie-Hellman};
     \item \texttt{ECDH}: meccanismo di scambio delle chiavi ispirato a Diffie Hellman ma che si basa sul concetto di \textbf{curva ellittica};
-    \item \texttt{Curve25519}: altro meccansimo di scambio delle chiavi basato su \textbf{curve ellittiche} che mira a migliorare le prestazioni rispetto ad \texttt{ECDH};
+    \item \texttt{Curve25519}: altro meccanismo di scambio delle chiavi basato su \textbf{curve ellittiche} che mira a migliorare le prestazioni rispetto ad \texttt{ECDH};
     \item \texttt{FourQ}: ulteriore meccanismo basato su curve ellittiche proposto da \textbf{Microsoft} nel 2015.
 \end{itemize}
 
@@ -789,9 +789,9 @@ Sebbene il concetto di Quantum Computing stia acquisendo sempre più importanza 
 
 La vera differenza che intercorre tra un computer classico ed una macchina quantistica consiste nel modo in cui sono rappresentate le informazioni: se nel caso "classico" a noi familiare si ragiona in termini di \texttt{bit} (ovvero la più piccola unità con cui possono essere codificate delle informazioni), nel caso quantistico si passa al concetto di \texttt{\textbf{qubit}}, termine coniato nel 1995 \cite{PhysRevA.51.2738} dal fisico Benjamin Schumacher che rappresenta l'unità di informazione quantistica. 
 
-Se nel contesto della computazione "classica" gli \textbf{stati} possibili che un bit può assumere sono solamente due: lo stato "0" e lo stato "1", nel contesto quantistico il confine tra gli stati che un qubit può assumere è in un certo senso più \textbf{labile}, in accordo con il fenomeno quantistico della \textbf{sovrapposizione tra stati}.
+Se nel contesto della computazione "classica" gli \textbf{stati} possibili che un bit può assumere sono solamente due: lo stato "0" e lo stato "1", nel contesto quantistico il confine tra gli stati che un \texttt{qubit} può assumere è in un certo senso più \textbf{labile}, in accordo con il fenomeno quantistico della \textbf{sovrapposizione tra stati}.
 
-Un qubit può quindi trovarsi rispettivamente:
+Un \texttt{qubit} può quindi trovarsi rispettivamente:
 
 \begin{itemize}
     \item Nello stato \texttt{0} (con il 100\% di probabilità);
@@ -810,7 +810,7 @@ Al di là dei (comunque importanti e necessari) formalismi matematici, la conseg
 \newpage
 
 \subsection{Il problema: RSA, DH e l'algoritmo di Shor}
-Uno degli esempi lampanti del potere computazionale notevolmente maggiore dei computer quantistici rispetto a quelli classici consiste nella pubblicazione di uno studio \cite{365700} da parte di \textbf{Peter W. Shor} nel 1994 che propone un \textbf{algoritmo} (conosicuto appunto come \textbf{Algoritmo di Shor}) per la fattorizzazione di interi.
+Uno degli esempi lampanti del potere computazionale notevolmente maggiore dei computer quantistici rispetto a quelli classici consiste nella pubblicazione di uno studio \cite{365700} da parte di \textbf{Peter W. Shor} nel 1994 che propone un \textbf{algoritmo} (conosciuto appunto come \textbf{Algoritmo di Shor}) per la fattorizzazione di interi.
 
 Dal punto di vista teorico, tale algoritmo si configura come una \textbf{riduzione} dal problema della fattorizzazione di interi ad un problema di ricerca dell'\textbf{ordine} di un gruppo (inteso come struttura algebrica), anch'esso considerato come problema \textit{difficile} nel contesto della computazione classica. 
 
@@ -824,7 +824,7 @@ L'analisi della complessità dell'algoritmo proposto da Shor suggerisce che il s
     $\mathcal{O}((log{}N)^2 (log{}log{}N))$
 \end{center}
 
-assumendo di utilizzare il metodo di \textbf{Harvey e Van Der Hoeven} \cite{harvey:hal-02070778} per la moltiplicazione efficiente di interi in tempo $\mathcal{O}(n log{}n)$ e che quindi il problema della fattorizzazione di interi appartenga, dal punto di vista della teroia della computazione, alla classe \textbf{BQP}, ovvero \textbf{la classe dei problemi risolvibili in tempo polinomiale mediante computer quantistici}.
+assumendo di utilizzare il metodo di \textbf{Harvey e Van Der Hoeven} \cite{harvey:hal-02070778} per la moltiplicazione efficiente di interi in tempo $\mathcal{O}(n log{}n)$ e che quindi il problema della fattorizzazione di interi appartenga, dal punto di vista della teoria della computazione, alla classe \textbf{BQP}, ovvero \textbf{la classe dei problemi risolvibili in tempo polinomiale mediante computer quantistici}.
 
 L'approccio proposto da Shor, secondo quanto menzionato nel sommario dello studio, è applicabile non solo al problema della fattorizzazione di interi ma anche al problema del \textbf{logaritmo discreto}.
 
@@ -832,23 +832,23 @@ Le implicazioni dello studio di Shor sono enormi nel campo della crittografia po
 
 La risoluzione in tempo polinomiale mediante computer quantistici di tali problemi renderebbe del tutto insicuri tali schemi, ponendo un considerevole rischio correlato al funzionamento dei protocolli crittografici basati su problemi difficili, come appunto RSA e Diffie Hellman.
 
-Tuttavia, vale la pena sottolinerare come il tasso di errore di tale algoritmo (dovuto al concetto di sovrapposizione degli stati) sia ancora troppo alto, pregiudicando quindi l'esecuzione dell'algoritmo anche sulle piattaforme più potenti allo stato attuale.
+Tuttavia, vale la pena sottolineare come il tasso di errore di tale algoritmo (dovuto al concetto di sovrapposizione degli stati) sia ancora troppo alto, pregiudicando quindi l'esecuzione dell'algoritmo anche sulle piattaforme più potenti allo stato attuale.
 
 \newpage
 
 \subsection{La soluzione: Post-Quantum Cryptography}
 Il problema di situazioni del genere è che una volta note le modalità, ciò che manca è quindi la \textbf{potenza di calcolo}, che con l'avanzamento tecnologico sarà con ogni probabilità raggiunta col passare del tempo, ponendo quindi un rischio concreto per la sicurezza dei sistemi informatici (e non solo).
 
-Proprio per regire a questo tipo specifico di minaccia, negli anni ha preso piede un nuovo concetto nel campo della crittografia, che permette di superare la minaccia posta dall'avvento del Quantum Computing: quello di \textbf{Post-Quantum Cryptography}.
+Proprio per reagire a questo tipo specifico di minaccia, negli anni ha preso piede un nuovo concetto nel campo della crittografia, che permette di superare la minaccia posta dall'avvento del Quantum Computing: quello di \textbf{Post-Quantum Cryptography}.
 
-Il grosso della ricerca in questo campo si è concentrato nel campo della crittografia a chiave pubblica e quindi nel contesto dello scambio di chiavi sicuro poiché è quello che fa affidamento su problemi diffcili come quelli descritti in precedenza (si pensi appunto ad RSA ed a Diffie Hellman).
+Il grosso della ricerca in questo campo si è concentrato nel campo della crittografia a chiave pubblica e quindi nel contesto dello scambio di chiavi sicuro poiché è quello che fa affidamento su problemi difficli come quelli descritti in precedenza (si pensi appunto ad RSA ed a Diffie Hellman).
 
 Gli schemi crittografici che sono stati messi appunti nel contesto di questo nuovo campo di studi vengono divisi in diverse categorie, a seconda dell'approccio che adottano \cite{Bernstein2009}. Tra questi:
 
 \begin{itemize}
     \item Approccio basato su \textbf{Reticoli}: l'approccio su cui si basa lo schema \texttt{Kyber} e che fa riferimento ad una struttura algebrica detta \textbf{Reticolo} e che include i sistemi crittografici basati sul problema \textbf{LWE} (acronimo per \textbf{Learning With Errors}) o su loro varianti;
     \item Approccio basato su \textbf{crittografia multivariata}: tale approccio si basa sulla difficoltà della risoluzione di \textbf{sistemi di equazioni multivariate};
-    \item Approccio basato su \textbf{hash}, che si basa sull'assuzione della sicurezza delle \textbf{funzioni hash}. Esempi di schemi che sfruttano questo approccio consistono nello schema di firma digitale di \textbf{Merkle} o comunque altri schemi che usano il \textbf{Merkle Tree};
+    \item Approccio basato su \textbf{hash}, che si basa sull'assunzione della sicurezza delle \textbf{funzioni hash}. Esempi di schemi che sfruttano questo approccio consistono nello schema di firma digitale di \textbf{Merkle} o comunque altri schemi che usano il \textbf{Merkle Tree};
     \item Approccio basato su \textbf{codici}: ad esempio lo schema di cifratura di \textbf{McEliece}, che si basa sui \textbf{Codici di Goppa}.
 \end{itemize}
 
@@ -904,7 +904,7 @@ dove:
         \item \texttt{pk} rappresenta la \textbf{chiave pubblica};
         \item \texttt{sk} rappresenta la \textbf{chiave segreta}.
     \end{itemize}
-    \item \texttt{Encaps(pk)} è l'algoritmo di \textbf{incapsulamento} che prende in input la chiave pubblica generatada da \texttt{Gen} e restituisce: \begin{itemize}
+    \item \texttt{Encaps(pk)} è l'algoritmo di \textbf{incapsulamento} che prende in input la chiave pubblica generata da \texttt{Gen} e restituisce: \begin{itemize}
         \item \texttt{k}: una chiave segreta da usare con un cifrario simmetrico. Non deve essere inviata direttamente;
         \item \texttt{s}: un \textbf{testo cifrato}, ovvero la "capsula" che viene inviata all'altro membro della conversazione e che contiene la chiave \texttt{k} appena descritta.
     \end{itemize}
@@ -935,7 +935,7 @@ Di seguito è presente un diagramma che riassume il funzionamento di un generico
 L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE}, che può essere ricondotto ad un altro problema definito su un \textbf{Reticolo}, entrambi oggetti di discussione nelle prossime sezioni.
 \newpage
 \subsubsection{Reticoli}
-Nelle sezioni precedenti sono stati presentati i vari approcci alla crittografia postquantistica. Uno di questi consisteva in quello basato su \textbf{Reticoli}.
+Nelle sezioni precedenti sono stati presentati i vari approcci alla crittografia post-quantistica. Uno di questi consisteva in quello basato su \textbf{Reticoli}.
 
 Il nome "reticolo" (in inglese \textit{lattice}) usato senza contestualizzazione risulta essere fuorviante poiché vi sono collegati due concetti distinti, ovvero:
 
@@ -1141,7 +1141,7 @@ Gli algoritmi di crittografia post quantistica si contraddistinguono per una cer
 \footnotetext[5]{Lunghezza della \textbf{chiave segreta}}
 \footnotetext[6]{Lunghezza della \textbf{chiave pubblica}}
 
-Dal punto di vista della struttura interna, l'unica differenza che intercorre tra le tre versioni dell'algoritmo consiste nella variazione del parametro $k$, introdottto nelle precedenti sezioni e che rappresenta il numero delle componenti dei vettori. In particolare:
+Dal punto di vista della struttura interna, l'unica differenza che intercorre tra le tre versioni dell'algoritmo consiste nella variazione del parametro $k$, introdotto nelle precedenti sezioni e che rappresenta il numero delle componenti dei vettori. In particolare:
 
 \begin{itemize}
     \item Nel caso di \textbf{Kyber512}, $k = 2$;
@@ -1164,7 +1164,7 @@ La scelta della versione di \texttt{Kyber} da utilizzare in questo lavoro è ric
 
 \newpage
 \section{Descrizione ed implementazione della soluzione proposta}
-Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scentifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
+Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scientifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
 
 \subsection{Overview del processo}
 Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundContol} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}. Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave.
@@ -1187,7 +1187,7 @@ Sul sito web del progetto \texttt{CRYSTALS} \cite{crystals-software} viene fatta
 
 Su GitHub è presente una \textbf{implementazione di riferimento} \cite{kyber-reference} di tale schema nel linguaggio C ottimizzata per processori \textbf{Intel} x86 che sfrutta il set di istruzioni \texttt{AVX2} e che aggiunge il supporto ai vettori a 256 bit, permettendo calcoli in \textbf{virgola mobile} ad alte prestazioni \cite{intel-avx2}.
 
-Esistono tuttavia implementazioni di \texttt{Kyber} integrate in progetti più strutturati come \texttt{PQClean} o \texttt{OpenQuantumSafe}. Quest'ultimo consiste "in un framework per la prototipazione e lo sviluppo di crittografia quantum-resistant" \cite{oqs}.
+Esistono tuttavia implementazioni di \texttt{Kyber} integrate in progetti più strutturati come \texttt{PQClean} o \texttt{OpenQuantumSafe}. Quest'ultimo consiste in "un framework per la prototipazione e lo sviluppo di crittografia quantum-resistant" \cite{oqs}.
 
 \subsubsection{\texttt{liboqs}: descrizione ed installazione}
 Il progetto di punta di questa organizzazione è però \texttt{liboqs}: una libreria open source che fornisce accesso ad implementazioni di diversi algoritmi post quantistici mediante un'API semplificata. Oltre a \texttt{Kyber}, questa suite include anche altri algoritmi \cite{liboqs-algorithms} \textbf{KEM} candidati nel processo di standardizzazione del NIST (\texttt{Classic McEliece}, \texttt{BIKE}, \texttt{HQC}, \texttt{FrodoKEM} ed \texttt{NTRU-Prime}) e degli schemi di \textbf{firma digitale} (\texttt{CRYSTALS-Dilithium}, \texttt{Falcon} e \texttt{SPHINCS+}). Il codice sorgente di tale libreria è presente su GitHub \cite{liboqs-github} insieme ad una guida per la compilazione e l'installazione del progetto, qui brevemente riportata:
@@ -1315,7 +1315,7 @@ La struttura della entry corrispondente al messaggio \texttt{KEYEXCHANGE} all'in
 In particolare:
 
 \begin{itemize}
-    \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresnta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della chiave;
+    \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresenta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della chiave;
     \item I campi \texttt{chunk\_start} e \texttt{chunk\_end} rappresentano rispettivamente gli \textbf{indici} di inizio e della fine del chunk della chiave pubblica che l'UAV desidera ricevere. Entrambi questi campi sono \textbf{interi a 16 bit};
     \item Il campo \textbf{IV} rappresenta il \textbf{vettore di inizializzazione} utilizzato per la comunicazione cifrata instaurata alla fine del processo di scambio delle chiavi. Consiste in un vettore di 128 bit, come richiesto dalle specifiche del cifrario AES.
 \end{itemize}
@@ -1362,12 +1362,12 @@ La struttura di \texttt{CAPSULE} è la seguente:
 In particolare:
 
 \begin{itemize}
-    \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresnta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della capsula;
+    \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresenta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della capsula;
     \item I campi \texttt{chunk\_start} e \texttt{chunk\_end} rappresentano rispettivamente gli \textbf{indici} di inizio e della fine del chunk della capsula che l'UAV desidera inviare alla GCS. Entrambi questi campi sono \textbf{interi a 16 bit};
     \item Il campo \texttt{more\_data} rappresenta un flag che permette, quando è impostato a 0, di avvisare l'UAV che lo scambio della capsula è terminato e la GCS può di conseguenza invocare \texttt{Decaps()}.
 \end{itemize}
 
-Il messaggio \texttt{CAPSULEACK} testimonia semplicmente l'avvenuta ricezione della GCS di un messaggio \texttt{CAPSULE} ed in particolare contiene \textbf{il prossimo numero di sequenza atteso}.
+Il messaggio \texttt{CAPSULEACK} testimonia semplicemente l'avvenuta ricezione della GCS di un messaggio \texttt{CAPSULE} ed in particolare contiene \textbf{il prossimo numero di sequenza atteso}.
 
 Ecco la struttura di un messaggio \texttt{CAPSULEACK}:
 
