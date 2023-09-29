@@ -1274,7 +1274,7 @@ Si noti che quello mostrato fino ad ora è una descrizione ad alto livello che p
 
 \newpage
 
-\subsection{Introduzione di nuovi messaggi \textsc{MAVLink} 2.0}
+\subsection{Step 3: Introduzione di nuovi messaggi \textsc{MAVLink} 2.0}
 Nella sezione dedicata al funzionamento della libreria \textsc{MAVLink} è stato sottolineato come fosse possibile \textbf{estenderlo} andando a modificare i file \texttt{XML} che descrivono i messaggi previsti per un certo "dialetto" del protocollo.
 
 Per modellare il funzionamento dello schema di scambio delle chiavi è contestualmente necessario prevedere dei messaggi ad hoc che permettano lo scambio delle informazioni illustrate nella sezione precedente.
@@ -1379,7 +1379,7 @@ Ecco la struttura di un messaggio \texttt{CAPSULEACK}:
 \end{minted}
 
 \newpage
-\subsection{Step 3: Integrazione di \texttt{Kyber} all'interno di ArduPilot}
+\subsection{Step 4: Integrazione di \texttt{Kyber} all'interno di ArduPilot}
 Come accennato in fase di presentazione di tale piattaforma software, \textbf{ArduPilot} utilizza il sistema di building \texttt{waf}. Di conseguenza, l'introduzione di nuove librerie all'interno di un progetto che fa uso di questo sistema di building deve naturalmente avvenire nei suoi file di configurazione. Per rendere quanto più semplice possibile il processo di integrazione e di linking di \texttt{liboqs} (come già descritto nello \textbf{Step 1}), tale libreria è stata installata in maniera system-wide sulla macchina su cui è stato svolto il lavoro allo scopo di minimizzare le modifiche a cui sottoporre il progetto. Di conseguenza, l'unico accorgimento da adottare consiste nell'aggiungere i flag \texttt{-loqs -lcrypto} in fase di linking. Tale operazione, di norma, si effettua andando a modificare la variabile d'ambiente \texttt{LDFLAGS}.
 
 Nel caso di \texttt{waf}, invece, è necessario andare a modificare il file \texttt{wscript} (uno script Python), presente nella root della repository del progetto \textbf{ArduPilot}.
