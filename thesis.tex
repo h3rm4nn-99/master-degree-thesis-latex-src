@@ -13,7 +13,6 @@
 \usepackage{algorithm}
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
-\usepackage{listings}
 \usepackage{minted}
 \usepackage[htt]{hyphenat}
 \usepackage{pgfplots}
@@ -339,7 +338,7 @@ Il progetto è stato sviluppato dall'organizzazione che si occupa di \textsc{MAV
 
 Al contrario delle altre GCS, QGroundControl \textbf{supporta anche la compilazione per la piattaforma Android}\cite{qgc-github-android}, il che di conseguenza permette l'utilizzo del software su dispositivi portatili e rendendo il progetto completamente \textbf{cross-platform}.
 
-In ogni caso, il \textit{core} della piattaforma è presente all'interno della directory \texttt{src/} nella root della repo GitHub. Qui sono presenti tutti i moduli che permettono, tra le altre cose, la gestione dei veicoli connessi alla GCS (classe \texttt{Vehicle} coaudivata da un'istanza di \texttt{LinkManager}) e dei messaggi di cui è stato svolto il \textit{parsing} dalla libreria \textsc{MAVLink} (classe \texttt{MAVLinkProtocol}: presente nella sottodirectory \texttt{comm/}).
+In ogni caso, il \textit{core} della piattaforma è presente all'interno della directory \texttt{src/} nella root della repo GitHub. Qui sono presenti tutti i moduli che permettono, tra le altre cose, la gestione dei veicoli connessi alla GCS (classe \texttt{Vehicle} coadiuvata da un'istanza di \texttt{LinkManager}) e dei messaggi di cui è stato svolto il \textit{parsing} dalla libreria \textsc{MAVLink} (classe \texttt{MAVLinkProtocol}: presente nella sottodirectory \texttt{comm/}).
 
 La comunicazione con l'UAV connesso avviene mediante \textbf{datagrammi UDP} gestiti da un \texttt{LinkManager} che contengono messaggi \textsc{MAVLink} costruiti utilizzando le funzioni della libreria C di questo progetto.
 
@@ -1308,7 +1307,7 @@ La struttura della entry corrispondente al messaggio \texttt{KEYEXCHANGE} all'in
       <field type="uint8_t" name="seq">Sequence Number.</field>
       <field type="uint16_t" name="chunk_start">Read from.</field>
       <field type="uint16_t" name="chunk_end">Read to.</field>
-      <field type="uint8_t[128]" name="iv">IV</field>
+      <field type="uint8_t[16]" name="iv">IV</field>
     </message>
 \end{minted}
 
@@ -1400,6 +1399,33 @@ A questo punto è possibile ricompilare \textbf{ArduCopter} mediante il comando:
 \end{center}
 
 utilizzando lo switch \texttt{-v} per abilitare la modalità \textit{verbose} e di conseguenza accertarsi che suddetti flag siano presenti nella stringa del linker mostrata durante l'ultima fase del processo di building.
+
+\newpage
+\subsection{Step 5: Integrazione di \texttt{Kyber} all'interno di QGroundControl}
+
+Al contrario di \textbf{ArduPilot}, \textbf{QGroundContol} utilizza il framework \textbf{Qt} per la gestione del progetto e delle procedure di building. Per andare ad integrare \texttt{liboqs} è quindi necessario andare ad intervenire sulla configurazione di Qt stesso. 
+
+Il file su cui intervenire, nello specifico, si chiama \texttt{QGCExternalLibs.pri} ed è situato nella \textit{root} della repository del progetto. L'inclusione di librerie installate in maniera system-wide, come nel caso di ArduPilot descritto nello Step 4, si effettua semplicemente alterando i flags che il sistema di building passa al linker. Nel caso di Qt, è possibile alterare la variabile \texttt{LIBS} alla fine del file prima menzionato ed aggiungendo i flags \texttt{-loqs -lcrypto} in questo modo:
+
+    \begin{minted}{python}
+        LIBS += -loqs -lcrypto
+    \end{minted}
+
+Dopo di che, è necessario eseguire una \textbf{build pulita del progetto}, andando ad eseguire i seguenti comandi:
+
+\begin{center}
+    \texttt{cd build/} \\
+    \texttt{make clean}
+\end{center}
+
+e successivamente rieseguendo i comandi descritti nella sezione relativa alla compilazione di QGroundControl nel presente documento.
+
+\newpage
+\subsection{Alterazione delle funzioni di \textbf{ArduPilot}}
+\newpage
+\subsection{Alterazione delle funzioni di \textbf{QGroundControl}}
+\newpage
+\subsection{Alterazione della libreria \textsc{MAVLink}}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}]
