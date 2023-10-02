@@ -1422,11 +1422,241 @@ e successivamente rieseguendo i comandi descritti nella sezione relativa alla co
 
 \newpage
 \subsection{Alterazione delle funzioni di \textbf{ArduPilot}}
+Una volta descritto il funzionamento ad alto livello del processo di scambio delle chiavi, è ora possibile scendere ancora di più nel dettaglio ed affrontare quali sono stati i cambiamenti alla struttura del codice sorgente del progetto \textbf{ArduPilot}.
+
+In particolare, il grosso dei cambiamenti si è concentrato in due file specifici:
+
+\begin{itemize}
+    \item Il file \texttt{GCS\_Common.cpp} presente nella directory \texttt{libraries/GCS\_MAVLink}, partendo dalla \textit{root} della repository del progetto. Questo file contiene la logica di gestione dei messaggi \textsc{MAVLink} \textbf{comune per ogni dispositivo};
+    \item Il file \texttt{GCS\_MAVLink.cpp} presente invece nella directory \texttt{ArduCopter/}, che invece gestisce lo scheduling dei messaggi \textsc{MAVLink} specifici per il progetto \textbf{ArduCopter}.
+\end{itemize}
+
+Segue una panoramica esaustiva sulle modifiche applicate ad entrambi i file.
+
+\subsubsection{\texttt{ArduCopter/GCS\_MAVLink.cpp}}
+In questo file è presente la logica che gestisce lo scheduling dei messaggi \textsc{MAVLink} per il dispositivo (sia virtuale che fisico) \textbf{Copter}, ossia quello utilizzato in questo lavoro.
+
+Per prima cosa, è stato necessario andare ad aggiungere le costanti \texttt{MSG\_KEYEXCHANGE} e \texttt{MSG\_CAPSULE} (esposte dalla libreria \textsc{MAVLink}) al vettore \texttt{STREAM\_EXTRA3\_msgs[]} per informare la piattaforma che si intende includere tali messaggi nel processo di invio periodico.
+
+\begin{minted}{c}
+    static const ap_message STREAM_EXTRA3_msgs[] = {
+        // messaggi precedenti
+        MSG_KEYEXCHANGE,
+        MSG_CAPSULE,
+        // eventuali messaggi successivi
+    };
+\end{minted}
+
+L'ordine con cui vengono inseriti i messaggi in questo vettore è ininfluente.
+
+È necessario che tali costanti siano aggiunte anche nel file \texttt{/libraries/GCS\_MAVLink/ap\_messages.h}, nell'\texttt{enum} presente al suo interno, immediatamente prima della costante \texttt{MSG\_LAST} che, come suggerito da un commento in suddetto file, deve essere sempre l'ultimo.
+
+\begin{minted}{c}
+    enum ap_message : uint8_t {
+        // messaggi precedenti
+        MSG_KEYEXCHANGE,
+        MSG_KEYEXCHANGEGCSACK,
+        MSG_LAST // MSG_LAST must be the last entry in this enum
+    };
+\end{minted}
+
+\subsubsection{\texttt{libraries/GCS\_MAVLink/GCS\_Common.cpp}}
+È invece in questo file che si concentra il grosso delle modifiche effettuate.
+
+Prima di tutto, è necessario includere \texttt{oqs.h} come accennato in precedenza per poter accedere alle API di \texttt{liboqs}:
+
+\begin{minted}{cpp}
+    #include <oqs/oqs.h>
+\end{minted}
+
+Successivamente, è necessario intervenire sulla funzione \texttt{bool GCS\_MAVLINK::try\_send\_message(const enum ap\_message id)} che, per ogni messaggio dello scheduler, richiama una funzione (definita ad hoc in questo stesso file) che si occuperà di inviare un'istanza di quel messaggio. \texttt{try\_send\_message} è implementata mediante uno \texttt{switch} che permette di discriminare il messaggio sulla base del suo tipo. È quindi sufficiente \textbf{aggiungere} un \texttt{case} in corrispondenza dei due messaggi che l'autopilot desidera inviare (il messaggio di Key Exchange e la capsula), come mostrato di seguito 
+
+\begin{minted}{cpp}
+    bool GCS_MAVLINK::try_send_message(const enum ap_message id)
+    {
+        switch(id) {
+            // messaggi precedenti
+            case MSG_KEYEXCHANGE:
+                CHECK_PAYLOAD_SIZE(KEYEXCHANGE);
+                send_keyexchange();
+                break;
+
+            case MSG_CAPSULE:
+                CHECK_PAYLOAD_SIZE(CAPSULE);
+                send_capsule();
+                break;
+            
+            // messaggi successivi
+        }
+    }
+\end{minted}
+
+
+
+Successivamente, vanno definite le funzioni \texttt{send\_keyexchange()} e \texttt{send\_capsule()}:
+
+\begin{minted}{cpp}
+    void GCS_MAVLINK::send_keyexchange() const {
+        if (key_exchange_complete) {
+            return;
+        }
+
+        if (is_iv_set == false) {
+            RAND_bytes(iv, 16);
+            is_iv_set = 1;
+        }
+
+        mavlink_msg_keyexchange_send(
+            chan,
+            keyexchange_seq,
+            request_remote_key_start,
+            request_remote_key_end,
+            iv
+        );    
+}
+\end{minted}
+
+Questa funzione si occupa di richiedere una porzione della chiave pubblica (i cui estremi, in termini di numero di bytes, sono definiti dalle variabili \texttt{request\_remote\_key\_start} e \texttt{request\_remote\_key\_end}, definite esternamente ed inizializzate rispettivamente a 0 ed a 200) della GCS, al contempo inviando un \textbf{vettore di inizializzazione} utilizzato successivamente per la comunicazione cifrata e generato mediante la funzione \texttt{RAND\_bytes()} presente nella libreria \texttt{rand.h} OpenSSL che, di conseguenza, va inclusa.
+
+\begin{minted}{cpp}
+    void GCS_MAVLINK::send_capsule() const {
+        if (!should_send_capsule) {
+            return;
+        }
+
+        if (!is_capsule_generated) {
+            OQS_init();
+            if (OQS_KEM_kyber_512_encaps(capsule, key, remote_key) 
+                != OQS_SUCCESS) {
+                printf("Failed to encaps, quitting.\n");
+                exit(-1);
+            } else {
+                printf("Generated secret key\n");
+                printf("Generated capsule\n");
+            }
+            OQS_destroy();
+            is_capsule_generated = true;
+        } else {
+            uint8_t chunk[192];
+            int index = 0;
+
+            for (int i = read_capsule_start; 
+                i < read_capsule_end; 
+                i++) {
+                chunk[index++] = capsule[i];
+            }
+
+            short more_data = (read_capsule_end == 
+            OQS_KEM_kyber_512_length_ciphertext) ? 0 : 1;
+
+            mavlink_msg_capsule_send(
+                chan,
+                capsule_message_sequence_number,
+                read_capsule_start,
+                read_capsule_end,
+                more_data,
+                chunk            
+            );
+    }
+\end{minted}
+
+In sostanza, questa funzione si comporta in maniera simile a \texttt{send\_keyexchange()} e si occupa di inviare alla GCS, una volta ottenuta completamente la sua chiave remota, una porzione della \textbf{capsula} generata da \texttt{Encaps()} delimitata dagli indici \texttt{read\_capsule\_start} e \texttt{read\_capsule\_end}. Gli argomenti di \texttt{Encaps()} sono vettori di bytes (leggasi, \texttt{uin8\_t}) definiti esternamente ed allocati con lo spazio necessario secondo le specifiche di \texttt{Kyber}.\footnote{\texttt{liboqs} espone delle costanti che rappresentano le dimensioni in bytes della coppia di chiavi, della capsula e dello \textit{shared secret}}
+
+Quando il protocollo di scambio della chiave pubblica e della capsula è terminato, questi due messaggi \textbf{non vengono più inviati}.
+
+Oltre alla definizione di funzioni che modellano l'invio di messaggi \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di acknowledgement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}.
+
+Tali funzioni vanno richiamate nel corpo della funzione \texttt{handle\_common\_message}, come segue:
+
+\begin{minted}{cpp}
+/*
+    handle messages which don't require vehicle specific data
+*/
+void GCS_MAVLINK::handle_common_message(const mavlink_message_t &msg)
+{
+    case MAVLINK_MSG_ID_KEYEXCHANGEGCSACK: {
+        handle_keyexchangegcsack(msg);
+        break;
+    }
+    
+
+    case MAVLINK_MSG_ID_CAPSULEACK: {
+        handle_capsuleack(msg);
+        break;
+    }
+}
+\end{minted}
+
+Ecco il corpo della funzione \texttt{handle\_keyexchangegcsack}:
+
+\begin{minted}{cpp}
+    void GCS_MAVLINK::handle_keyexchangegcsack
+    (const mavlink_message_t &msg) const {
+        mavlink_keyexchangegcsack_t decoded_message;
+        mavlink_msg_keyexchangegcsack_decode(&msg, &decoded_message);
+
+        if (decoded_message.seq_ack != keyexchange_seq + 1) {
+            // Out-of-sequence
+            exit(-1);
+        }
+
+        int chunk_start = decoded_message.chunk_start;
+        int chunk_end = decoded_message.chunk_end;
+
+        uint8_t *data = decoded_message.data;
+
+        int index = 0;
+        for (int i = chunk_start; i < chunk_end; i++) {
+            remote_key[i] = data[index++];
+        }
+
+        if (decoded_message.more_data == 0) {
+            key_exchange_complete = true;
+            should_send_capsule = true;
+        } else {
+            keyexchange_seq = decoded_message.seq_ack;
+            request_remote_key_start = request_remote_key_end;
+            request_remote_key_end += 200;
+        }
+    }
+\end{minted}
+
+Tale meccanismo è stato ripreso anche per il messaggio \texttt{CAPSULEACK}:
+
+\begin{minted}{cpp}
+    void GCS_MAVLINK::handle_capsuleack
+    (const mavlink_message_t &msg) const {
+        mavlink_capsuleack_t decoded_message;
+        mavlink_msg_capsuleack_decode(&msg, &decoded_message);
+
+        if (decoded_message.ack != 
+        capsule_message_sequence_number + 1) {
+            // Out-of-sequence
+            exit(1);
+        } else {
+            if (read_capsule_end == 
+            OQS_KEM_kyber_512_length_ciphertext) {
+                should_send_capsule = false;
+                printf("Successfully sent the capsule.\n");
+                set_session_key(key);
+                // we are done.
+            } else {
+                read_capsule_start = read_capsule_end;
+                read_capsule_end += 192;
+                capsule_message_sequence_number = decoded_message.ack;
+            }
+        }
+    }
+\end{minted}
+
+In quest'ultimo caso, quando la capsual è stata scambiata, viene impostata anche la \textbf{chiave di sessione}, generata in precedenza mediante chiamata ad \texttt{Encaps()}: da questo momento in poi è possibile iniziare la \textbf{comunicazione cifrata} tra l'UAV e la GCS.
+La funzione \texttt{set\_session\_key()} viene definita nella liberia \textsc{MAVLink}, che sarà oggetto di discussione successivamente.
+
 \newpage
 \subsection{Alterazione delle funzioni di \textbf{QGroundControl}}
 \newpage
 \subsection{Alterazione della libreria \textsc{MAVLink}}
 
 \newpage
-\printbibliography[title={Riferimenti bibliografici e risorse consultate}]
+\printbibliography[title={Riferimenti bibliografici e risorse consultate}, heading=bibintoc]
 \end{document} 
