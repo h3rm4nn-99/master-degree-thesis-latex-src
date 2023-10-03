@@ -1638,7 +1638,7 @@ Tale meccanismo è stato ripreso anche per il messaggio \texttt{CAPSULEACK}:
             OQS_KEM_kyber_512_length_ciphertext) {
                 should_send_capsule = false;
                 printf("Successfully sent the capsule.\n");
-                set_session_key(key);
+                set_session_key(key, iv);
                 // we are done.
             } else {
                 read_capsule_start = read_capsule_end;
@@ -1674,9 +1674,136 @@ In suddetto file è presente una funzione chiamata
 
 che si occupa di effettuare il parsing, un carattere alla volta, di un messaggio \textsc{MAVLink} deserializzato ed offre (a parsing completato) la possibilità di eseguire del codice in base all'\textbf{ID} del messaggio mediante un costrutto \texttt{if-else}.
 
-Data la prolissità del codice, se ne riporta qui il funzionamento generale e gli \texttt{snippet} riguardanti gli aspetti più importanti.
+Data la prolissità del corpo della funzione, se ne riporta qui il funzionamento generale e gli \texttt{snippet} riguardanti gli aspetti più importanti.
 
-In particolare, \textbf{alla ricezione dei messaggi \texttt{KEYEXCHANGE} e \texttt{CAPSULE}}, la GCS emette rispettivamente i messaggi \texttt{KEYEXCHANGEGCSACK} ed \texttt{CAPSULEACK}.
+In particolare, \textbf{alla ricezione dei messaggi \texttt{KEYEXCHANGE} e \texttt{CAPSULE}}, la GCS emette rispettivamente i messaggi \texttt{KEYEXCHANGEGCSACK} ed \texttt{CAPSULEACK} mediante l'aggiunta di un \texttt{case} dove previsto.
+
+
+\subsubsection{Invio di \texttt{KEYEXCHANGEGCSACK}}
+Nel caso della ricezione di un messaggio di tipo \texttt{KEYEXCHANGE}, la GCS preleva la porzione di chiave pubblica richiesta dall'UAV e, nel caso del primo messaggio, chiama la procedura \texttt{Gen()} di \texttt{Kyber}, come segue:
+
+\begin{minted}{cpp}
+    if (are_keys_generated == 0) {
+        OQS_KEM_kyber_512_keypair(
+            ground_control_station_public_key,
+            ground_control_station_secret_key
+        );
+        are_keys_generated = 1;
+    }
+\end{minted}
+
+successivamente, viene costruito il buffer che ospita la porzione di chiave richiesta:
+
+\begin{minted}{cpp}
+    uint16_t start_from = keyExchange.chunk_start;
+    uint16_t end_to = keyExchange.chunk_end;
+
+    uint8_t data[200];
+    int index = 0;
+    for (int i = start_from; i < end_to; i++) {
+        data[index++] = ground_control_station_public_key[i];
+    }
+\end{minted}
+
+Infine, viene allocato e popolato un messaggio \texttt{KEYEXCHANGEGCSACK}:
+
+\begin{minted}{cpp}
+    mavlink_message_t keyExchangeAck;
+    mavlink_msg_keyexchangegcsack_pack_chan(
+        getSystemId(),
+        getComponentId(),
+        link->mavlinkChannel(),
+        &keyExchangeAck,
+        incoming_sequence_number + 1,
+        start_from,
+        end_to,
+        more_data,
+        data
+    );
+\end{minted}
+
+Gli indici \texttt{start\_from} ed \texttt{end\_to} coincidono con quelli del messaggio \texttt{KEYEXCHANGE} che ha triggerato l'invio del presente messaggio. Il flag \texttt{more\_data} segnala che il messaggio che sta per essere inviato rappresenta, quando posto a 0, \textbf{l'ultima porzione di chiave} da comunicare. 
+
+Il messaggio viene poi serializzato:
+
+\begin{minted}{cpp}
+    uint8_t serialization_buffer[MAVLINK_MAX_PACKET_LEN];
+    uint8_t length = mavlink_msg_to_send_buffer(
+        serialization_buffer, 
+        &keyExchangeAck
+    );
+\end{minted}
+
+e passato al \texttt{LinkManager}, a cui viene delegato l'invio effettivo:
+
+\begin{minted}{cpp}
+    link->writeBytesThreadSafe(
+        (const char *) serialization_buffer, 
+        length
+    );
+\end{minted}
+
+\subsubsection{Invio di \texttt{CAPSULEACK}}
+Il funzionamento del meccanismo di invio di questo messaggio rispecchia a grandi linee quello appena visto per \texttt{KEYEXCHANGEGCSACK}.
+
+In particolare, la GCS recupera gli indici dal payload del messaggio \texttt{CAPSULE} appena ricevuto:
+
+\begin{minted}{cpp}
+    mavlink_capsule_t capsule;
+    mavlink_msg_capsule_decode(&_message, &capsule);
+
+    uint8_t* data = capsule.data;
+    uint16_t startIndex = capsule.chunk_start;
+    uint16_t endIndex = capsule.chunk_end;
+\end{minted}
+
+Successivamente, imposta la porzione di capsula ricevuta:
+
+\begin{minted}{cpp}
+    uint8_t data_index = 0;
+    for (uint16_t index = startIndex; index < endIndex; index++) {
+        received_capsule[index] = data[data_index++];
+    }
+\end{minted}
+
+E, quando il flag \texttt{more\_data} del messaggio \texttt{CAPSULE} acquisisce finalmente il valore 0, invoca la procedura \texttt{Decaps()}, \textbf{impostando contestualmente lo \texttt{shared\_secret} appena estratto ed il vettore di inizializzazione ricevuto in precedenza}:
+
+\begin{minted}{cpp}
+    if (capsule.more_data == 0) {
+        uint8_t shared_secret[OQS_KEM_kyber_512_length_shared_secret];
+        if (OQS_KEM_kyber_512_decaps(shared_secret, received_capsule,
+        ground_control_station_secret_key) == OQS_SUCCESS) {
+            set_session_key(shared_secret, iv);
+        } else {
+            exit(-1);
+        }
+    }
+\end{minted}
+
+Infine, viene inviato il messaggio \texttt{CAPSULEACK}, in maniera del tutto analoga a quanto visto per \texttt{KEYEXCHANGEGCSACK}:
+
+\begin{minted}{cpp}
+    mavlink_message_t capsule_ack;
+    mavlink_msg_capsuleack_pack_chan(
+        getSystemId(),
+        getComponentId(),
+        link->mavlinkChannel(),
+        &capsule_ack,
+        capsule.seq + 1
+    );
+
+    uint8_t serialization_buffer[MAVLINK_MAX_PACKET_LEN];
+    uint8_t length = mavlink_msg_to_send_buffer(
+        serialization_buffer, 
+        &capsule_ack
+    );
+    link->writeBytesThreadSafe(
+        (const char *) serialization_buffer, 
+        length
+    );
+\end{minted}
+
+A questo punto, la GCS è finalmente pronta per iniziare la comunicazione cifrata con l'UAV.
 
 \newpage
 \subsection{Alterazione della libreria \textsc{MAVLink}}
