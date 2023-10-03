@@ -1469,7 +1469,7 @@ Prima di tutto, è necessario includere \texttt{oqs.h} come accennato in precede
     #include <oqs/oqs.h>
 \end{minted}
 
-Successivamente, è necessario intervenire sulla funzione \texttt{bool GCS\_MAVLINK::try\_send\_message(const enum ap\_message id)} che, per ogni messaggio dello scheduler, richiama una funzione (definita ad hoc in questo stesso file) che si occuperà di inviare un'istanza di quel messaggio. \texttt{try\_send\_message} è implementata mediante uno \texttt{switch} che permette di discriminare il messaggio sulla base del suo tipo. È quindi sufficiente \textbf{aggiungere} un \texttt{case} in corrispondenza dei due messaggi che l'autopilot desidera inviare (il messaggio di Key Exchange e la capsula), come mostrato di seguito 
+Successivamente, è necessario intervenire sulla funzione \texttt{bool GCS\_MAVLINK::try\_send\_message(const enum ap\_message id)} che, per ogni messaggio dello scheduler, richiama una funzione (definita ad hoc in questo stesso file) che si occuperà di inviare un'istanza di quel messaggio. \texttt{try\_send\_message} è implementata mediante uno \texttt{switch} che permette di discriminare il messaggio sulla base del suo tipo. È quindi sufficiente \textbf{aggiungere} un \texttt{case} in corrispondenza dei due messaggi che l'autopilot desidera inviare (il messaggio di Key Exchange e la capsula), come mostrato di seguito.
 
 \begin{minted}{cpp}
     bool GCS_MAVLINK::try_send_message(const enum ap_message id)
@@ -1564,7 +1564,7 @@ In sostanza, questa funzione si comporta in maniera simile a \texttt{send\_keyex
 
 Quando il protocollo di scambio della chiave pubblica e della capsula è terminato, questi due messaggi \textbf{non vengono più inviati}.
 
-Oltre alla definizione di funzioni che modellano l'invio di messaggi \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di acknowledgement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}.
+Oltre alla definizione di funzioni che modellano l'invio di messaggi \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di acknowledgement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}. Entrambe queste funzioni si occupano di informare ArduPilot che la GCS e che è di conseguenza possibile avanzare nel processo di scambio delle informazioni (in termini di numeri di sequenza e di indici da richiedere ed inviare).
 
 Tali funzioni vanno richiamate nel corpo della funzione \texttt{handle\_common\_message}, come segue:
 
@@ -1649,11 +1649,35 @@ Tale meccanismo è stato ripreso anche per il messaggio \texttt{CAPSULEACK}:
     }
 \end{minted}
 
-In quest'ultimo caso, quando la capsual è stata scambiata, viene impostata anche la \textbf{chiave di sessione}, generata in precedenza mediante chiamata ad \texttt{Encaps()}: da questo momento in poi è possibile iniziare la \textbf{comunicazione cifrata} tra l'UAV e la GCS.
+In quest'ultimo caso, quando la capsula è stata scambiata, viene impostata anche la \textbf{chiave di sessione}, generata in precedenza mediante chiamata ad \texttt{Encaps()}: da questo momento in poi è possibile iniziare la \textbf{comunicazione cifrata} tra l'UAV e la GCS.
 La funzione \texttt{set\_session\_key()} viene definita nella liberia \textsc{MAVLink}, che sarà oggetto di discussione successivamente.
 
 \newpage
 \subsection{Alterazione delle funzioni di \textbf{QGroundControl}}
+L'altro progetto che è stato necessario modificare in questo lavoro consiste, coem detto, in \textbf{QGroundControl}, la cui responsabilità è triplice:
+
+\begin{itemize}
+    \item \textbf{Generare} la coppia $(pk, sk)$ ed inviare $pk$ su richiesta dell'UAV;
+    \item \textbf{Ricevere} la capsula creata mediante $pk$ dall'UAV;
+    \item \textbf{Decapsulare} la capsula ed estrarre la \textbf{chiave di sessione}.
+\end{itemize}
+
+Le modifiche effettuate a questo progetto si concentrano principalmente nel file \texttt{MAVLinkProtocol.cc} e, di conseguenza, nel suo \textit{header file} \texttt{MAVLinkProtocol.h}, che si occupa di gestire i messaggi \textsc{MAVLink} in entrata ed in uscita dalla GCS e di interagire con il \texttt{LinkManager}, ovvero il gestore le connessioni. Entrambi questi file si trovano nella directory \texttt{src/comm/}, a partire dalla \textit{root} della repository del progetto.
+
+\subsubsection{\texttt{src/comm/MAVLinkProtocol.cc}}
+In suddetto file è presente una funzione chiamata
+\begin{minted}{cpp}
+    void MAVLinkProtocol::receiveBytes(LinkInterface* link, 
+                                        QByteArray b)
+    { ... }
+\end{minted}
+
+che si occupa di effettuare il parsing, un carattere alla volta, di un messaggio \textsc{MAVLink} deserializzato ed offre (a parsing completato) la possibilità di eseguire del codice in base all'\textbf{ID} del messaggio mediante un costrutto \texttt{if-else}.
+
+Data la prolissità del codice, se ne riporta qui il funzionamento generale e gli \texttt{snippet} riguardanti gli aspetti più importanti.
+
+In particolare, \textbf{alla ricezione dei messaggi \texttt{KEYEXCHANGE} e \texttt{CAPSULE}}, la GCS emette rispettivamente i messaggi \texttt{KEYEXCHANGEGCSACK} ed \texttt{CAPSULEACK}.
+
 \newpage
 \subsection{Alterazione della libreria \textsc{MAVLink}}
 
