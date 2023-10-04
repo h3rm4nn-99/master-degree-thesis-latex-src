@@ -1564,7 +1564,7 @@ In sostanza, questa funzione si comporta in maniera simile a \texttt{send\_keyex
 
 Quando il protocollo di scambio della chiave pubblica e della capsula è terminato, questi due messaggi \textbf{non vengono più inviati}.
 
-Oltre alla definizione di funzioni che modellano l'invio di messaggi \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di acknowledgement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}. Entrambe queste funzioni si occupano di informare ArduPilot che la GCS e che è di conseguenza possibile avanzare nel processo di scambio delle informazioni (in termini di numeri di sequenza e di indici da richiedere ed inviare).
+Oltre alla definizione di funzioni che modellano l'invio di messaggi \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di gement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}. Entrambe queste funzioni si occupano di informare ArduPilot che la GCS e che è di conseguenza possibile avanzare nel processo di scambio delle informazioni (in termini di numeri di sequenza e di indici da richiedere ed inviare).
 
 Tali funzioni vanno richiamate nel corpo della funzione \texttt{handle\_common\_message}, come segue:
 
@@ -1835,19 +1835,61 @@ Tale implementazione è stata scelta per due ragioni pratiche:
 
 La libreria, recita il suo README, offre le varianti di AES con chiavi da \textbf{128}, \textbf{192} e \textbf{256} bit nelle modalità operative \textbf{ECB}, \textbf{CBC} e \textbf{CTR}.
 
-La configurazione scelta per l'utilizzo di tale libreria consiste in:
+La libreria si compone sostanzialmente di due file:
+
+\begin{itemize}
+    \item \texttt{aes.h}: un header file dove sono dichiarate le funzioni e definiti i parametri dell'algoritmo, ovvero la \textbf{modalità operativa} da utilizzare e la \textbf{lunghezza della chiave} desiderata;
+    \item \texttt{aes.c}: un file sorgente che contiene l'implementazione concreta delle funzioni dichiarate nell'header file.
+\end{itemize}
+
+La configurazione scelta per l'utilizzo consiste in:
 
 \begin{itemize}
     \item \textbf{Lunghezza della chiave di 256 bit}, alla luce del ragionamento svolto nella precedente sezione di questo capitolo;
     \item \textbf{Modalità operativa CTR}, poiché la modalità ECB viene generalmente reputata insicura e la modalità CBC richiederebbe il \textbf{padding} del plain text ad un multiplo di 16 bytes, operazione non sempre possibile a causa delle limitazioni alla grandezza del payload di un messaggio \textsc{MAVLink}.
 \end{itemize}
 
-L'integrazione di tale libreria nei due progetti si effettua in due modi:
+Le modalità di integrazione della libreria varia a seconda del progetto:
 
 \begin{itemize}
-    \item Nel caso di ArduPilot:
-    \item Nel caso di QGroundControl:
+    \item Nel caso di QGroundContol, è sufficiente aggiungere le seguenti righe alla fine di \texttt{\texttt{QGCExternalLibs.pri}}:
+
+    \begin{minted}{python}
+        SOURCES += libs/mavlink/include/mavlink/v2.0/aes.c
+        HEADERS += libs/mavlink/include/mavlink/v2.0/aes.h
+    \end{minted}
+
+    Successivamente, è necessario posizionare i file \texttt{aes.c} ed \texttt{aes.h} nella directory \texttt{libs/mavlink/include/mavlink/v2.0} e ricompilare il progetto.
+    \item Nel caso di ArduPilot, l'aggiunta di altri file da aggiungere al progetto di building è più complicata. 
+    In particolare, non è possibile informare \texttt{waf} che si intende includere un altro file \texttt{.c} o \texttt{.cpp} nella compilazione. Dunque, nel caso di uso di funzioni implementate in tale file (e richiamate mediante l'header file a lui associato), il linker restituirà lo \textbf{status code 1} e genererà un messaggio di \texttt{undefined reference}. 
+    La soluzione\footnote{il \textit{workaround}, più che altro} consiste nel rendere la libreria \textit{header-only} e spostare semplicemente l'implementazione concreta delle funzioni nell'header file. A questo punto, la compilazione ed il linking vanno a buon fine.
 \end{itemize}
+
+Una volta chiarito questo aspetto è possibile procedere nell'\textit{overview}.
+
+Il \textit{core} delle modifiche alla libreria \textsc{MAVLink} risiede nel file \texttt{mavlink\_helpers.h}, dove sono presenti le funzioni che regolano a basso livello la \textbf{serializzazione} e la \textbf{deserializzazione} dei messaggi \textsc{MAVLink}. 
+
+Queste ultime sono state \textbf{modificate} in modo tale da includere chiamate alle funzionalità di \textbf{cifratura} e \textbf{decifratura} offerte da \texttt{aes.h}. In particolare:
+
+\begin{enumerate}
+    \item \mintinline{cpp}{MAVLINK_HELPER uint16_t mavlink_finalize_message_buffer()}, che calcola il checksum del messaggio da inviare. Utilizzata da QGroundControl;
+    \item \mintinline{cpp}{MAVLINK_HELPER void _mav_finalize_message_chan_send()}, che effettua le medesime operazioni ma viene utilizzata da ArduPilot poiché tale progetto definisce la macro \texttt{MAVLINK\_USE\_CONVENIENCE\_FUNCTIONS};
+    \item \mintinline{cpp}{MAVLINK_HELPER uint8_t mavlink_frame_char_buffer()}, che si occupa di effettuare il parsing di un messaggio in arrivo e ne verifica il checksum. Viene usata da entrambi i progetti.
+\end{enumerate}
+
+Nel caso delle funzioni \textbf{1} e \textbf{2}, è necessario effettuare l'operazione di \textbf{cifratura} mediante l'invocazione della funzione \mintinline{cpp}{void AES_CTR_xcrypt_buffer()}. Questa operazione, per mantenere intatto il funzionamento del meccanismo di controllo integrità di \textsc{MAVLink}, viene effettuata \textbf{prima del calcolo del checksum}
+
+Nella funzione \textbf{3}, è invece necessario effettuare l'operazione di \textbf{decifratura}. Specularmente, tale operazione viene effettuata \textbf{dopo la verifica del checksum}. Per decifrare, è stata invocata la \textbf{stessa funzione} delle funzioni \textbf{1} e \textbf{2} poiché nel contesto di \texttt{AES} in \texttt{CTR-mode}, \textbf{cifratura e decifratura condividono la stessa procedura}.
+
+Sono state inoltre previste tre funzioni \textit{utility}:
+
+\begin{enumerate}
+    \item \mintinline{cpp}{void set_session_key()}, richiamata sia da ArduPilot che da QGroundControl e che permette di impostare lo \textbf{shared secret} estratto dalla capsula ed il \textbf{vettore di inizializzazione};
+    \item \mintinline{cpp}{uint8_t *get_session_key()}, che restituisce un \textbf{puntatore} allo \textbf{shared secret} una volta impostato;
+    \item \mintinline{cpp}{uint8_t *get_iv()}, che restituisce un \textbf{puntatore} al \textbf{vettore di inizializzazione} una volta impostato;
+\end{enumerate}
+
+Le operazioni di \textbf{cifratura} e \textbf{decifratura} non sono effettuate nel caso di invio e ricezione dei messaggi di \texttt{HEARTBEAT} o di scambio delle chiavi o della capsula (e relativi messaggi di acknowlegement). Questo controllo viene effettuato facendo riferimento all'\textbf{ID} del messaggio.
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}, heading=bibintoc]
