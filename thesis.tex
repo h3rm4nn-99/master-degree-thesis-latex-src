@@ -1265,7 +1265,7 @@ Nello schema presente nella pagina successiva:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{images/key_exchange.png}
+    \includegraphics[width=0.6\textwidth]{images/key_exchange.pdf}
     \caption{Una rappresentazione grafica del protocollo descritto}
 \end{figure}
 
@@ -1804,6 +1804,24 @@ Infine, viene inviato il messaggio \texttt{CAPSULEACK}, in maniera del tutto ana
 \end{minted}
 
 A questo punto, la GCS è finalmente pronta per iniziare la comunicazione cifrata con l'UAV.
+
+\newpage
+\subsubsection{Riassumendo}
+Ora che è stato descritto nel dettaglio il funzionamento del meccanismo di scambio delle chiavi e della capsula, è possibile fornire una versione aggiornata e più dettagliata del grafico riassuntivo mostrato nelle pagine precedenti.
+
+Per quanto riguarda lo scambio della chiave:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/key_exchange_concrete.pdf}
+\end{figure}
+
+Per quanto riguarda il protocollo di scambio della capsula, invece:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/capsule.pdf}
+\end{figure}
 
 \newpage
 \subsection{Step 8: AES ed alterazione della libreria \textsc{MAVLink}}
