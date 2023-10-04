@@ -121,7 +121,7 @@ In particolare:
     \item Questo capitolo funge da introduzione al lavoro svolto durante l'attività di Tesi, ne illustra la struttura e ne chiarisce le motivazioni ed il contesto in cui è calato;
     \item il \textbf{Capitolo 2} fornisce una panoramica sulle principali piattaforme software considerate nel presente lavoro;
     \item il \textbf{Capitolo 3} fornisce una panoramica sul protocollo \textbf{\textsc{MAVLink}};
-    \item il \textbf{Capitolo 4} discute alcune problematiche di sicurezza che affliggono il protocollo \textsc{MAVLink} e discute alcuni approcci a questo problema presnti in letteratura;
+    \item il \textbf{Capitolo 4} discute alcune problematiche di sicurezza che affliggono il protocollo \textsc{MAVLink} e discute alcuni approcci a questo problema presenti in letteratura;
     \item il \textbf{Capitolo 5} fornisce un'introduzione all'impatto dell'avvento dei \textbf{Computer Quantistici} nel campo della crittografia e al concetto di \textbf{Post-Quantum Cryptography} (PQC). Si procederà quindi ad una panoramica dell'algoritmo \textbf{Kyber};
     \item il \textbf{Capitolo 6} illustra in dettaglio le \textbf{modifiche} effettuate alle piattaforme software considerate nel presente lavoro ed al protocollo \textsc{MAVLink} stesso;
     \item il \textbf{Capitolo 7} fornisce le \textbf{conclusioni} al presente lavoro e illustra alcuni possibili \textbf{sviluppi futuri}.
@@ -483,7 +483,7 @@ Un \textbf{frame} \textsc{MAVLink} 1.0 è strutturato come segue \cite{mavlink-1
     \item Packet Sequence Number (\texttt{SEQ}): un byte che rappresenta il numero di sequenza del pacchetto nel contesto di una comunicazione. Serve principalmente per la \textbf{detection} di \textbf{perdita} dei pacchetti e degli errori in generale;
     \item System ID (\texttt{SYSID}): un byte che rappresenta l'ID del \textbf{mittente} del messaggio. Non è possibile indicare 0 (l'indirizzo di broadcast) come mittente poiché viene interpretato come non valido dal parser;
     \item Component ID (\texttt{COMPID}): un byte che rappresenta la \textbf{componente} del veicolo che ha generato il messaggio (una videocamera o un qualche accessorio);
-    \item Message ID (\texttt{MSGID}): un byte che rappresenta il \textbf{Message ID} del contenuto del payload. Serve alla libreria per identificare il messaggio eselezionare il parser più adatto per interpretare il contenuto e deserializzarlo;
+    \item Message ID (\texttt{MSGID}): un byte che rappresenta il \textbf{Message ID} del contenuto del payload. Serve alla libreria per identificare il messaggio e selezionare il parser più adatto per interpretare il contenuto e deserializzarlo;
     \item Payload (\texttt{PAYLOAD}): un vettore di byte di \textbf{al più} 255 bytes (si veda il ragionamento fatto in precedenza) che contiene i dati veri e propri scambiati tra l'UAV e la GCS;
     \item CRC (+ CRC Extra) (\texttt{CHECKSUM}): due bytes: \begin{itemize}
         \item Il primo rappresenta il checksum del messaggio (nel suo calcolo non viene considerato \texttt{STX});
@@ -523,12 +523,12 @@ Un frame \textsc{MAVLink} 2.0 è quindi strutturato come segue \cite{mavlink-2-p
 \begin{itemize}
     \item Start of Text (\texttt{STX}, chiamato anche \texttt{MAGIC}): un byte che rappresenta l'inizio di un frame \textsc{MAVLink}. Nella versione 2.0 del protocollo questo byte assume un valore fisso: \texttt{0xFD};
     \item Payload Length (\texttt{LEN}): un byte che rappresenta la \textbf{lunghezza in byte} del payload. Poiché questo campo è formato da un solo byte, la lunghezza del payload \textbf{non può superare i 255 bytes};
-    \item Incompatibility Flags (\texttt{INCFLAGS}): un byte che rappresenta quelle features del protocollo che \textbf{devono essere tassativamente supportate} da chi riceve il pacchetto poiché \textbf{ne alterano la struttura}. In caso contrario, le specifiche del protcollo indicano che il pacchetto deve essere \textbf{scartato}. L'unico valore attualmente supportato è \texttt{0x01}, che rappresenta la possibilità di \textbf{firmare il messaggio};
-    \item Compatibility Flags (\texttt{CMPFLAGS}): un byte che indica la presenza di features "aggiuntive" che, anche se non supportate dal ricevente \textbf{non pregiudicano} la deserializzazione del pacchetto e che quindi lo scarto delpacchetto non è per forza necessario. Un esempio è una flag che denota un pacchetto "ad alta priorità".
+    \item Incompatibility Flags (\texttt{INCFLAGS}): un byte che rappresenta quelle features del protocollo che \textbf{devono essere tassativamente supportate} da chi riceve il pacchetto poiché \textbf{ne alterano la struttura}. In caso contrario, le specifiche del protocollo indicano che il pacchetto deve essere \textbf{scartato}. L'unico valore attualmente supportato è \texttt{0x01}, che rappresenta la possibilità di \textbf{firmare il messaggio};
+    \item Compatibility Flags (\texttt{CMPFLAGS}): un byte che indica la presenza di features "aggiuntive" che, anche se non supportate dal ricevente \textbf{non pregiudicano} la deserializzazione del pacchetto e che quindi lo scarto del pacchetto non è per forza necessario. Un esempio è una flag che denota un pacchetto "ad alta priorità".
     \item Packet Sequence Number (\texttt{SEQ}): un byte che rappresenta il numero di sequenza del pacchetto nel contesto di una comunicazione. Serve principalmente per la \textbf{detection} di \textbf{perdita} dei pacchetti e degli errori in generale;
     \item System ID (\texttt{SYSID}): un byte che rappresenta l'ID del \textbf{mittente} del messaggio. Non è possibile indicare 0 (l'indirizzo di broadcast) come mittente poiché viene interpretato come non valido dal parser;
     \item Component ID (\texttt{COMPID}): un byte che rappresenta la \textbf{componente} del veicolo che ha generato il messaggio (una videocamera o un qualche accessorio);
-    \item Message ID (\texttt{MSGID}): \textbf{tre bytes} che rappresentano il \textbf{Message ID} del contenuto del payload. Serve alla libreria per identificare il messaggio eselezionare il parser più adatto per interpretare il contenuto e deserializzarlo. Con l'aumento della dimensione di questo campo è possibile supportare un numero più grande di messaggi e di rendere la libreria ancora più flessibile rispetto a prima;
+    \item Message ID (\texttt{MSGID}): \textbf{tre bytes} che rappresentano il \textbf{Message ID} del contenuto del payload. Serve alla libreria per identificare il messaggio e selezionare il parser più adatto per interpretare il contenuto e deserializzarlo. Con l'aumento della dimensione di questo campo è possibile supportare un numero più grande di messaggi e di rendere la libreria ancora più flessibile rispetto a prima;
     \item Payload (\texttt{PAYLOAD}): un vettore di byte di \textbf{al più} 255 bytes (si veda il ragionamento fatto in precedenza) che contiene i dati veri e propri scambiati tra l'UAV e la GCS;
     \item CRC (+ CRC Extra) (\texttt{CHECKSUM}): due bytes: \begin{itemize}
         \item Il primo rappresenta il checksum del messaggio (nel suo calcolo non viene considerato \texttt{STX});
@@ -610,14 +610,14 @@ Poiché l'uso del protocollo \textsc{MAVLink} 1.0 è ancora ampiamente diffuso, 
         \item Se invece non vi è supporto per \textsc{MAVLink} 2.0, risponderà con un \textbf{NACK} e, in caso di assenza di procedure apposite, \textbf{scarterà il messaggio precedente} e non risponderà affatto.
     \end{itemize}
     \item \begin{itemize}
-        \item Se la GCS riceve il messaggio \texttt{PROTOCOL\_VERSION} allorà verrà effettuato lo \textit{switch} alla versione 2.0 del protocollo.
+        \item Se la GCS riceve il messaggio \texttt{PROTOCOL\_VERSION} allora verrà effettuato lo \textit{switch} alla versione 2.0 del protocollo.
         \item Se viene ricevuto un NACK oppure si giunge al timeout, viene utilizzata la versione 1.0 del protocollo poiché evidentemente l'UAV non è riuscito ad interpretare in maniera corretta il frame precedente.
         \end{itemize} 
 \end{itemize}
 
 \newpage
 
-Di seguito è presente una rappresntazione grafica dell'handshaking appena descritto.
+Di seguito è presente una rappresentazione grafica dell'handshaking appena descritto.
 
 \begin{figure}[H]
     \centering
@@ -784,7 +784,7 @@ Una descrizione tecnica approfondita dell'implementazione effettuata verrà svol
 In questo capitolo verrà svolta una breve introduzione al concetto di \textbf{Quantum Computing} e si discuteranno le implicazioni della sua diffusione, tra gli altri, nel campo della crittografia.
 
 \subsection{Cos'è il Quantum Computing}
-Sebbene il concetto di Quantum Computing stia acquisendo sempre più importanza negli ultimi decenni, l'idea che sta alla sua base risale ai \textbf{primi anni '80} del XX secolo, quando in uno studio \cite{Benioff1980} del fisico statunutense \textbf{Paul Benioff} (venuto a mancare di recente, nel marzo del 2022) venne proposto un primo modello di \textbf{macchina di Turing} operante sotto le leggi della \textbf{meccanica quantistica}. Da quel momento molti altri studi vennero basati su questa idea: tra questi annoveriamo quello proposto da \textbf{Richard Feynmann} a proposito della simulazione di fenomeni fisici usando computer quantistici.
+Sebbene il concetto di Quantum Computing stia acquisendo sempre più importanza negli ultimi decenni, l'idea che sta alla sua base risale ai \textbf{primi anni '80} del XX secolo, quando in uno studio \cite{Benioff1980} del fisico statunitense \textbf{Paul Benioff} (venuto a mancare di recente, nel marzo del 2022) venne proposto un primo modello di \textbf{macchina di Turing} operante sotto le leggi della \textbf{meccanica quantistica}. Da quel momento molti altri studi vennero basati su questa idea: tra questi annoveriamo quello proposto da \textbf{Richard Feynmann} a proposito della simulazione di fenomeni fisici usando computer quantistici.
 
 La vera differenza che intercorre tra un computer classico ed una macchina quantistica consiste nel modo in cui sono rappresentate le informazioni: se nel caso "classico" a noi familiare si ragiona in termini di \texttt{bit} (ovvero la più piccola unità con cui possono essere codificate delle informazioni), nel caso quantistico si passa al concetto di \texttt{\textbf{qubit}}, termine coniato nel 1995 \cite{PhysRevA.51.2738} dal fisico Benjamin Schumacher che rappresenta l'unità di informazione quantistica. 
 
@@ -1176,7 +1176,7 @@ Come accennato in fase di introduzione a questo lavoro, l'idea principale consis
     \item Integrazione di \texttt{Kyber} all'interno di QGroundControl;
     \item Alterazione delle funzioni di \textbf{ArduPilot};
     \item Alterazione delle funzioni di \textbf{QGroundControl};
-    \item Alterazione della libreria \textsc{MAVLink}.
+    \item AES ed alterazione della libreria \textsc{MAVLink}.
 \end{enumerate}
 
 Le sezioni successive approfondiscono ciascuno di questi step.
@@ -1316,7 +1316,7 @@ In particolare:
 \begin{itemize}
     \item Il campo \texttt{seq} consiste in un \textbf{byte} che rappresenta il \textbf{numero di sequenza} del messaggio all'interno del processo di scambio della chiave;
     \item I campi \texttt{chunk\_start} e \texttt{chunk\_end} rappresentano rispettivamente gli \textbf{indici} di inizio e della fine del chunk della chiave pubblica che l'UAV desidera ricevere. Entrambi questi campi sono \textbf{interi a 16 bit};
-    \item Il campo \textbf{IV} rappresenta il \textbf{vettore di inizializzazione} utilizzato per la comunicazione cifrata instaurata alla fine del processo di scambio delle chiavi. Consiste in un vettore di 128 bit, come richiesto dalle specifiche del cifrario AES.
+    \item Il campo \textbf{IV} rappresenta il \textbf{vettore di inizializzazione} utilizzato per la comunicazione cifrata instaurata alla fine del processo di scambio delle chiavi. Consiste in un vettore di 128 bit, come richiesto dalle specifiche del cifrario \texttt{AES}.
 \end{itemize}
 
 \subsubsection{\texttt{KEYEXCHANGEGCSACK}}
@@ -1421,7 +1421,7 @@ Dopo di che, è necessario eseguire una \textbf{build pulita del progetto}, anda
 e successivamente rieseguendo i comandi descritti nella sezione relativa alla compilazione di QGroundControl nel presente documento.
 
 \newpage
-\subsection{Alterazione delle funzioni di \textbf{ArduPilot}}
+\subsection{Step 6: Alterazione delle funzioni di \textbf{ArduPilot}}
 Una volta descritto il funzionamento ad alto livello del processo di scambio delle chiavi, è ora possibile scendere ancora di più nel dettaglio ed affrontare quali sono stati i cambiamenti alla struttura del codice sorgente del progetto \textbf{ArduPilot}.
 
 In particolare, il grosso dei cambiamenti si è concentrato in due file specifici:
@@ -1653,8 +1653,8 @@ In quest'ultimo caso, quando la capsula è stata scambiata, viene impostata anch
 La funzione \texttt{set\_session\_key()} viene definita nella liberia \textsc{MAVLink}, che sarà oggetto di discussione successivamente.
 
 \newpage
-\subsection{Alterazione delle funzioni di \textbf{QGroundControl}}
-L'altro progetto che è stato necessario modificare in questo lavoro consiste, coem detto, in \textbf{QGroundControl}, la cui responsabilità è triplice:
+\subsection{Step 7: Alterazione delle funzioni di \textbf{QGroundControl}}
+L'altro progetto che è stato necessario modificare in questo lavoro consiste, come detto, in \textbf{QGroundControl}, la cui responsabilità è triplice:
 
 \begin{itemize}
     \item \textbf{Generare} la coppia $(pk, sk)$ ed inviare $pk$ su richiesta dell'UAV;
@@ -1806,7 +1806,48 @@ Infine, viene inviato il messaggio \texttt{CAPSULEACK}, in maniera del tutto ana
 A questo punto, la GCS è finalmente pronta per iniziare la comunicazione cifrata con l'UAV.
 
 \newpage
-\subsection{Alterazione della libreria \textsc{MAVLink}}
+\subsection{Step 8: AES ed alterazione della libreria \textsc{MAVLink}}
+L'ultima parte delle modifiche effettuate per questo lavoro riguardano proprio la libreria C \textsc{MAVLink}, comune ad entrambi i progetti. In particolare, a questo livello è stata inserita la logica per gestire la comunicazione cifrata tra le due parti e, nello specifico, sono state richiamate le funzioni di una libreria che implementa il cifrario \textbf{AES}.
+
+\subsubsection{Perché \texttt{AES?}}
+Lo scopo principale di questo lavoro, come ripetuto più volte nel presente documento, consiste nell'utilizzare tecnologie \textbf{quantum-resistant}: la scelta della componente di cifratura simmetrica per la comunicazione è ricaduta sul cifrario \texttt{AES} poiché è opinione comune che tale cifrario resista ad attacchi di crittoanalisi condotti da algoritmi quantistici. Il miglior "attacco quantistico" a questo cifrario conosciuto fino ad ora consiste in quello veicolato tramite l'uso del cosiddetto \textbf{Algoritmo di Grover} \cite{grover1996fast}, un algoritmo quantistico originariamente pensato per effettuare operazioni efficienti di ricerca in database \textbf{non ordinato} con una complessità temporale di $\mathcal{O}(\sqrt{N})$ e spaziale di $\mathcal{O}(\log N)$. Quando applicato in un contesto di \textbf{ricerca esaustiva}, tale algoritmo permette quindi di \textbf{dimezzare} il tempo necessario all'individuazione di un valore e, nel caso di attacchi \textit{bruteforce}, de recupero della chiave di cifratura.\cite*{cryptoeprint:2017/811}
+
+Quanto appena detto conduce quindi ad un duplice risultato:
+
+\begin{itemize}
+    \item Nel caso di AES, il livello di sicurezza è quindi \textbf{dimezzato}: ad esempio, per la variante \texttt{AES-128} il livello di sicurezza in un contesto quantistico si riduce a quello offerto da una (ipotetica!) variante con chiavi a 64 bit di tale schema in un contesto classico;
+    \item La variante \texttt{AES-256} passa ad un livello di sicurezza pari a quello di \texttt{AES-128}, considerato oggi ancora \textbf{sufficiente}.
+\end{itemize}
+
+Per questa ragione, lo schema \texttt{AES} viene considerato, allo stato attuale, \textbf{quantum-resistant}.
+
+\subsubsection{AES: implementazione}
+Fatta questa precisazione circa la sicurezza dello schema AES nel contesto quantistico, si descrive ora il processo di integrazione di una sua implementazione all'interno della libreria \textsc{MAVLink}.
+
+L'implementazione scelta per tale processo si chiama \texttt{tiny-AES-c}, stata proposta dall'utente \textbf{kokke} ed il suo codice è disponibile liberamente su GitHub. \cite{tiny-aes-c-github}
+
+Tale implementazione è stata scelta per due ragioni pratiche:
+
+\begin{itemize}
+    \item Non è necessario alcun tipo di \textbf{compilazione} preventiva;
+    \item L'utilizzo di memoria derivato dalla semplice inclusione di tale libreria in un progetto \textbf{non supera} i 200 bytes. 
+\end{itemize}
+
+La libreria, recita il suo README, offre le varianti di AES con chiavi da \textbf{128}, \textbf{192} e \textbf{256} bit nelle modalità operative \textbf{ECB}, \textbf{CBC} e \textbf{CTR}.
+
+La configurazione scelta per l'utilizzo di tale libreria consiste in:
+
+\begin{itemize}
+    \item \textbf{Lunghezza della chiave di 256 bit}, alla luce del ragionamento svolto nella precedente sezione di questo capitolo;
+    \item \textbf{Modalità operativa CTR}, poiché la modalità ECB viene generalmente reputata insicura e la modalità CBC richiederebbe il \textbf{padding} del plain text ad un multiplo di 16 bytes, operazione non sempre possibile a causa delle limitazioni alla grandezza del payload di un messaggio \textsc{MAVLink}.
+\end{itemize}
+
+L'integrazione di tale libreria nei due progetti si effettua in due modi:
+
+\begin{itemize}
+    \item Nel caso di ArduPilot:
+    \item Nel caso di QGroundControl:
+\end{itemize}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}, heading=bibintoc]
