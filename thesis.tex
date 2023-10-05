@@ -399,7 +399,7 @@ L'invocazione di \texttt{qmake} permette a Qt di inizializzare i \textbf{Makefil
 
 Il comando \texttt{nproc -{}-all} permette di determinare il numero di core logici che la CPU della macchina su cui si sta svolgendo la compilazione ha a disposizione. Ciò permette una compilazione veloce quanto più possibile.
 
-Una volta terminata la compilazione del software, l'eseguibile prodotto sarà posizionato all'interno della cartella \texttt{build/staging} e si chiama semplicemente \texttt{QGroundContol}. Suddetto file ha già assegnati i permessi di esecuzione ed è possibile eseguirlo mediante il seguente comando:
+Una volta terminata la compilazione del software, l'eseguibile prodotto sarà posizionato all'interno della cartella \texttt{build/staging} e si chiama semplicemente \texttt{QGroundControl}. Suddetto file ha già assegnati i permessi di esecuzione ed è possibile eseguirlo mediante il seguente comando:
 
 \begin{center}
     \texttt{staging/QGroundControl}
@@ -408,13 +408,13 @@ Una volta terminata la compilazione del software, l'eseguibile prodotto sarà po
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/QGroundCotrol-Interface.jpg}
-    \caption{L'interfaccia di QGroundContol una volta aperto}
+    \caption{L'interfaccia di QGroundControl una volta aperto}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/QGroundControl-settings.jpg}
-    \caption{Le impostazioni di QGroundContol}
+    \caption{Le impostazioni di QGroundControl}
 \end{figure}
 
 \section{Il protocollo \textsc{MAVLink}}
@@ -771,7 +771,7 @@ Dal punto di vista tecnologico, invece, sono state utilizzate le stesse piattafo
 
 \begin{itemize}
     \item \textbf{ArduPilot} perl'utilizzo di SITL;
-    \item \textbf{QGroundContol} per controllare il simulatore;
+    \item \textbf{QGroundControl} per controllare il simulatore;
     \item \textbf{\textsc{MAVLink}} (nella sua implementazione di riferimento in C) per integrare i nuovi messaggi per lo scambio delle chiavi e gestire cifratura e decifratura.
 \end{itemize}
 
@@ -780,11 +780,11 @@ Il lavoro proposto in questo elaborato ricalca il framework stabilito da \textbf
 Una descrizione tecnica approfondita dell'implementazione effettuata verrà svolta nel \textbf{Capitolo 6}.
 
 \newpage
-\section{Quantum Comuting e Post-Quantum Cryptography}
+\section{Quantum Computing e Post-Quantum Cryptography}
 In questo capitolo verrà svolta una breve introduzione al concetto di \textbf{Quantum Computing} e si discuteranno le implicazioni della sua diffusione, tra gli altri, nel campo della crittografia.
 
 \subsection{Cos'è il Quantum Computing}
-Sebbene il concetto di Quantum Computing stia acquisendo sempre più importanza negli ultimi decenni, l'idea che sta alla sua base risale ai \textbf{primi anni '80} del XX secolo, quando in uno studio \cite{Benioff1980} del fisico statunitense \textbf{Paul Benioff} (venuto a mancare di recente, nel marzo del 2022) venne proposto un primo modello di \textbf{macchina di Turing} operante sotto le leggi della \textbf{meccanica quantistica}. Da quel momento molti altri studi vennero basati su questa idea: tra questi annoveriamo quello proposto da \textbf{Richard Feynmann} a proposito della simulazione di fenomeni fisici usando computer quantistici.
+Sebbene il concetto di Quantum Computing stia acquisendo sempre più importanza negli ultimi decenni, l'idea che sta alla sua base risale ai \textbf{primi anni '80} del XX secolo, quando in uno studio \cite{Benioff1980} del fisico statunitense \textbf{Paul Benioff} (venuto a mancare di recente, nel marzo del 2022) venne proposto un primo modello di \textbf{macchina di Turing} operante sotto le leggi della \textbf{meccanica quantistica}. Da quel momento molti altri studi vennero basati su questa idea: tra questi annoveriamo quello proposto da \textbf{Richard Feynman} a proposito della simulazione di fenomeni fisici usando computer quantistici.
 
 La vera differenza che intercorre tra un computer classico ed una macchina quantistica consiste nel modo in cui sono rappresentate le informazioni: se nel caso "classico" a noi familiare si ragiona in termini di \texttt{bit} (ovvero la più piccola unità con cui possono essere codificate delle informazioni), nel caso quantistico si passa al concetto di \texttt{\textbf{qubit}}, termine coniato nel 1995 \cite{PhysRevA.51.2738} dal fisico Benjamin Schumacher che rappresenta l'unità di informazione quantistica. 
 
@@ -1166,7 +1166,7 @@ La scelta della versione di \texttt{Kyber} da utilizzare in questo lavoro è ric
 Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scientifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
 
 \subsection{Overview del processo}
-Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundContol} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}. Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave.
+Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundControl} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}. Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave.
 
 \begin{enumerate}
     \item Installazione di un'implementazione di \texttt{Kyber} nell'ambiente di sviluppo;
@@ -1403,7 +1403,7 @@ utilizzando lo switch \texttt{-v} per abilitare la modalità \textit{verbose} e 
 \newpage
 \subsection{Step 5: Integrazione di \texttt{Kyber} all'interno di QGroundControl}
 
-Al contrario di \textbf{ArduPilot}, \textbf{QGroundContol} utilizza il framework \textbf{Qt} per la gestione del progetto e delle procedure di building. Per andare ad integrare \texttt{liboqs} è quindi necessario andare ad intervenire sulla configurazione di Qt stesso. 
+Al contrario di \textbf{ArduPilot}, \textbf{QGroundControl} utilizza il framework \textbf{Qt} per la gestione del progetto e delle procedure di building. Per andare ad integrare \texttt{liboqs} è quindi necessario andare ad intervenire sulla configurazione di Qt stesso. 
 
 Il file su cui intervenire, nello specifico, si chiama \texttt{QGCExternalLibs.pri} ed è situato nella \textit{root} della repository del progetto. L'inclusione di librerie installate in maniera system-wide, come nel caso di ArduPilot descritto nello Step 4, si effettua semplicemente alterando i flags che il sistema di building passa al linker. Nel caso di Qt, è possibile alterare la variabile \texttt{LIBS} alla fine del file prima menzionato ed aggiungendo i flags \texttt{-loqs -lcrypto} in questo modo:
 
@@ -1870,7 +1870,7 @@ La configurazione scelta per l'utilizzo consiste in:
 Le modalità di integrazione della libreria varia a seconda del progetto:
 
 \begin{itemize}
-    \item Nel caso di QGroundContol, è sufficiente aggiungere le seguenti righe alla fine di \texttt{\texttt{QGCExternalLibs.pri}}:
+    \item Nel caso di QGroundControl, è sufficiente aggiungere le seguenti righe alla fine di \texttt{\texttt{QGCExternalLibs.pri}}:
 
     \begin{minted}{python}
         SOURCES += libs/mavlink/include/mavlink/v2.0/aes.c
