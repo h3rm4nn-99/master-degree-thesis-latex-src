@@ -672,7 +672,7 @@ Gli autori dello studio menzionano due tipologie di attacchi portati a termine c
 Inoltre, il fatto che il protocollo \textsc{MAVLink} non preveda alcun tipo di cifratura dei pacchetti in transito \cite{mavlink-no-encrypt} implica una intrinseca insicurezza dello stesso poiché tutte le informazioni sono scambiate in chiaro, rendendo quindi possibile gli attacchi di cui sopra.
 
 \subsection{Possibili contromisure}
-La versione 2.0 di \textsc{MAVLink}, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}. In ogni caso, il fatto che suddetta firma sia grande solamente \textbf{48 bit} apre la porta a tutta un'altra serie di attacchi basati su \textbf{bruteforcing}.
+La versione 2.0 di \textsc{MAVLink}, che introduce il sistema della firma digitale dei pacchetti mette \textbf{solo parzialmente} una pezza alle problematiche descritte poiché previene il \textbf{tampering} delle comunicazioni ma non risolve le problematiche relative alla \textbf{confidenzialità}.
 
 Data la sempre maggiore attenzione riservata a questo tipo di dispositivi in particolare nell'ultimo decennio, il problema della messa in sicurezza dei protocolli come il \textsc{MAVLink} ha acquisito sicuramente un'importanza maggiore. Il problema, inoltre, viene reso ancora più difficile dal fatto che si renda necessario fare un \textbf{tradeoff} tra il grado di sicurezza del protocollo e l'alto \textbf{\textit{throughput}} che lo stesso deve offrire pur trovandosi in contesti caratterizzati da risorse hardware tutt'altro che illimitate.
 
