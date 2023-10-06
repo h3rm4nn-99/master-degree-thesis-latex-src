@@ -380,7 +380,7 @@ Per quanto riguarda la (1.), pacchetti precompilati sono disponibili nella sezio
     \item Un file apk installabile su Android.
 \end{itemize}
 
-Per quanto riguarda la (2.), sono naturalmente necessari particolari accorgimenti, oltre ad una piattaforma che permetta di compilare agevolmente un progetto di grandi dimensioni.\footnote{Gli step riportati qui di seguito si riferiscono al sistema operativo \textbf{Ubuntu 20.04 LTS}, lo stesso utilizzato per il lavoro presentato.}
+Per quanto riguarda la (2.), sono naturalmente necessari particolari accorgimenti, oltre ad una piattaforma che permetta di compilare agevolmente un progetto di grandi dimensioni.\footnote{Gli step riportati qui di seguito si riferiscono al sistema operativo \textbf{Ubuntu 22.04 LTS}, lo stesso utilizzato per il lavoro presentato.}
 
 In particolare:
 
@@ -575,7 +575,7 @@ Come menzionato, a partire dalla versione 2.0 del protocollo \textsc{MAVLink} è
 
 \begin{itemize}
     \item \textbf{Link ID} (\texttt{LINK ID}): un byte che rappresenta il \textbf{link} su cui è stato inviato un determinato pacchetto;
-    \item \textbf{Timestamp} (\texttt{TM.STAMP}): \textbf{sei bytes} che rappresentano il numero di unità di 10 \textbf{microsecondi} passati dal \textbf{1 Gennaio 2015}. Questo contatore deve aumentare in maniera \textit{monotona} ad ogni messaggio inviato. Se ci si trova in un contesto in cui vengono inviati più di ~100.000 messaggi al secondo, questo timestamp può \textbf{superare} l'ora corrente;
+    \item \textbf{Timestamp} (\texttt{TM.STAMP}): \textbf{sei bytes} che rappresentano il numero di unità di 10 \textbf{microsecondi} passati dal \textbf{1 Gennaio 2015}. Questo contatore deve aumentare in maniera \textit{monotona} ad ogni messaggio inviato. Se ci si trova in un contesto in cui vengono inviati più di $\sim$100.000 messaggi al secondo, questo timestamp può \textbf{superare} l'ora corrente;
     \item \textbf{Signature} (\texttt{SIGNATURE}): \textbf{sei bytes} (48 bit) che contengono la firma digitale vera e propria.
 \end{itemize}
 
@@ -665,7 +665,7 @@ In uno studio \cite{8425627} del 2019, \textbf{Kwon et al.} hanno svolto un'anal
 Gli autori dello studio menzionano due tipologie di attacchi portati a termine con successo, testati mediante \textbf{SITL} ed ArduPilot \textbf{Mission Control}:
 
 \begin{itemize}
-    \item Attacco basato su \textbf{ICMP flooding}, che permette di saturare i due endpoint della comunicazione, modificando pesantemente la \textbf{varianza} dei temPI DI \textit{inter-ricezione} dei pacchetti, rendendo quindi la comunicazione \textbf{instabile};
+    \item Attacco basato su \textbf{ICMP flooding}, che permette di saturare i due endpoint della comunicazione, modificando pesantemente la \textbf{varianza} dei tempi di \textit{inter-ricezione} dei pacchetti, rendendo quindi la comunicazione \textbf{instabile};
     \item Attacco basato su \textbf{packet injection}, che permette ad un attaccante di effettuare l'\textbf{hijacking} della comunicazione tra drone e GCS ed è basata su una vulnerabilità del \textbf{Waypoint Protocol}. In breve, quando un UAV riceve il comando \texttt{MISSION\_COUNT(N)} da parte della GCS cancella tutte le informazioni relative alla missione che stava eseguendo e resta in attesa di indicazioni sulla nuova missione da eseguire. L'iniezione di un pacchetto di questo tipo permette ad un attaccante di "iniettare" una nuova missione da eseguire magari creata ad-hoc.
 \end{itemize}
 
@@ -723,7 +723,7 @@ I risultati di questo studio confermano, in un certo senso, quelli del precedent
 Si noti come in entrambi i casi sia stato utilizzato il progetto ArduPilot ed in particolare il già citato software \textbf{SITL} per condurre i test.
 
 \subsubsection{Sicurezza in ambienti resource-constrained: una breve introduzione al concetto di lightweight cryptography}
-Più o meno nello stesso periodo in cui si il panorama delle piattaforme hardware e software per UAV si è arricchito e l'utilizzo di questi dispositivi è e andata "democratizzandosi", si è assistito, in generale, alla sempre più capillare di dispositivi "intelligenti" da utilizzare nei contesti più disparati. Nasce quindi il concetto di \textbf{Internet of Things} (comunemente definito con il suo acronimo \textbf{IoT}), che condivide un discreto numero di aspetti sia positivi che negativi con il contesto dell'UAV. 
+Più o meno nello stesso periodo in cui si il panorama delle piattaforme hardware e software per UAV si è arricchito e l'utilizzo di questi dispositivi è andata "democratizzandosi", si è assistito, in generale, alla sempre più capillare di dispositivi "intelligenti" da utilizzare nei contesti più disparati. Nasce quindi il concetto di \textbf{Internet of Things} (comunemente definito con il suo acronimo \textbf{IoT}), che condivide un discreto numero di aspetti sia positivi che negativi con il contesto degli UAV. 
 
 Certamente, si ritrova in entrambi i casi la necessità dell'utilizzo di protocolli leggeri ed efficienti ma anche (e soprattutto) i limiti delle piattaforme hardware che permettono il funzionamento dei dispositivi (quindi tipicamente microcontrollori dotati di funzionalità di rete). 
 
@@ -778,7 +778,7 @@ Per quanto riguarda invece il concetto di scambio delle chiavi, nel lavoro consi
     \item \texttt{FourQ}: ulteriore meccanismo basato su curve ellittiche proposto da \textbf{Microsoft} nel 2015.
 \end{itemize}
 
-I risultati raggiunti nel paper menzionato in precedenza suggeriscono che gli algoritmi basati su \textbf{curve ellittiche} offrano le migliori prestazioni ed un minore consumo di risorse (memoria e percentuale di CPU utilizzata) ed in particolare, \texttt{FourQ} risulta prevalere sugli altri algoritmi del pool considerato.
+I risultati raggiunti nel paper menzionato in precedenza suggeriscono che gli algoritmi basati su \textbf{curve ellittiche} offrano le migliori prestazioni ed un minore consumo di risorse (memoria e percentuale di CPU utilizzata) ed in particolare \texttt{FourQ} risulta prevalere sugli altri algoritmi del pool considerato.
 
 Proprio per questa ragione, l'algoritmo che sta alla base del meccanismo di scambio delle chiavi implementato nel lavoro di Angelo Passaro consiste proprio in \texttt{FourQ}.
 
@@ -813,7 +813,7 @@ Un \texttt{qubit} può quindi trovarsi rispettivamente:
     \item In una sovrapposizione di due stati: con il \texttt{p} di probabilità nello stato \texttt{0} e con probabilità \texttt{1 - p} nello stato \texttt{1}.
 \end{itemize}
 
-Al di là dei (comunque importanti e necessari) formalismi matematici, la conseguenza di usare un sistema basato su \texttt{qubit} al posto dei classici \texttt{bit} permette alle macchine che sfruttano questo sistema di ottenere performance nettamente maggiori a quelle dei computer tradizionali, tant'è che col passare del tempo questa tipologia di macchine sono state usate per provare a risolvere in tempo polinomiale problemi per cui non erano noti algoritmi "classici" efficienti.
+Al di là dei (comunque importanti e certamente necessari!) formalismi matematici, l'utilizzo di un sistema basato su \texttt{qubit} al posto dei classici \texttt{bit} permette alle macchine di ottenere performance nettamente maggiori a quelle dei computer tradizionali, tant'è che col passare del tempo questa tipologia di macchine sono state usate per provare a risolvere in tempo polinomiale problemi per cui non erano noti algoritmi "classici" efficienti.
 
 \begin{figure}[H]
     \centering
@@ -830,7 +830,7 @@ Dal punto di vista teorico, tale algoritmo si configura come una \textbf{riduzio
 
 Si noti comunque che il processo di riduzione in sé avviene in tempo polinomiale anche in un computer tradizionale. 
 
-Il \textit{core} dell'algoritmo proposto da Shor si occupa quindi di risolvere efficientemente (leggasi, \textit{tempo polinomiale}) il problema verso cui è stata effettuata la riduzione, seppur con un tasso di errore minore o uguale ad $\frac{1}{3}$ nel caso pessimo. La soluzione di tale problema, per com'è strutturato il processo dell riduzione di sicurezza implica la soluzione anche del problema "originale".
+Il \textit{core} dell'algoritmo proposto da Shor si occupa quindi di risolvere efficientemente (leggasi, \textit{in tempo polinomiale}) il problema verso cui è stata effettuata la riduzione, seppur con un tasso di errore minore o uguale ad $\frac{1}{3}$ nel caso pessimo. La soluzione di tale problema, per com'è strutturato il processo dell riduzione di sicurezza, implica la \textbf{soluzione anche del problema di partenza}.
 
 L'analisi della complessità dell'algoritmo proposto da Shor suggerisce che il suo tempo di esecuzione, comprensivo di tutte le operazioni descritte in precedenza sia proporzionale a:
 
@@ -838,11 +838,11 @@ L'analisi della complessità dell'algoritmo proposto da Shor suggerisce che il s
     $\mathcal{O}((log{}N)^2 (log{}log{}N))$
 \end{center}
 
-assumendo di utilizzare il metodo di \textbf{Harvey e Van Der Hoeven} \cite{harvey:hal-02070778} per la moltiplicazione efficiente di interi in tempo $\mathcal{O}(n log{}n)$ e che quindi il problema della fattorizzazione di interi appartenga, dal punto di vista della teoria della computazione, alla classe \textbf{BQP}, ovvero \textbf{la classe dei problemi risolvibili in tempo polinomiale mediante computer quantistici}.
+a patto di utilizzare il metodo di \textbf{Harvey e Van Der Hoeven} \cite{harvey:hal-02070778} per la moltiplicazione efficiente di interi in tempo $\mathcal{O}(n log{}n)$ e che quindi il problema della fattorizzazione di interi appartenga, dal punto di vista della teoria della computazione, alla classe \textbf{BQP}, ovvero \textbf{la classe dei problemi risolvibili in tempo polinomiale mediante computer quantistici}.
 
 L'approccio proposto da Shor, secondo quanto menzionato nel sommario dello studio, è applicabile non solo al problema della fattorizzazione di interi ma anche al problema del \textbf{logaritmo discreto}.
 
-Le implicazioni dello studio di Shor sono enormi nel campo della crittografia poiché il problema della fattorizzazione di interi e del logaritmo discreto sono alla base degli schemi più utilizzati nel campo della crittografia asimmetrica (o a chiave pubblica): rispettivamente di \textbf{RSA} e del meccanismo di Key Exchange \textbf{Diffie Hellman}.
+Le implicazioni dello studio di Shor sono \textbf{enormi} nel campo della crittografia poiché il problema della fattorizzazione di interi e del logaritmo discreto sono alla base degli schemi più utilizzati nel campo della crittografia asimmetrica (o a chiave pubblica): rispettivamente di \textbf{RSA} e del meccanismo di Key Exchange \textbf{Diffie Hellman}.
 
 La risoluzione in tempo polinomiale mediante computer quantistici di tali problemi renderebbe del tutto insicuri tali schemi, ponendo un considerevole rischio correlato al funzionamento dei protocolli crittografici basati su problemi difficili, come appunto RSA e Diffie Hellman.
 
@@ -857,7 +857,7 @@ Proprio per reagire a questo tipo specifico di minaccia, negli anni ha preso pie
 
 Il grosso della ricerca in questo campo si è concentrato nel campo della crittografia a chiave pubblica e quindi nel contesto dello scambio di chiavi sicuro poiché è quello che fa affidamento su problemi difficli come quelli descritti in precedenza (si pensi appunto ad RSA ed a Diffie Hellman).
 
-Gli schemi crittografici che sono stati messi appunti nel contesto di questo nuovo campo di studi vengono divisi in diverse categorie, a seconda dell'approccio che adottano \cite{Bernstein2009}. Tra questi:
+Gli schemi crittografici che sono stati messi a punto nel contesto di questo nuovo campo di studi vengono divisi in diverse categorie, a seconda dell'approccio che adottano \cite{Bernstein2009}. Tra questi:
 
 \begin{itemize}
     \item Approccio basato su \textbf{Reticoli}: l'approccio su cui si basa lo schema \texttt{Kyber} e che fa riferimento ad una struttura algebrica detta \textbf{Reticolo} e che include i sistemi crittografici basati sul problema \textbf{LWE} (acronimo per \textbf{Learning With Errors}) o su loro varianti;
@@ -903,7 +903,7 @@ Viene proposto alla comunità scientifica nel 2017 in uno studio \cite{cryptoepr
 Prima di descrivere il funzionamento di tale schema è necessario fare una panoramica sulle sue basi matematiche e scientifiche, in particolare il concetto di KEM, il concetto di \textbf{Reticolo} ed il problema \textbf{LWE} (acronimo di \textbf{Learning with Errors}).
 
 \subsubsection{KEM - Key Encapsulation Mechanism}
-L'acronimo KEM è un abbreviazione per \textbf{Key Encapsulation Mechanism} ed è un particolare sistema crittografico \textit{ibrido} ed in particolare permette ai due "interlocutori" di una conversazione di utilizzare \textbf{un algoritmo di cifratura asimmetrica} per lo scambio di una chiave di cifratura da utilizzare nel contesto di un cifrario \textbf{simmetrico}. Naturalmente, il concetto di KEM non è solamente prerogativa della crittografia post quantistica ma è stato studiato ed implementato anche nel contesto della crittografia classica. Un esempio lampante ne è il KEM \textbf{basato sullo schema RSA} o su \textbf{curve ellittiche}, ampiamente utilizzati al giorno d'oggi.
+L'acronimo KEM è un abbreviazione per \textbf{Key Encapsulation Mechanism} ed è un particolare sistema crittografico \textit{ibrido} che, in sostanza, permette ai due "interlocutori" di una conversazione di utilizzare \textbf{un algoritmo di cifratura asimmetrica} per lo scambio di una chiave di cifratura da utilizzare nel contesto di un cifrario \textbf{simmetrico}. Naturalmente, il concetto di KEM non è solamente prerogativa della crittografia post quantistica ma è stato studiato ed implementato anche nel contesto della crittografia classica. Un esempio lampante ne è il KEM \textbf{basato sullo schema RSA} o su \textbf{curve ellittiche}, ampiamente utilizzati al giorno d'oggi.
 
 Formalmente, un generico schema di incapsulamento KEM $K$ è una tupla di algoritmi \textbf{probabilistici di tempo polinomiale}:
 
@@ -946,15 +946,15 @@ Di seguito è presente un diagramma che riassume il funzionamento di un generico
 
 \footnotetext{\href{https://blog.cloudflare.com/post-quantum-key-encapsulation/}{Fonte dell'immagine}}
 
-L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE}, che può essere ricondotto ad un altro problema definito su un \textbf{Reticolo}, entrambi oggetti di discussione nelle prossime sezioni.
+L'architettura di questo tipo di schemi di cifratura rimane sostanzialmente la stessa anche nel caso degli algoritmi post-quantum e l'algoritmo \texttt{Kyber} non fa eccezione. Il concetto che cambia è invece l'\textbf{assunzione} che sta alla base del funzionamento dello schema: nel caso classico i principali KEM utilizzati si basano sul problema \textbf{RSA} (e quindi sulla fattorizzazione di interi) e su \textbf{curve ellittiche} come menzionato in precedenza, mentre algoritmi come \texttt{Kyber} si basano sul problema \textbf{LWE}, che può essere ricondotto ad un altro problema definito su un \textbf{Reticolo}, entrambi oggetti di discussione nelle prossime sezioni.
 \newpage
 \subsubsection{Reticoli}
-Nelle sezioni precedenti sono stati presentati i vari approcci alla crittografia post-quantistica. Uno di questi consisteva in quello basato su \textbf{Reticoli}.
+Nelle sezioni precedenti sono stati presentati i vari approcci alla crittografia post-quantistica: uno di questi consiste in quello basato su \textbf{Reticoli}.
 
 Il nome "reticolo" (in inglese \textit{lattice}) usato senza contestualizzazione risulta essere fuorviante poiché vi sono collegati due concetti distinti, ovvero:
 
 \begin{enumerate}
-    \item \textbf{Reticolo} inteso come \textbf{struttura algebrica} o, equivalentemente, come \textbf{insieme parzialmente ordinato} tale che per ogni coppia di elementi $x$ ed $y$ è possibile individuare l'\textbf{estremo superiore} $Sup$ e l'\textbf{estremo inferiore} $Inf$. Tale tipologia di insiemi può essere rappresentato mediante un \textbf{diagramma di Hasse};
+    \item \textbf{Reticolo} inteso come \textbf{struttura algebrica} o, equivalentemente, come \textbf{insieme parzialmente ordinato} tale che per ogni coppia di elementi $(x,y)$ è possibile individuare l'\textbf{estremo superiore} $Sup$ e l'\textbf{estremo inferiore} $Inf$. Tale tipologia di insiemi può essere rappresentato mediante un \textbf{diagramma di Hasse};
     \item \textbf{Reticolo} inteso come particolare \textbf{sottogruppo} dello spazio vettoriale $\mathcal{R}^n$.
 \end{enumerate}
 
@@ -970,7 +970,7 @@ Intuitivamente:
 Formalmente:
 
 \begin{definition}
-    Siano $b_1, b_2, ..., b_n \in \mathbb{R} ^n$ $n$ vettori linearmente indipendenti (dunque una \textbf{base} di $\mathbb{R}^n$), l'insieme definito come:
+    Siano $b_1, b_2, ..., b_n \in \mathbb{R} ^n$ $n$ vettori linearmente indipendenti (dunque una \textbf{base} di $\mathbb{R}^n$). L'insieme definito come:
 
     \begin{center}
         \[\mathcal{L}(b_1,b_2,...,b_n) = \Biggl \{ \sum_{i = 1}^{n}x_ib_i \: : \: x_i \in \mathbb{Z} \Biggl\}\]
@@ -1003,7 +1003,7 @@ Infatti, un generico sistema della forma
     $Ax = b$
 \end{center}
 
-(espresso in forma matriciale per ragione di compattezza) può essere risolto facilmente mediante uno dei metodi "classici" come quello di \textbf{sostituzione} o quello di \textbf{eliminazione di Gauss-Jordan}.
+(espresso in forma matriciale per ragioni di compattezza) può essere risolto facilmente mediante uno dei metodi "classici" come quello di \textbf{sostituzione} o quello di \textbf{eliminazione di Gauss-Jordan}.
 
 Tuttavia, se ad un sistema di questa forma viene aggiunto del "rumore", ovvero un certo vettore $e$ della forma:
 
@@ -1046,11 +1046,11 @@ Segue ora una definizione formale \cite{lwe-definition} del problema \texttt{LWE
         $A\mathbf{s} + e = b \: (mod \: q)$
     \end{center}
 
-    Il problema \texttt{LWE} consiste, data una coppia $(A, b)$ ed un vettore $e$, trovare il "segreto" $s$. 
+    Il problema \texttt{LWE} consiste, data una coppia $(A, b)$ ed un vettore $e$, di trovare il "segreto" $s$. 
 
 \end{definition}
 
-Oltre alla variante del problema di \textbf{ricerca} appena mostrato esiste anche un problema \textbf{decisionale}, equivalente a questo.
+Oltre alla variante del problema di \textbf{ricerca} appena mostrato esiste anche un problema \textbf{decisionale}, del tutto equivalente dal punto di vista della difficoltà, a questo.
 
 L'algoritmo \texttt{Kyber} precedentemente menzionato si basa su una particolare variante del problema appena descritto, ovvero \texttt{ModuleLWE} \cite{cryptoeprint:2012/090}, a sua volta derivato dal problema \texttt{RingLWE} \cite{cryptoeprint:2012/230}.
 
@@ -1081,6 +1081,8 @@ Formalmente,
 utilizzando le operazioni di addizione e di prodotto riga per colonna.
 
 Come accennato in fase di definizione del problema, risulta essere difficile (a causa del vettore $e$) recuperare $s$ a partire da $(A, t)$ poiché equivarrebbe a risolvere il problema \texttt{ModuleLWE}. 
+
+Tutti i coefficienti dei polinomi sono campionati in \textbf{maniera uniforme} dall'insieme $\mathbb{Z}_q$.
 
 \newpage
 \subsubsection{\texttt{Kyber}: la cifratura}
@@ -1181,7 +1183,7 @@ La scelta della versione di \texttt{Kyber} da utilizzare in questo lavoro è ric
 Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scientifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
 
 \subsection{Overview del processo}
-Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundControl} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}. Tale cifrario è stato integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave.
+Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundControl} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}, integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave. Questo processo è stato articolato in diversi step, ovvero:
 
 \begin{enumerate}
     \item Installazione di un'implementazione di \texttt{Kyber} nell'ambiente di sviluppo;
@@ -1194,12 +1196,12 @@ Come accennato in fase di introduzione a questo lavoro, l'idea principale consis
     \item AES ed alterazione della libreria \textsc{MAVLink}.
 \end{enumerate}
 
-Le sezioni successive approfondiscono ciascuno di questi step.
+Le sezioni successive approfondiscono ciascuno di questi.
 
 \subsection{Step 1: installazione di un'implementazione di \texttt{Kyber} nell'ambiente di sviluppo}
 Sul sito web del progetto \texttt{CRYSTALS} \cite{crystals-software} viene fatta una panoramica delle soluzioni software esistenti che permettono l'utilizzo dello schema di incapsulamento \texttt{Kyber}.
 
-Su GitHub è presente una \textbf{implementazione di riferimento} \cite{kyber-reference} di tale schema nel linguaggio C ottimizzata per processori \textbf{Intel} x86 che sfrutta il set di istruzioni \texttt{AVX2} e che aggiunge il supporto ai vettori a 256 bit, permettendo calcoli in \textbf{virgola mobile} ad alte prestazioni \cite{intel-avx2}.
+Su GitHub è presente una \textbf{implementazione di riferimento} \cite{kyber-reference} di tale schema nel linguaggio C ottimizzata per processori \textbf{Intel} x86 che sfrutta il set di istruzioni \texttt{AVX2} (che aggiunge il supporto ai vettori a 256 bit, permettendo calcoli in \textbf{virgola mobile} ad alte prestazioni \cite{intel-avx2}).
 
 Esistono tuttavia implementazioni di \texttt{Kyber} integrate in progetti più strutturati come \texttt{PQClean} o \texttt{OpenQuantumSafe}. Quest'ultimo consiste in "un framework per la prototipazione e lo sviluppo di crittografia quantum-resistant" \cite{oqs}.
 
@@ -1420,7 +1422,7 @@ utilizzando lo switch \texttt{-v} per abilitare la modalità \textit{verbose} e 
 
 Al contrario di \textbf{ArduPilot}, \textbf{QGroundControl} utilizza il framework \textbf{Qt} per la gestione del progetto e delle procedure di building. Per andare ad integrare \texttt{liboqs} è quindi necessario andare ad intervenire sulla configurazione di Qt stesso. 
 
-Il file su cui intervenire, nello specifico, si chiama \texttt{QGCExternalLibs.pri} ed è situato nella \textit{root} della repository del progetto. L'inclusione di librerie installate in maniera system-wide, come nel caso di ArduPilot descritto nello Step 4, si effettua semplicemente alterando i flags che il sistema di building passa al linker. Nel caso di Qt, è possibile alterare la variabile \texttt{LIBS} alla fine del file prima menzionato ed aggiungendo i flags \texttt{-loqs -lcrypto} in questo modo:
+Il file su cui intervenire, nello specifico, si chiama \texttt{QGCExternalLibs.pri} ed è situato nella \textit{root} della repository del progetto. L'inclusione di librerie installate in maniera system-wide, come nel caso di ArduPilot descritta nello Step 4, si effettua semplicemente alterando i flags che il sistema di building passa al linker. Nel caso di Qt, è possibile alterare la variabile \texttt{LIBS} alla fine del file prima menzionato ed aggiungendo i flags \texttt{-loqs -lcrypto} in questo modo:
 
     \begin{minted}{python}
         LIBS += -loqs -lcrypto
@@ -1437,9 +1439,9 @@ e successivamente rieseguendo i comandi descritti nella sezione relativa alla co
 
 \newpage
 \subsection{Step 6: Alterazione delle funzioni di \textbf{ArduPilot}}
-Una volta descritto il funzionamento ad alto livello del processo di scambio delle chiavi, è ora possibile scendere ancora di più nel dettaglio ed affrontare quali sono stati i cambiamenti alla struttura del codice sorgente del progetto \textbf{ArduPilot}.
+Una volta descritto il funzionamento ad alto livello del processo di scambio delle chiavi, è ora possibile scendere ancora di più nel dettaglio e descrivere quali sono stati i cambiamenti alla struttura del codice sorgente del progetto \textbf{ArduPilot}.
 
-In particolare, il grosso dei cambiamenti si è concentrato in due file specifici:
+In particolare, il grosso dei cambiamenti si è concentrato sostanzialmente in due file:
 
 \begin{itemize}
     \item Il file \texttt{GCS\_Common.cpp} presente nella directory \texttt{libraries/GCS\_MAVLink}, partendo dalla \textit{root} della repository del progetto. Questo file contiene la logica di gestione dei messaggi \textsc{MAVLink} \textbf{comune per ogni dispositivo};
@@ -1484,7 +1486,7 @@ Prima di tutto, è necessario includere \texttt{oqs.h} come accennato in precede
     #include <oqs/oqs.h>
 \end{minted}
 
-Successivamente, è necessario intervenire sulla funzione \texttt{bool GCS\_MAVLINK::try\_send\_message(const enum ap\_message id)} che, per ogni messaggio dello scheduler, richiama una funzione (definita ad hoc in questo stesso file) che si occuperà di inviare un'istanza di quel messaggio. \texttt{try\_send\_message} è implementata mediante uno \texttt{switch} che permette di discriminare il messaggio sulla base del suo tipo. È quindi sufficiente \textbf{aggiungere} un \texttt{case} in corrispondenza dei due messaggi che l'autopilot desidera inviare (il messaggio di Key Exchange e la capsula), come mostrato di seguito.
+Successivamente, è necessario intervenire sulla funzione \\ \texttt{bool GCS\_MAVLINK::try\_send\_message(const enum ap\_message id)} \\ che, per ogni messaggio dello scheduler, richiama una funzione (definita ad hoc in questo stesso file) che si occuperà di inviare un'istanza di quel messaggio. \texttt{try\_send\_message()} è implementata mediante uno \texttt{switch} che permette di discriminare il messaggio sulla base del suo tipo. È quindi sufficiente \textbf{aggiungere} un \texttt{case} in corrispondenza dei due messaggi che l'autopilot desidera inviare (il messaggio di Key Exchange e la capsula), come mostrato di seguito.
 
 \begin{minted}{cpp}
     bool GCS_MAVLINK::try_send_message(const enum ap_message id)
@@ -1531,7 +1533,7 @@ Successivamente, vanno definite le funzioni \texttt{send\_keyexchange()} e \text
 }
 \end{minted}
 
-Questa funzione si occupa di richiedere una porzione della chiave pubblica (i cui estremi, in termini di numero di bytes, sono definiti dalle variabili \texttt{request\_remote\_key\_start} e \texttt{request\_remote\_key\_end}, definite esternamente ed inizializzate rispettivamente a 0 ed a 200) della GCS, al contempo inviando un \textbf{vettore di inizializzazione} utilizzato successivamente per la comunicazione cifrata e generato mediante la funzione \texttt{RAND\_bytes()} presente nella libreria \texttt{rand.h} OpenSSL che, di conseguenza, va inclusa.
+Questa funzione si occupa di richiedere una porzione della chiave pubblica (i cui estremi, in termini di numero di bytes, sono definiti dalle variabili \texttt{request\_remote\_key\_start} e \texttt{request\_remote\_key\_end}, definite esternamente ed inizializzate rispettivamente a 0 ed a 200) della GCS, al contempo inviando un \textbf{vettore di inizializzazione} utilizzato successivamente per la comunicazione cifrata e generato mediante la funzione \texttt{RAND\_bytes()} presente nella libreria \texttt{rand.h} di OpenSSL che, di conseguenza, va inclusa.
 
 \begin{minted}{cpp}
     void GCS_MAVLINK::send_capsule() const {
@@ -1579,7 +1581,7 @@ In sostanza, questa funzione si comporta in maniera simile a \texttt{send\_keyex
 
 Quando il protocollo di scambio della chiave pubblica e della capsula è terminato, questi due messaggi \textbf{non vengono più inviati}.
 
-Oltre alla definizione di funzioni che modellano l'invio di messaggi \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di gement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}. Entrambe queste funzioni si occupano di informare ArduPilot che la GCS e che è di conseguenza possibile avanzare nel processo di scambio delle informazioni (in termini di numeri di sequenza e di indici da richiedere ed inviare).
+Oltre alla definizione di funzioni che modellano l'invio di messaggi \\ \textsc{MAVLink}, è stato necessario codificare delle funzioni che modellassero la \textbf{ricezione} dei \textbf{messaggi di gement}, ovvero \texttt{KEYEXCHANGEGCSACK} e \texttt{CAPSULEACK}. Entrambe queste funzioni si occupano di informare ArduPilot che la GCS ha ricevuto la porzione di informazione precedente e che è di conseguenza possibile avanzare nel processo di scambio(in termini di numeri di sequenza e di indici da richiedere ed inviare).
 
 Tali funzioni vanno richiamate nel corpo della funzione \texttt{handle\_common\_message}, come segue:
 
@@ -1602,7 +1604,7 @@ void GCS_MAVLINK::handle_common_message(const mavlink_message_t &msg)
 }
 \end{minted}
 
-Ecco il corpo della funzione \texttt{handle\_keyexchangegcsack}:
+Ecco il corpo della funzione \texttt{handle\_keyexchangegcsack()}:
 
 \begin{minted}{cpp}
     void GCS_MAVLINK::handle_keyexchangegcsack
@@ -1822,7 +1824,7 @@ A questo punto, la GCS è finalmente pronta per iniziare la comunicazione cifrat
 
 \newpage
 \subsubsection{Riassumendo}
-Ora che è stato descritto nel dettaglio il funzionamento del meccanismo di scambio delle chiavi e della capsula, è possibile fornire una versione aggiornata e più dettagliata del grafico riassuntivo mostrato nelle pagine precedenti.
+Ora che è stato descritto nel dettaglio il funzionamento del meccanismo di scambio della chiave e della capsula, è possibile fornire una versione aggiornata e più dettagliata del grafico riassuntivo mostrato nelle pagine precedenti.
 
 Per quanto riguarda lo scambio della chiave:
 
@@ -1840,10 +1842,10 @@ Per quanto riguarda il protocollo di scambio della capsula, invece:
 
 \newpage
 \subsection{Step 8: AES ed alterazione della libreria \textsc{MAVLink}}
-L'ultima parte delle modifiche effettuate per questo lavoro riguardano proprio la libreria C \textsc{MAVLink}, comune ad entrambi i progetti. In particolare, a questo livello è stata inserita la logica per gestire la comunicazione cifrata tra le due parti e, nello specifico, sono state richiamate le funzioni di una libreria che implementa il cifrario \textbf{AES}.
+L'ultima parte delle modifiche effettuate per questo lavoro riguarda proprio la libreria C \textsc{MAVLink}, comune ad entrambi i progetti. In particolare, a questo livello è stata inserita la logica per gestire la comunicazione cifrata tra le due parti e, nello specifico, sono state richiamate le funzioni di una libreria che implementa il cifrario \textbf{AES}.
 
 \subsubsection{Perché \texttt{AES?}}
-Lo scopo principale di questo lavoro, come ripetuto più volte nel presente documento, consiste nell'utilizzare tecnologie \textbf{quantum-resistant}: la scelta della componente di cifratura simmetrica per la comunicazione è ricaduta sul cifrario \texttt{AES} poiché è opinione comune che tale cifrario resista ad attacchi di crittoanalisi condotti da algoritmi quantistici. Il miglior "attacco quantistico" a questo cifrario conosciuto fino ad ora consiste in quello veicolato tramite l'uso del cosiddetto \textbf{Algoritmo di Grover} \cite{grover1996fast}, un algoritmo quantistico originariamente pensato per effettuare operazioni efficienti di ricerca in database \textbf{non ordinato} con una complessità temporale di $\mathcal{O}(\sqrt{N})$ e spaziale di $\mathcal{O}(\log N)$. Quando applicato in un contesto di \textbf{ricerca esaustiva}, tale algoritmo permette quindi di \textbf{dimezzare} il tempo necessario all'individuazione di un valore e, nel caso di attacchi \textit{bruteforce}, de recupero della chiave di cifratura.\cite*{cryptoeprint:2017/811}
+Lo scopo principale di questo lavoro, come ripetuto più volte nel presente documento, consiste nell'utilizzare tecnologie \textbf{quantum-resistant}: la scelta della componente di cifratura simmetrica per la comunicazione è ricaduta sul cifrario \texttt{AES} poiché è opinione comune che tale cifrario resista ad attacchi di crittoanalisi condotti da algoritmi quantistici. Il miglior "attacco quantistico" a questo cifrario conosciuto fino ad ora consiste in quello veicolato tramite l'uso del cosiddetto \textbf{Algoritmo di Grover} \cite{grover1996fast}, un algoritmo quantistico originariamente pensato per effettuare operazioni efficienti di ricerca in database \textbf{non ordinati} con una complessità temporale di $\mathcal{O}(\sqrt{N})$ e spaziale di $\mathcal{O}(\log N)$. Quando applicato in un contesto di \textbf{ricerca esaustiva}, tale algoritmo permette quindi di \textbf{dimezzare} il tempo necessario all'individuazione di un valore e, nel caso di attacchi \textit{bruteforce}, de recupero della chiave di cifratura.\cite*{cryptoeprint:2017/811}
 
 Quanto appena detto conduce quindi ad un duplice risultato:
 
@@ -1857,7 +1859,7 @@ Per questa ragione, lo schema \texttt{AES} viene considerato, allo stato attuale
 \subsubsection{AES: implementazione}
 Fatta questa precisazione circa la sicurezza dello schema AES nel contesto quantistico, si descrive ora il processo di integrazione di una sua implementazione all'interno della libreria \textsc{MAVLink}.
 
-L'implementazione scelta per tale processo si chiama \texttt{tiny-AES-c}, stata proposta dall'utente \textbf{kokke} ed il suo codice è disponibile liberamente su GitHub. \cite{tiny-aes-c-github}
+L'implementazione scelta per tale processo si chiama \texttt{tiny-AES-c}, proposta dall'utente \textbf{kokke}, ed il suo codice è disponibile liberamente su GitHub. \cite{tiny-aes-c-github}
 
 Tale implementazione è stata scelta per due ragioni pratiche:
 
@@ -1895,7 +1897,7 @@ Le modalità di integrazione della libreria varia a seconda del progetto:
     Successivamente, è necessario posizionare i file \texttt{aes.c} ed \texttt{aes.h} nella directory \texttt{libs/mavlink/include/mavlink/v2.0} e ricompilare il progetto.
     \item Nel caso di ArduPilot, l'aggiunta di altri file da aggiungere al progetto di building è più complicata. 
     In particolare, non è possibile informare \texttt{waf} che si intende includere un altro file \texttt{.c} o \texttt{.cpp} nella compilazione. Dunque, nel caso di uso di funzioni implementate in tale file (e richiamate mediante l'header file a lui associato), il linker restituirà lo \textbf{status code 1} e genererà un messaggio di \texttt{undefined reference}. 
-    La soluzione\footnote{il \textit{workaround}, più che altro} consiste nel rendere la libreria \textit{header-only} e spostare semplicemente l'implementazione concreta delle funzioni nell'header file. A questo punto, la compilazione ed il linking vanno a buon fine.
+    La soluzione\footnote{il \textit{workaround}, più che altro} consiste nel rendere la libreria \textit{header-only} e spostare semplicemente l'implementazione concreta delle funzioni nell'header file. A questo punto, sia la compilazione che il linking vanno a buon fine.
 \end{itemize}
 
 Una volta chiarito questo aspetto è possibile procedere nell'\textit{overview}.
@@ -1922,7 +1924,7 @@ Sono state inoltre previste tre funzioni \textit{utility}:
     \item \mintinline{cpp}{uint8_t *get_iv()}, che restituisce un \textbf{puntatore} al \textbf{vettore di inizializzazione} una volta impostato;
 \end{enumerate}
 
-Le operazioni di \textbf{cifratura} e \textbf{decifratura} non sono effettuate nel caso di invio e ricezione dei messaggi di \texttt{HEARTBEAT} o di scambio delle chiavi o della capsula (e relativi messaggi di acknowlegement). Questo controllo viene effettuato facendo riferimento all'\textbf{ID} del messaggio.
+Le operazioni di \textbf{cifratura} e \textbf{decifratura} non sono effettuate nel caso di invio e ricezione dei messaggi di \texttt{HEARTBEAT} o di scambio della chiave o della capsula (e relativi messaggi di acknowlegement). Questo controllo viene effettuato facendo riferimento all'\textbf{ID} del messaggio.
 
 \newpage
 
@@ -1933,12 +1935,12 @@ A valle della fase di implementazione di questo lavoro, è stato effettuato un b
 
 In particolare, il test è stato effettuato mediante il tool \texttt{htop}, tipico dei sistemi GNU/Linux e che permette, per ogni processo, di identificare il suo PID, il suo utilizzo di memoria ed il suo impatto sul carico di CPU del sistema.
 
-Tale tool è installabile su virtualmente ogni distribuzione GNU/Linux, quindi (naturalmente) anche su Ubuntu, il sistema operativo su cui è stato stabilito l'ambiente operativo per questo lavoro che, riassumendo, possiede queste specifiche:
+Tale tool è installabile su virtualmente ogni distribuzione GNU/Linux, quindi (naturalmente) anche su Ubuntu: il sistema operativo su cui è stato stabilito l'ambiente operativo per questo lavoro che, riassumendo, possiede queste specifiche:
 
 \begin{itemize}
     \item Processore \textbf{Intel Core i5-8265U}, con processo produttivo a 14nm ed una frequenza massima di 3,90GHz quando la tecnologia \textbf{TurboBoost} è attivata;
     \item \textbf{8GB} di RAM DDR4;
-    \item Ubuntu \textbf{22.04 LTS} Jammy Jellifish;
+    \item Ubuntu \textbf{22.04 LTS} Jammy Jellyfish;
     \item Kernel \texttt{6.2.0-33-generic}, compilato in data 7 Settembre 2023;
     \item GNU \texttt{make} 4.3;
     \item GNU \texttt{gcc} 11.4
@@ -1946,32 +1948,32 @@ Tale tool è installabile su virtualmente ogni distribuzione GNU/Linux, quindi (
 
 Il test è stato condotto mettendo in esecuzione il tool \texttt{htop} una volta fatto partire \textbf{SITL}, che si mette in attesa di connessioni in ingresso. Il processo di riferimento è unico e si chiama \texttt{arducopter} ed è isolabile mediante la funzionalità di ricerca del tool (invocabile tramite \keystroke{F3} e digitando la stringa \texttt{arducopter}).
 
-Il processo di scambio delle chiavi inizia immediatamente dopo l'avvenuta connessione tra UAV e GCS, quindi è immediatamente possibile valutare l'impatto dell'introduzione delle modifiche in tale lavoro
+Il processo di scambio della chiave e della capsula inizia subito dopo l'avvenuta connessione tra UAV e GCS, quindi è immediatamente possibile valutare l'impatto dell'introduzione delle modifiche in tale lavoro
 
 Per quanto riguarda il \textbf{carico di CPU}:
 
 \begin{itemize}
     \item Il progetto \textit{vanilla} (quindi ArduPilot senza modifiche usato con l'\texttt{AppImage} di QGroundControl) vede un utilizzo di CPU pari al \textbf{9,2\%}, costante durante lo scambio dei messaggi \textsc{MAVLink};
-    \item Il progetto modificato (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di CPU del \textbf{12\%}, con un incremento al \textbf{15\%}, presumibilmente nel momento in cui viene effettuato \texttt{Encaps()}.
+    \item Il progetto \textbf{modificato} (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di CPU del \textbf{12\%}, con un incremento al \textbf{15\%} nel momento in cui viene effettuato \texttt{Encaps()}.
 \end{itemize}
 
-Per quanto riguarda il \textbf{consumo di memoria}:
+Per quanto riguarda invece il \textbf{consumo di memoria}:
 
 \begin{itemize}
     \item Il progetto \textit{vanilla} (quindi ArduPilot senza modifiche usato con l'\texttt{AppImage} di QGroundControl) vede un utilizzo di memoria pari al \textbf{0,10\%}, pari a circa \textbf{7,8MB} sul totale della memoria disponibile nell'ambiente di lavoro; 
-    \item Il progetto modificato (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di memoria dello \textbf{0,14\%} pari a circa \textbf{10,9MB} sul totale della memoria disponibile nell'ambiente di lavoro.
+    \item Il progetto \textbf{modificato} (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di memoria dello \textbf{0,14\%} pari a circa \textbf{10,9MB} sul totale della memoria disponibile nell'ambiente di lavoro.
 \end{itemize}
 
 \subsection{Conclusioni e sviluppi futuri}
 L'introduzione dell'algoritmo \texttt{Kyber} e, conseguentemente, del cifrario \texttt{AES} risultano dunque \textbf{rilevanti} in termini di consumo di memoria e di carico di CPU ma \textbf{non} in maniera tale da \textbf{prgiudicare} l'operatività del protocollo \textsc{MAVLink}. 
 
-Viene inoltre dimostrata la \textbf{duttilità} e l'\textbf{estendibilità} dei progetti \textbf{ArduPilot} e \textbf{QGroundControl}, proprio grazie alla loro natura \textbf{open-source} che quindi permette a tutti di contribuire al loro sviluppo e sfruttare al meglio gli sforzi di una community attiva e sempre aperta al confronto, come dimostrato dalla sempre vivace interazione tra i membri del server Discord \textbf{DroneCode}, che ospita sia discussioni tecniche che di carattere generale.
+Viene inoltre dimostrata la \textbf{duttilità} e l'\textbf{estendibilità} dei progetti \\ \textbf{ArduPilot} e \textbf{QGroundControl}, proprio grazie alla loro natura \textbf{open-source} che quindi permette a tutti di contribuire al loro sviluppo e sfruttare al meglio gli sforzi di una community attiva e sempre aperta al confronto, come dimostrato dalla sempre vivace interazione tra i membri del server Discord \textbf{DroneCode}, che ospita sia discussioni tecniche che di carattere generale.
 
 Per concludere questa trattazione, i principali possibili \textbf{sviluppi futuri} di questo lavoro di Tesi si articolano nello specifico in \textbf{due filoni}:
 
 \begin{itemize}
     \item \textbf{Generalizzare} la soluzione proposta per altri tipi di piattaforma oltre ArduPilot (una su tutte la piattaforma \textbf{PX4} anch'essa \textbf{open source});
-    \item \textbf{Completare} la migrazione ad uno stack crittografico post-quantum introducendo lo schema di firma \textbf{DILITHIUM}, lo standard del NIST per gli algoritmi di firma post-quantistici. Tale soluzione, tuttavia, risulta complicata a causa della dimensione massima di un pacchetto \textsc{MAVLink}, discussa nelle sezioni precedenti.
+    \item \textbf{Completare} la migrazione ad uno stack crittografico post-quantum introducendo lo schema di firma \textbf{DILITHIUM}: lo standard del NIST per gli algoritmi di firma post-quantistici. Tale soluzione, tuttavia, risulta complicata a causa della dimensione massima di un pacchetto \textsc{MAVLink}, discussa nelle sezioni precedenti.
 \end{itemize}
 
 \newpage
