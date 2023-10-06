@@ -22,7 +22,22 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage[bottom]{footmisc}
-
+\usepackage{tikz}
+\usetikzlibrary{shadows}
+\newcommand*\keystroke[1]{%
+  \tikz[baseline=(key.base)]
+    \node[%
+      draw,
+      fill=white,
+      drop shadow={shadow xshift=0.25ex,shadow yshift=-0.25ex,fill=black,opacity=0.75},
+      rectangle,
+      rounded corners=2pt,
+      inner sep=1pt,
+      line width=0.5pt,
+      font=\scriptsize\sffamily
+    ](key) {#1\strut}
+  ;
+}
 
 \usepackage{mathtools, nccmath}
 \DeclarePairedDelimiter{\nint}\lfloor\rceil % https://tex.stackexchange.com/questions/433101/rounding-to-nearest-integer-symbol-in-latex. Grazie!
@@ -1908,6 +1923,56 @@ Sono state inoltre previste tre funzioni \textit{utility}:
 \end{enumerate}
 
 Le operazioni di \textbf{cifratura} e \textbf{decifratura} non sono effettuate nel caso di invio e ricezione dei messaggi di \texttt{HEARTBEAT} o di scambio delle chiavi o della capsula (e relativi messaggi di acknowlegement). Questo controllo viene effettuato facendo riferimento all'\textbf{ID} del messaggio.
+
+\newpage
+
+\section{Analisi delle performance, conclusioni e sviluppi futuri}
+
+\subsection{Utilizzo di memoria e consumo di CPU}
+A valle della fase di implementazione di questo lavoro, è stato effettuato un breve confronto in termini di \textbf{utilizzo di CPU} e di \textbf{utilizzo di memoria} tra la versione \textit{vanilla} di ArduPilot e quella sviluppata e descritta nelle sezioni precedenti.
+
+In particolare, il test è stato effettuato mediante il tool \texttt{htop}, tipico dei sistemi GNU/Linux e che permette, per ogni processo, di identificare il suo PID, il suo utilizzo di memoria ed il suo impatto sul carico di CPU del sistema.
+
+Tale tool è installabile su virtualmente ogni distribuzione GNU/Linux, quindi (naturalmente) anche su Ubuntu, il sistema operativo su cui è stato stabilito l'ambiente operativo per questo lavoro che, riassumendo, possiede queste specifiche:
+
+\begin{itemize}
+    \item Processore \textbf{Intel Core i5-8265U}, con processo produttivo a 14nm ed una frequenza massima di 3,90GHz quando la tecnologia \textbf{TurboBoost} è attivata;
+    \item \textbf{8GB} di RAM DDR4;
+    \item Ubuntu \textbf{22.04 LTS} Jammy Jellifish;
+    \item Kernel \texttt{6.2.0-33-generic}, compilato in data 7 Settembre 2023;
+    \item GNU \texttt{make} 4.3;
+    \item GNU \texttt{gcc} 11.4
+\end{itemize}
+
+Il test è stato condotto mettendo in esecuzione il tool \texttt{htop} una volta fatto partire \textbf{SITL}, che si mette in attesa di connessioni in ingresso. Il processo di riferimento è unico e si chiama \texttt{arducopter} ed è isolabile mediante la funzionalità di ricerca del tool (invocabile tramite \keystroke{F3} e digitando la stringa \texttt{arducopter}).
+
+Il processo di scambio delle chiavi inizia immediatamente dopo l'avvenuta connessione tra UAV e GCS, quindi è immediatamente possibile valutare l'impatto dell'introduzione delle modifiche in tale lavoro
+
+Per quanto riguarda il \textbf{carico di CPU}:
+
+\begin{itemize}
+    \item Il progetto \textit{vanilla} (quindi ArduPilot senza modifiche usato con l'\texttt{AppImage} di QGroundControl) vede un utilizzo di CPU pari al \textbf{9,2\%}, costante durante lo scambio dei messaggi \textsc{MAVLink};
+    \item Il progetto modificato (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di CPU del \textbf{12\%}, con un incremento al \textbf{15\%}, presumibilmente nel momento in cui viene effettuato \texttt{Encaps()}.
+\end{itemize}
+
+Per quanto riguarda il \textbf{consumo di memoria}:
+
+\begin{itemize}
+    \item Il progetto \textit{vanilla} (quindi ArduPilot senza modifiche usato con l'\texttt{AppImage} di QGroundControl) vede un utilizzo di memoria pari al \textbf{0,10\%}, pari a circa \textbf{7,8MB} sul totale della memoria disponibile nell'ambiente di lavoro; 
+    \item Il progetto modificato (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di memoria dello \textbf{0,14\%} pari a circa \textbf{10,9MB} sul totale della memoria disponibile nell'ambiente di lavoro.
+\end{itemize}
+
+\subsection{Conclusioni e sviluppi futuri}
+L'introduzione dell'algoritmo \texttt{Kyber} e, conseguentemente, del cifrario \texttt{AES} risultano dunque \textbf{rilevanti} in termini di consumo di memoria e di carico di CPU ma \textbf{non} in maniera tale da \textbf{prgiudicare} l'operatività del protocollo \textsc{MAVLink}. 
+
+Viene inoltre dimostrata la \textbf{duttilità} e l'\textbf{estendibilità} dei progetti \textbf{ArduPilot} e \textbf{QGroundControl}, proprio grazie alla loro natura \textbf{open-source} che quindi permette a tutti di contribuire al loro sviluppo e sfruttare al meglio gli sforzi di una community attiva e sempre aperta al confronto, come dimostrato dalla sempre vivace interazione tra i membri del server Discord \textbf{DroneCode}, che ospita sia discussioni tecniche che di carattere generale.
+
+Per concludere questa trattazione, i principali possibili \textbf{sviluppi futuri} di questo lavoro di Tesi si articolano nello specifico in \textbf{due filoni}:
+
+\begin{itemize}
+    \item \textbf{Generalizzare} la soluzione proposta per altri tipi di piattaforma oltre ArduPilot (una su tutte la piattaforma \textbf{PX4} anch'essa \textbf{open source});
+    \item \textbf{Completare} la migrazione ad uno stack crittografico post-quantum introducendo lo schema di firma \textbf{DILITHIUM}, lo standard del NIST per gli algoritmi di firma post-quantistici. Tale soluzione, tuttavia, risulta complicata a causa della dimensione massima di un pacchetto \textsc{MAVLink}, discussa nelle sezioni precedenti.
+\end{itemize}
 
 \newpage
 \printbibliography[title={Riferimenti bibliografici e risorse consultate}, heading=bibintoc]
