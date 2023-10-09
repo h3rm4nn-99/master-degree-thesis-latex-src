@@ -1179,15 +1179,71 @@ Una discussione sulle \textbf{implementazioni software} per questo algoritmo vie
 La scelta della versione di \texttt{Kyber} da utilizzare in questo lavoro è ricaduta su \texttt{Kyber512} per fra fronte al tradeoff necessario tra prestazioni e livello di sicurezza.
 
 \newpage
-\section{Descrizione ed implementazione della soluzione proposta}
-Dopo una descrizione sullo stato dell'arte del contesto applicativo e delle fondamenta scientifiche e matematiche dell'algoritmo \texttt{Kyber} è ora finalmente possibile svolgere una panoramica sulle modifiche e sulle nuove aggiunte alle piattaforme introdotte e descritte nelle precedenti sezioni.
+\section{Progettazione e descrizione della soluzione proposta}
+L'idea principale che sta alla base di questo lavoro consiste nel definire un meccanismo di \textbf{scambio delle chiavi} utilizzando uno schema \textbf{quantum-resistant} allo scopo di stabilire una comunicazione sicura tra un \textbf{UAV} e la sua \textbf{Ground Control Station} utilizzando uno \textbf{schema di cifratura simmetrico} per intervenire sul \textbf{payload} di messaggi \textsc{MAVLink} già serializzati e quindi sotto forma di \textbf{stream} di byte, come descritto nelle sezioni precedenti, anch'esso \textbf{quantum-resistant}.
 
-\subsection{Overview del processo}
-Come accennato in fase di introduzione a questo lavoro, l'idea principale consiste nell'integrare l'algoritmo di cifratura post-quantistica \texttt{Kyber} (configurato come \textbf{KEM}, secondo le specifiche proposte al NIST) all'interno delle piattaforme \textbf{ArduPilot} e \textbf{QGroundControl} allo scopo di \textbf{generare} e scambiare una \textbf{chiave simmetrica} per il cifrario \texttt{AES}, integrato a basso livello nella libreria C \textsc{MAVLink} allo scopo di cifrare il payload (già serializzato e quindi configurato come \textbf{sequenza di bytes}) dei messaggi scambiati tra le due parti che partecipano alla comunicazione. È stato quindi proposto un vero e proprio \textbf{protocollo} per la definizione e la condivisione di suddetta chiave. Questo processo è stato articolato in diversi step, ovvero:
+Per realizzare quanto detto, le modifiche proposte da questo lavoro si concentrano principalmente su tre \textbf{componenti}:
+
+\begin{itemize}
+    \item \textbf{ArduPilot}, che gioca la parte dell'UAV;
+    \item \textbf{QGroundControl}, usato come GCS;
+    \item La libreria \textbf{\textsc{MAVLink}}, ovvero la componente di più basso livello di questo stack tecnologico e che viene utilizzata da entrambi i progetti
+\end{itemize}
+
+\subsection{Scambio della chiave: perché \texttt{Kyber}?}
+Come già ripetuto nel capitolo dedicato a esso dedicato, l'algoritmo \texttt{Kyber} è stato scelto poiché risulta essere il vincitore del processo di standardizzazione di schemi di cifratura \textbf{quantum-resistant}, rendendolo quindi una scelta quasi obbligata.
+
+Poiché standardizzato come un \textbf{KEM}, \texttt{Kyber} viene utilizzato come tale. Di conseguenza, il meccanismo di scambio della chiave deve sottostare alle specifiche di tale meccanismo di cifratura e decifratura, utilizzando quindi operazioni di \textbf{incapsulamento} e \textbf{decapsulamento} di uno \textbf{shared secret}, ovvero la chiave da utilizzare con il \textbf{cifrario simmetrico}. 
+
+È stato, di conseguenza, stabilito un vero e proprio \textbf{protocollo} in cui sono eseguite le operazioni appena descritte.
+
+\subsection{Cifratura simmetrica: perché \texttt{AES?}}
+Lo scopo principale di questo lavoro, come ripetuto più volte nel presente documento, consiste nell'utilizzare tecnologie \textbf{quantum-resistant}: la scelta della componente di cifratura simmetrica per la comunicazione non può esulare certamente da questo requisito. Di conseguenza, si è scelto di utilizzare il cifrario \texttt{AES} poiché è opinione comune che tale cifrario resista ad attacchi di crittoanalisi condotti da algoritmi quantistici. Il miglior "attacco quantistico" a questo cifrario conosciuto fino ad ora consiste in quello veicolato tramite l'uso del cosiddetto \textbf{Algoritmo di Grover} \cite{grover1996fast}, un algoritmo quantistico originariamente pensato per effettuare operazioni efficienti di ricerca in database \textbf{non ordinati} con una complessità temporale di $\mathcal{O}(\sqrt{N})$ e spaziale di $\mathcal{O}(\log N)$. Quando applicato in un contesto di \textbf{ricerca esaustiva}, tale algoritmo permette quindi di \textbf{dimezzare} il tempo necessario all'individuazione di un valore e, nel caso di attacchi \textit{bruteforce}, de recupero della chiave di cifratura.\cite*{cryptoeprint:2017/811}
+
+Quanto appena detto conduce quindi ad un duplice risultato:
+
+\begin{itemize}
+    \item Nel caso di AES, il livello di sicurezza è quindi \textbf{dimezzato}: ad esempio, per la variante \texttt{AES-128} il livello di sicurezza in un contesto quantistico si riduce a quello offerto da una (ipotetica!) variante con chiavi a 64 bit di tale schema in un contesto classico;
+    \item La variante \texttt{AES-256} passa ad un livello di sicurezza pari a quello di \texttt{AES-128}, considerato oggi ancora \textbf{sufficiente}.
+\end{itemize}
+
+Per questa ragione, lo schema \texttt{AES} viene considerato, allo stato attuale, \textbf{quantum-resistant}.
+
+\subsection{Definizione del protocollo}
+Fatta questa premessa, è ora necessario capire \textit{cosa} fare per effettuare correttamente uno scambio di chiavi allo scopo di stabilire una comunicazione cifrata successivamente.
+
+È necessario quindi stabilire \textit{quale} delle due "parti" impegnate nella comunicazione, con riferimento al meccanismo di funzionamento di un KEM descritto in precedenza, deve svolgere le operazioni di \texttt{Gen()}, \texttt{Encaps()} e \texttt{Decaps()}.
+
+In fase di progettazione del nuovo sistema sono state effettuate le seguenti scelte, tenendo anche conto della possibile \footnote{In realtà, molto probabile!} differenza di capacità computazionale tra l'UAV e la GCS (che, si ricorda, è generalmente ospitata su hardware consumer, senza particolari limitazioni di risorse):
+
+\begin{itemize}
+    \item L'operazione di \texttt{Gen()} viene effettuata dalla componente \textbf{GCS}, che \textbf{invia la chiave pubblica} all'UAV;
+    \item Una volta ricevuta la chiave pubblica, la componente \textbf{UAV} effettua l'operazione di \texttt{Encaps()} (che implica la generazione di una \textbf{chiave segreta}). Successivamente, lo stesso UAV \textbf{invia la capsula} alla GCS;
+    \item Alla ricezione della capsula, la \textbf{GCS} effettua l'operazione di \texttt{Decaps()}, \textbf{estrae la chiave segreta}, la \textbf{imposta} ed infine \textbf{invia conferma} all'UAV;
+    \item A questo punto, \textbf{le due parti} posseggono la stessa chiave segreta: è finalmente possibile iniziare la \textbf{comunicazione cifrata} utilizzando la componente \textbf{\textsc{MAVLink}}.
+\end{itemize}
+Nello schema presente qui di seguito:
+
+\begin{itemize}
+    \item \texttt{pk} ed \texttt{sk} rappresentano rispettivamente la \textbf{chiave pubblica} e la \textbf{chiave privata} restituite dalla procedura \texttt{Gen()} dell'algoritmo \texttt{Kyber};
+    \item \texttt{capsule} rappresenta la \textbf{capsula} generata dalla procedura \texttt{Encaps()} dell'algoritmo \texttt{Kyber};
+    \item \texttt{ss} rappresenta lo \textbf{shared secret}, utilizzata come \textbf{chiave segreta} per la comunicazione cifrata mediante cifrario \texttt{AES}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/key_exchange.pdf}
+    \caption{Una rappresentazione grafica del protocollo descritto}
+\end{figure}
+
+Si noti che quello mostrato fino ad ora è una descrizione ad alto livello che permette di farsi un'idea di ciò che accade durante la fase di \textbf{scambio della chiave}. Una descrizione a più basso livello dei messaggi effettivamente scambiati tra le due parti della comunicazione viene svolta man mano che vengono presentati i vari step che hanno permetto la creazione del sistema proposto nella sezione successiva del presente documento.
+
+\newpage
+\section{Implementazione della soluzione proposta}
+Dopo una descrizione sullo stato dell'arte del contesto applicativo, delle fondamenta scientifiche e matematiche dell'algoritmo \texttt{Kyber} ed a seguito di una descrizione logica del sistema proposto è ora finalmente possibile svolgere una panoramica ad un livello più basso delle modifiche ai progetti precedentemente introdotti.
 
 \begin{enumerate}
     \item Installazione di un'implementazione di \texttt{Kyber} nell'ambiente di sviluppo;
-    \item Definizione del protocollo;
     \item Introduzione di nuovi messaggi \textsc{MAVLink} 2.0;
     \item Integrazione di \texttt{Kyber} all'interno di ArduPilot;
     \item Integrazione di \texttt{Kyber} all'interno di QGroundControl;
@@ -1258,39 +1314,8 @@ In particolare, per ogni schema KEM abilitato nella libreria \texttt{liboqs} off
 \end{itemize}
 
 \newpage
-\subsection{Step 2: definizione del protocollo}
-Una volta capito \textit{come} ottenere un'implementazione funzionante di \texttt{Kyber} è ora necessario capire \textit{cosa} fare per effettuare correttamente uno scambio di chiavi allo scopo di stabilire una comunicazione cifrata successivamente.
 
-È necessario quindi stabilire \textit{quale} delle due "parti" impegnate nella comunicazione, con riferimento al meccanismo di funzionamento di un KEM descritto in precedenza, deve svolgere le operazioni di \texttt{Gen()}, \texttt{Encaps()} e \texttt{Decaps()}.
-
-In fase di progettazione del nuovo sistema sono state effettuate le seguenti scelte, tenendo anche conto della possibile \footnote{In realtà, molto probabile!} differenza di capacità computazionale tra l'UAV e la GCS (che, si ricorda, è generalmente ospitata su hardware consumer, senza particolari limitazioni di risorse):
-
-\begin{itemize}
-    \item L'operazione di \texttt{Gen()} viene effettuata dalla \textbf{GCS}, che \textbf{invia la chiave pubblica} all'UAV;
-    \item Una volta ricevuta la chiave pubblica, l'\textbf{UAV} effettua l'operazione di \texttt{Encaps()} (che implica la generazione di una \textbf{chiave segreta}). Successivamente, lo stesso UAV \textbf{invia la capsula} alla GCS;
-    \item Alla ricezione della capsula, la \textbf{GCS} effettua l'operazione di \texttt{Decaps()}, \textbf{estrae la chiave segreta}, la \textbf{imposta} ed infine \textbf{invia conferma} all'UAV;
-    \item A questo punto, \textbf{le due parti} posseggono la stessa chiave segreta: è finalmente possibile iniziare la \textbf{comunicazione cifrata}.
-\end{itemize}
-
-Nello schema presente nella pagina successiva:
-
-\begin{itemize}
-    \item \texttt{pk} ed \texttt{sk} rappresentano rispettivamente la \textbf{chiave pubblica} e la \textbf{chiave privata} restituite dalla procedura \texttt{Gen()} dell'algoritmo \texttt{Kyber};
-    \item \texttt{capsule} rappresenta la \textbf{capsula} generata dalla procedura \texttt{Encaps()} dell'algoritmo \texttt{Kyber};
-    \item \texttt{ss} rappresenta lo \textbf{shared secret}, utilizzata come \textbf{chiave segreta} per la comunicazione cifrata mediante cifrario \texttt{AES}.
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{images/key_exchange.pdf}
-    \caption{Una rappresentazione grafica del protocollo descritto}
-\end{figure}
-
-Si noti che quello mostrato fino ad ora è una descrizione ad alto livello che permette di farsi un'idea di ciò che accade durante la fase di \textbf{scambio della chiave}. Una descrizione a più basso livello dei messaggi effettivamente scambiati tra le due parti della comunicazione viene svolta man mano che vengono presentati i vari step che hanno permetto la creazione del sistema proposto.
-
-\newpage
-
-\subsection{Step 3: Introduzione di nuovi messaggi \textsc{MAVLink} 2.0}
+\subsection{Step 2: Introduzione di nuovi messaggi \textsc{MAVLink} 2.0}
 Nella sezione dedicata al funzionamento della libreria \textsc{MAVLink} è stato sottolineato come fosse possibile \textbf{estenderlo} andando a modificare i file \texttt{XML} che descrivono i messaggi previsti per un certo "dialetto" del protocollo.
 
 Per modellare il funzionamento dello schema di scambio delle chiavi è contestualmente necessario prevedere dei messaggi ad hoc che permettano lo scambio delle informazioni illustrate nella sezione precedente.
@@ -1395,7 +1420,7 @@ Ecco la struttura di un messaggio \texttt{CAPSULEACK}:
 \end{minted}
 
 \newpage
-\subsection{Step 4: Integrazione di \texttt{Kyber} all'interno di ArduPilot}
+\subsection{Step 3: Integrazione di \texttt{Kyber} all'interno di ArduPilot}
 Come accennato in fase di presentazione di tale piattaforma software, \textbf{ArduPilot} utilizza il sistema di building \texttt{waf}. Di conseguenza, l'introduzione di nuove librerie all'interno di un progetto che fa uso di questo sistema di building deve naturalmente avvenire nei suoi file di configurazione. Per rendere quanto più semplice possibile il processo di integrazione e di linking di \texttt{liboqs} (come già descritto nello \textbf{Step 1}), tale libreria è stata installata in maniera system-wide sulla macchina su cui è stato svolto il lavoro allo scopo di minimizzare le modifiche a cui sottoporre il progetto. Di conseguenza, l'unico accorgimento da adottare consiste nell'aggiungere i flag \texttt{-loqs -lcrypto} in fase di linking. Tale operazione, di norma, si effettua andando a modificare la variabile d'ambiente \texttt{LDFLAGS}.
 
 Nel caso di \texttt{waf}, invece, è necessario andare a modificare il file \texttt{wscript} (uno script Python), presente nella root della repository del progetto \textbf{ArduPilot}.
@@ -1418,7 +1443,7 @@ A questo punto è possibile ricompilare \textbf{ArduCopter} mediante il comando:
 utilizzando lo switch \texttt{-v} per abilitare la modalità \textit{verbose} e di conseguenza accertarsi che suddetti flag siano presenti nella stringa del linker mostrata durante l'ultima fase del processo di building.
 
 \newpage
-\subsection{Step 5: Integrazione di \texttt{Kyber} all'interno di QGroundControl}
+\subsection{Step 4: Integrazione di \texttt{Kyber} all'interno di QGroundControl}
 
 Al contrario di \textbf{ArduPilot}, \textbf{QGroundControl} utilizza il framework \textbf{Qt} per la gestione del progetto e delle procedure di building. Per andare ad integrare \texttt{liboqs} è quindi necessario andare ad intervenire sulla configurazione di Qt stesso. 
 
@@ -1438,7 +1463,7 @@ Dopo di che, è necessario eseguire una \textbf{build pulita del progetto}, anda
 e successivamente rieseguendo i comandi descritti nella sezione relativa alla compilazione di QGroundControl nel presente documento.
 
 \newpage
-\subsection{Step 6: Alterazione delle funzioni di \textbf{ArduPilot}}
+\subsection{Step 5: Alterazione delle funzioni di \textbf{ArduPilot}}
 Una volta descritto il funzionamento ad alto livello del processo di scambio delle chiavi, è ora possibile scendere ancora di più nel dettaglio e descrivere quali sono stati i cambiamenti alla struttura del codice sorgente del progetto \textbf{ArduPilot}.
 
 In particolare, il grosso dei cambiamenti si è concentrato sostanzialmente in due file:
@@ -1670,7 +1695,7 @@ In quest'ultimo caso, quando la capsula è stata scambiata, viene impostata anch
 La funzione \texttt{set\_session\_key()} viene definita nella liberia \textsc{MAVLink}, che sarà oggetto di discussione successivamente.
 
 \newpage
-\subsection{Step 7: Alterazione delle funzioni di \textbf{QGroundControl}}
+\subsection{Step 6: Alterazione delle funzioni di \textbf{QGroundControl}}
 L'altro progetto che è stato necessario modificare in questo lavoro consiste, come detto, in \textbf{QGroundControl}, la cui responsabilità è triplice:
 
 \begin{itemize}
@@ -1824,7 +1849,7 @@ A questo punto, la GCS è finalmente pronta per iniziare la comunicazione cifrat
 
 \newpage
 \subsubsection{Riassumendo}
-Ora che è stato descritto nel dettaglio il funzionamento del meccanismo di scambio della chiave e della capsula, è possibile fornire una versione aggiornata e più dettagliata del grafico riassuntivo mostrato nelle pagine precedenti.
+Ora che è stato descritto nel dettaglio il funzionamento del meccanismo di scambio della chiave e della capsula, è possibile fornire una versione aggiornata e più dettagliata del grafico riassuntivo mostrato nel capitolo dedicato alla progettazione del presente lavoro.
 
 Per quanto riguarda lo scambio della chiave:
 
@@ -1841,23 +1866,11 @@ Per quanto riguarda il protocollo di scambio della capsula, invece:
 \end{figure}
 
 \newpage
-\subsection{Step 8: AES ed alterazione della libreria \textsc{MAVLink}}
-L'ultima parte delle modifiche effettuate per questo lavoro riguarda proprio la libreria C \textsc{MAVLink}, comune ad entrambi i progetti. In particolare, a questo livello è stata inserita la logica per gestire la comunicazione cifrata tra le due parti e, nello specifico, sono state richiamate le funzioni di una libreria che implementa il cifrario \textbf{AES}.
-
-\subsubsection{Perché \texttt{AES?}}
-Lo scopo principale di questo lavoro, come ripetuto più volte nel presente documento, consiste nell'utilizzare tecnologie \textbf{quantum-resistant}: la scelta della componente di cifratura simmetrica per la comunicazione è ricaduta sul cifrario \texttt{AES} poiché è opinione comune che tale cifrario resista ad attacchi di crittoanalisi condotti da algoritmi quantistici. Il miglior "attacco quantistico" a questo cifrario conosciuto fino ad ora consiste in quello veicolato tramite l'uso del cosiddetto \textbf{Algoritmo di Grover} \cite{grover1996fast}, un algoritmo quantistico originariamente pensato per effettuare operazioni efficienti di ricerca in database \textbf{non ordinati} con una complessità temporale di $\mathcal{O}(\sqrt{N})$ e spaziale di $\mathcal{O}(\log N)$. Quando applicato in un contesto di \textbf{ricerca esaustiva}, tale algoritmo permette quindi di \textbf{dimezzare} il tempo necessario all'individuazione di un valore e, nel caso di attacchi \textit{bruteforce}, de recupero della chiave di cifratura.\cite*{cryptoeprint:2017/811}
-
-Quanto appena detto conduce quindi ad un duplice risultato:
-
-\begin{itemize}
-    \item Nel caso di AES, il livello di sicurezza è quindi \textbf{dimezzato}: ad esempio, per la variante \texttt{AES-128} il livello di sicurezza in un contesto quantistico si riduce a quello offerto da una (ipotetica!) variante con chiavi a 64 bit di tale schema in un contesto classico;
-    \item La variante \texttt{AES-256} passa ad un livello di sicurezza pari a quello di \texttt{AES-128}, considerato oggi ancora \textbf{sufficiente}.
-\end{itemize}
-
-Per questa ragione, lo schema \texttt{AES} viene considerato, allo stato attuale, \textbf{quantum-resistant}.
+\subsection{Step 7: Alterazione della libreria \textsc{MAVLink}}
+L'ultima parte delle modifiche effettuate per questo lavoro riguarda proprio la libreria C \textsc{MAVLink}, comune ad entrambi i progetti. In particolare, a questo livello è stata inserita la logica per gestire la comunicazione cifrata tra le due parti e, nello specifico, sono state richiamate le funzioni di una libreria che implementa il cifrario \textbf{AES}, la cui scelta è giustificata nel capitolo precedente.
 
 \subsubsection{AES: implementazione}
-Fatta questa precisazione circa la sicurezza dello schema AES nel contesto quantistico, si descrive ora il processo di integrazione di una sua implementazione all'interno della libreria \textsc{MAVLink}.
+Si descrive ora il processo di integrazione di un'implementazione del cifrario \texttt{AES} all'interno della libreria \textsc{MAVLink}.
 
 L'implementazione scelta per tale processo si chiama \texttt{tiny-AES-c}, proposta dall'utente \textbf{kokke}, ed il suo codice è disponibile liberamente su GitHub. \cite{tiny-aes-c-github}
 
