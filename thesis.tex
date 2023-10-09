@@ -1928,9 +1928,7 @@ Le operazioni di \textbf{cifratura} e \textbf{decifratura} non sono effettuate n
 
 \newpage
 
-\section{Analisi delle performance, conclusioni e sviluppi futuri}
-
-\subsection{Utilizzo di memoria e consumo di CPU}
+\section{Analisi delle performance}
 A valle della fase di implementazione di questo lavoro, è stato effettuato un breve confronto in termini di \textbf{utilizzo di CPU} e di \textbf{utilizzo di memoria} tra la versione \textit{vanilla} di ArduPilot e quella sviluppata e descritta nelle sezioni precedenti.
 
 In particolare, il test è stato effettuato mediante il tool \texttt{htop}, tipico dei sistemi GNU/Linux e che permette, per ogni processo, di identificare il suo PID, il suo utilizzo di memoria ed il suo impatto sul carico di CPU del sistema.
@@ -1964,7 +1962,8 @@ Per quanto riguarda invece il \textbf{consumo di memoria}:
     \item Il progetto \textbf{modificato} (con le versioni \textit{custom} di ArduPilot e QGroundControl) vede invece un consumo medio di memoria dello \textbf{0,14\%} pari a circa \textbf{10,9MB} sul totale della memoria disponibile nell'ambiente di lavoro.
 \end{itemize}
 
-\subsection{Conclusioni e sviluppi futuri}
+\newpage
+\section{Conclusioni e sviluppi futuri}
 L'introduzione dell'algoritmo \texttt{Kyber} e, conseguentemente, del cifrario \texttt{AES} risultano dunque \textbf{rilevanti} in termini di consumo di memoria e di carico di CPU ma \textbf{non} in maniera tale da \textbf{prgiudicare} l'operatività del protocollo \textsc{MAVLink}. 
 
 Viene inoltre dimostrata la \textbf{duttilità} e l'\textbf{estendibilità} dei progetti \\ \textbf{ArduPilot} e \textbf{QGroundControl}, proprio grazie alla loro natura \textbf{open-source} che quindi permette a tutti di contribuire al loro sviluppo e sfruttare al meglio gli sforzi di una community attiva e sempre aperta al confronto, come dimostrato dalla sempre vivace interazione tra i membri del server Discord \textbf{DroneCode}, che ospita sia discussioni tecniche che di carattere generale.
